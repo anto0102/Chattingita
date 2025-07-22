@@ -3,23 +3,28 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Casuale Realtime</title> 
+    <title>Chat Casuale Realtime (Vue)</title>
     <link rel="stylesheet" href="style.css"> 
 </head>
 <body>
-    <div class="container">
-        <h1>Chat Casuale Semplice</h1>
-        <div id="status"></div> 
-        <button id="start-matchmaking">Avvia Nuova Chat</button>
+    <div id="app" class="container"> <h1>Chat Casuale Semplice</h1>
+        
+        <div v-if="!isMatched"> <div id="status">{{ statusMessage }}</div> 
+            <button @click="startMatchmaking">Avvia Nuova Chat</button>
+        </div>
 
-        <div id="chat-container" style="display: none;">
-            <div id="chatbox"></div>
-            <input type="text" id="message-input" placeholder="Digita il tuo messaggio...">
-            <button id="send-button">Invia</button>
-            <button id="disconnect-button">Disconnetti</button>
+        <div v-else id="chat-container"> <div id="chatbox">
+                <p v-for="(msg, index) in messages" :key="index">
+                    <strong>{{ msg.senderId === userId ? 'Tu' : (msg.senderId === 'system' ? 'Sistema' : 'Partner') }}:</strong> {{ msg.text }}
+                </p>
+            </div>
+            <input type="text" v-model="messageInput" @keyup.enter="sendMessage" placeholder="Digita il tuo messaggio...">
+            <button @click="sendMessage">Invia</button>
+            <button @click="disconnect">Disconnetti</button>
         </div>
     </div>
 
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <script src="script.js"></script> 
