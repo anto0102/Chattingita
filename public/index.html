@@ -4,13 +4,8 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat Anonima</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -20,78 +15,59 @@
       display: flex;
       min-height: 100vh;
       overflow-x: hidden;
-      transition: margin-left 0.3s ease;
     }
 
-    /* === SIDEBAR === */
+    /* Sidebar */
     .sidebar {
+      height: 100vh;
+      width: 0;
       position: fixed;
+      z-index: 2;
       top: 0;
       left: 0;
-      width: 220px;
-      height: 100%;
-      background-color: #1e1b4b;
-      padding: 2rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-
-    .sidebar.open {
-      transform: translateX(0);
+      background-color: #1f2937;
+      overflow-x: hidden;
+      transition: 0.3s;
+      padding-top: 60px;
     }
 
     .sidebar a {
-      color: white;
+      padding: 12px 24px;
       text-decoration: none;
-      font-size: 1.1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      transition: background 0.2s;
+      font-size: 18px;
+      color: #f3f4f6;
+      display: block;
+      transition: 0.2s;
     }
 
     .sidebar a:hover {
-      background-color: #4f46e5;
+      background-color: #374151;
     }
 
     .menu-toggle {
       position: fixed;
       top: 20px;
       left: 20px;
-      z-index: 1001;
-      background-color: #4f46e5;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      font-size: 24px;
+      font-size: 28px;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .menu-toggle:hover {
-      background-color: #4338ca;
+      z-index: 3;
+      color: white;
+      background: none;
+      border: none;
     }
 
     .main-content {
-      margin: 0 auto;
-      padding: 2rem 1rem;
-      max-width: 600px;
+      margin: auto;
+      padding: 2rem;
+      padding-top: 4rem;
+      flex-grow: 1;
       width: 100%;
-      transition: margin-left 0.3s ease;
-    }
-
-    body.menu-open .main-content {
-      margin-left: 220px;
+      max-width: 600px;
     }
 
     h1 {
       text-align: center;
-      margin-top: 3.5rem;
+      margin-top: 0;
     }
 
     #container {
@@ -99,7 +75,6 @@
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 2rem;
-      margin-top: 2rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
@@ -109,12 +84,17 @@
       text-align: center;
     }
 
+    #onlineCounter {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
     #controls {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      margin-bottom: 1rem;
       flex-wrap: wrap;
+      margin-bottom: 1rem;
     }
 
     button {
@@ -157,7 +137,7 @@
       color: #333;
       border-radius: 10px;
       padding: 1rem;
-      height: 300px;
+      height: 400px;
       overflow-y: auto;
       margin-bottom: 1rem;
     }
@@ -187,7 +167,7 @@
     }
 
     #inputArea {
-      display: none;
+      display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
@@ -207,34 +187,38 @@
       color: white;
     }
 
-    @media (max-width: 768px) {
-      body.menu-open .main-content {
-        margin-left: 0;
+    @media (max-width: 480px) {
+      #inputArea {
+        flex-direction: column;
+        align-items: center;
       }
 
-      .sidebar {
+      input[type="text"] {
         width: 100%;
-        transform: translateX(-100%);
       }
 
-      .sidebar.open {
-        transform: translateX(0);
+      button {
+        width: 100%;
       }
     }
   </style>
 </head>
 <body>
 
-  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
-
-  <nav class="sidebar" id="sidebar">
+  <!-- Sidebar -->
+  <div class="sidebar" id="sidebar">
     <a href="#">🏠 Home</a>
-    <a href="#">❓ FAQ</a>
-    <a href="#">📩 Contatti</a>
-  </nav>
+    <a href="#">📄 Info</a>
+    <a href="#">🔒 Privacy</a>
+  </div>
 
+  <!-- Menu Toggle -->
+  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
+
+  <!-- Main Content -->
   <div class="main-content">
     <h1>💬 Chat Anonima</h1>
+
     <div id="container">
       <div id="status">Premi "Inizia Chat" per connetterti</div>
       <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
@@ -253,15 +237,14 @@
     </div>
   </div>
 
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
-  <script src="script.js"></script>
   <script>
-    function toggleMenu() {
-      const sidebar = document.getElementById('sidebar');
-      const body = document.body;
-      sidebar.classList.toggle('open');
-      body.classList.toggle('menu-open');
+    function toggleSidebar() {
+      const sidebar = document.getElementById("sidebar");
+      sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
     }
   </script>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
 </html>
