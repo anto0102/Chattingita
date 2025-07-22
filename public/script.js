@@ -1,4 +1,3 @@
-// Sostituisci con il tuo backend se diverso
 const socket = io("https://chattingapp-backend.onrender.com");
 
 const status = document.getElementById('status');
@@ -19,21 +18,24 @@ function resetChat() {
   chat.style.display = 'none';
 }
 
+function addMessage(text, isYou = false) {
+  const msg = document.createElement('div');
+  msg.className = 'message ' + (isYou ? 'you' : 'other');
+  msg.textContent = (isYou ? '🧑 ' : '👤 ') + text;
+  chat.appendChild(msg);
+  chat.scrollTop = chat.scrollHeight;
+}
+
 function sendMessage() {
   const msg = input.value.trim();
   if (msg && connected) {
-    const el = document.createElement('div');
-    el.textContent = '🧑 Tu: ' + msg;
-    chat.appendChild(el);
-    chat.scrollTop = chat.scrollHeight;
-
+    addMessage(msg, true);
     socket.emit('message', msg);
     input.value = '';
   }
 }
 
 startBtn.addEventListener('click', () => {
-  console.log("▶ Bottone cliccato");
   if (!connected) {
     socket.emit('start_chat');
     status.textContent = '🔄 In attesa di un altro utente...';
@@ -55,19 +57,19 @@ disconnectBtn.addEventListener('click', () => {
 sendBtn.addEventListener('click', sendMessage);
 
 input.addEventListener('keypress', (e) => {
-  if (e.key === 'Enter') {
-    sendMessage();
-  }
+  if (e.key === 'Enter') sendMessage();
 });
 
-// Eventi socket
+// SOCKET.IO Events
+
 socket.on('waiting', () => {
   status.textContent = '🔄 In attesa di un altro utente...';
 });
 
 socket.on('match', () => {
   status.textContent = '✅ Connesso! Puoi iniziare a chattare.';
-  chat.style.display = 'block';
+  chat.style.display = 'flex';
+  chat.style.flexDirection = 'column';
   input.disabled = false;
   sendBtn.disabled = false;
   disconnectBtn.disabled = false;
@@ -75,10 +77,7 @@ socket.on('match', () => {
 });
 
 socket.on('message', (msg) => {
-  const el = document.createElement('div');
-  el.textContent = '👤 ' + msg;
-  chat.appendChild(el);
-  chat.scrollTop = chat.scrollHeight;
+  addMessage(msg, false);
 });
 
 socket.on('partner_disconnected', () => {
