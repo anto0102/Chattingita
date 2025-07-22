@@ -481,3 +481,201 @@ body.light-mode input[type="text"]:focus {
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER LE SEZIONI DI CONTENUTO */
+.content-section {
+    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease;
+}
+
+.content-section.hidden {
+  display: none; /* Nasconde l'elemento */
+}
+
+/* Stili specifici per FAQ e Contatti (se vuoi un look diverso) */
+.content-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  color: #fff; /* Colore bianco per il titolo H2 delle sezioni */
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.content-section .intro-text {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #e0e0e0;
+    font-size: 1.1rem;
+}
+
+.content-section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
+.accordion {
+    margin-top: 1.5rem;
+}
+
+.faq-item {
+  background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente */
+  border-radius: 15px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Bordo sottile per definizione */
+}
+
+.faq-header {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-item.active .faq-header {
+    border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro quando attivo */
+}
+
+
+.faq-header:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.faq-header h3 {
+  color: #c0c0c0; /* Grigio chiaro per il titolo della domanda (Dark Mode) */
+  margin: 0;
+  font-size: 1.2rem;
+  flex-grow: 1;
+}
+
+.accordion-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #c0c0c0; /* Stesso colore del titolo (Dark Mode) */
+    transition: transform 0.3s ease, color 0.3s ease;
+    margin-left: 1rem;
+}
+
+.faq-item.active .accordion-icon {
+    transform: rotate(45deg);
+    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Dark Mode) */
+}
+
+.faq-body {
+  max-height: 0;
+  padding: 0 1.2rem;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+  background-color: rgba(255, 255, 255, 0.05); /* Sfondo leggermente più scuro per il corpo */
+}
+
+.faq-item.active .faq-body {
+  max-height: 500px;
+  padding-top: 0.8rem;
+  padding-bottom: 1rem;
+}
+
+.faq-body p {
+  color: #e0e0e0; /* Colore testo leggermente più chiaro per le risposte */
+  font-size: 1rem;
+  margin: 0;
+}
+
+
+.content-section a {
+  color: #a78bfa; /* Un viola chiaro/blu per i link, coeso con il tema generale */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.content-section a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+
+/* --- LIGHT MODE ADJUSTMENTS FOR NEW SECTIONS --- */
+body.light-mode .content-section {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content-section h2 {
+  color: #222;
+}
+
+body.light-mode .content-section .intro-text {
+    color: #555;
+}
+
+body.light-mode .content-section p {
+  color: #555;
+}
+
+body.light-mode .faq-item {
+  background-color: rgba(0, 0, 0, 0.05); /* Sfondo chiaro per FAQ in light mode */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .faq-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .faq-item.active .faq-header {
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.08); /* Sfondo più scuro per header attivo in light mode */
+}
+
+body.light-mode .faq-header:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .faq-header h3 {
+  color: #444; /* Grigio scuro per il titolo della domanda (Light Mode) */
+}
+
+body.light-mode .accordion-icon {
+    color: #444; /* Stesso colore del titolo (Light Mode) */
+}
+
+body.light-mode .faq-item.active .accordion-icon {
+    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Light Mode) */
+}
+
+body.light-mode .faq-body {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .faq-body p {
+  color: #444;
+}
+
+body.light-mode .content-section a {
+  color: #4f46e5; /* Blu primario per i link in light mode */
+}
+
+body.light-mode .content-section a:hover {
+  color: #4338ca;
+}
+
+
+/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
