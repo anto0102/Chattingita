@@ -845,4 +845,123 @@ body.light-mode .about-outro {
 /* Media Queries per Responsività */
 @media (max-width: 768px) {
   /* ... (Mantieni le tue media queries esistenti) ... */
-  #about-us-content .about-grid
+  #about-us-content .about-grid {
+      grid-template-columns: 1fr; /* Una colonna su schermi più piccoli */
+  }
+}
+
+@media (max-width: 480px) {
+  /* ... (Mantieni le tue media queries esistenti) ... */
+  .about-card {
+    padding: 1.2rem;
+  }
+  .about-card .icon {
+    font-size: 2.8rem;
+  }
+  .about-card h3 {
+    font-size: 1.2rem;
+  }
+  .about-outro {
+    font-size: 1rem;
+  }
+}
+
+/* Animazioni (mantieni quelle esistenti) */
+/* ... */
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER IL LAYOUT INIZIALE DEI BOTTONI */
+#controls {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 1.5rem 0;
+  min-height: 100px; /* Assicura uno spazio minimo per il bottone */
+  /* NOTA: Non più display: grid qui di default, sarà gestito da chat-active */
+}
+
+/* Nascondi di default i bottoni di disconnessione e segnalazione */
+#disconnectBtn, #reportBtn {
+    display: none;
+}
+
+/* Stile per il bottone principale "Inizia Chat" quando è l'unico */
+#startBtn.initial-state {
+    padding: 1.5rem 3rem; /* Grande e accattivante */
+    font-size: 1.8rem; /* Testo grande */
+    border-radius: 15px; /* Bordi più arrotondati */
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4); /* Ombra più pronunciata e colorata */
+    background-color: #4f46e5;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+#startBtn.initial-state:hover {
+    transform: translateY(-5px) scale(1.02); /* Effetto hover più evidente */
+    filter: brightness(1.2);
+    box-shadow: 0 12px 35px rgba(79, 70, 229, 0.6);
+}
+
+/* Stili per i bottoni normali quando la chat è attiva */
+#controls.chat-active {
+    display: grid; /* Torna a grid per i 3 bottoni (anche se startBtn è display: none) */
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
+    justify-items: center;
+}
+
+#controls.chat-active #startBtn {
+    display: none !important; /* Forza la scomparsa di startBtn quando chat-active */
+}
+
+#controls.chat-active #disconnectBtn,
+#controls.chat-active #reportBtn {
+    display: block !important; /* Forza la comparsa dei bottoni quando chat-active */
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    width: 100%;
+    min-width: 120px;
+    max-width: 180px;
+    /* Assicurati che questi stili siano coerenti con gli altri bottoni */
+}
+
+/* NUOVO: Nascondi chat e inputArea di default */
+#chat,
+#inputArea {
+    display: none;
+}
+
+
+/* Adattamenti per la light-mode */
+body.light-mode #startBtn.initial-state {
+    background-color: #4338ca;
+    box-shadow: 0 8px 25px rgba(67, 56, 202, 0.3);
+}
+
+body.light-mode #startBtn.initial-state:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 12px 35px rgba(67, 56, 202, 0.5);
+}
+
+/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
+
+/* MEDIA QUERIES per i bottoni - Aggiustamenti */
+@media (max-width: 480px) {
+  #startBtn.initial-state {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    width: 90%;
+    max-width: none;
+  }
+
+  #controls.chat-active {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  #controls.chat-active #disconnectBtn,
+  #controls.chat-active #reportBtn {
+    width: 100%;
+    max-width: none;
+  }
+}
