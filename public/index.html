@@ -7,10 +7,6 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
-    * {
-      box-sizing: border-box;
-    }
-
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -18,65 +14,66 @@
       margin: 0;
       padding: 0;
       display: flex;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
       overflow-x: hidden;
     }
 
-    /* Sidebar */
+    h1 {
+      margin-top: 2rem;
+    }
+
+    #sidebarToggle {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      background: #4f46e5;
+      color: white;
+      border: none;
+      padding: 0.6rem 1rem;
+      border-radius: 8px;
+      cursor: pointer;
+      z-index: 1001;
+      transition: background 0.3s;
+    }
+
+    #sidebarToggle:hover {
+      background: #4338ca;
+    }
+
     #sidebar {
       position: fixed;
       top: 0;
       left: -220px;
-      width: 220px;
+      width: 200px;
       height: 100%;
-      background: #333;
+      background-color: #1f2937;
+      color: white;
+      padding-top: 4rem;
       transition: left 0.3s ease;
-      padding-top: 60px;
-      z-index: 10;
+      z-index: 1000;
     }
 
     #sidebar.open {
       left: 0;
     }
 
-    #sidebar a {
-      display: block;
-      padding: 15px 20px;
-      color: white;
-      text-decoration: none;
-      border-bottom: 1px solid #444;
+    #sidebar ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+
+    #sidebar ul li {
+      padding: 1rem;
+      border-bottom: 1px solid #374151;
+      cursor: pointer;
       transition: background 0.2s;
     }
 
-    #sidebar a:hover {
-      background: #444;
-    }
-
-    #menuToggle {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 20;
-      background: #4f46e5;
-      border: none;
-      color: white;
-      padding: 10px 14px;
-      border-radius: 8px;
-      cursor: pointer;
-      font-size: 18px;
-    }
-
-    #mainContent {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem;
-      width: 100%;
-    }
-
-    h1 {
-      margin-top: 2rem;
+    #sidebar ul li:hover {
+      background-color: #374151;
     }
 
     #container {
@@ -174,7 +171,7 @@
     }
 
     #inputArea {
-      display: none;
+      display: flex;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
@@ -207,56 +204,47 @@
       button {
         width: 100%;
       }
-
-      #menuToggle {
-        top: 10px;
-        left: 10px;
-        padding: 8px 12px;
-      }
     }
   </style>
 </head>
 <body>
-
-  <button id="menuToggle">☰</button>
+  <button id="sidebarToggle">☰</button>
 
   <div id="sidebar">
-    <a href="#">🏠 Home</a>
-    <a href="#">📜 Regole</a>
-    <a href="#">🔗 Link</a>
-    <a href="#">ℹ️ Info</a>
+    <ul>
+      <li onclick="window.location.href='index.html'">Home</li>
+      <li onclick="alert('Prossimamente...')">Profilo</li>
+      <li onclick="alert('Prossimamente...')">Impostazioni</li>
+    </ul>
   </div>
 
-  <div id="mainContent">
-    <h1>💬 Chat Anonima</h1>
+  <h1>💬 Chat Anonima</h1>
 
-    <div id="container">
-      <div id="status">Premi "Inizia Chat" per connetterti</div>
-      <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
+  <div id="container">
+    <div id="status">Premi "Inizia Chat" per connetterti</div>
+    <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
+    <div id="controls">
+      <button id="startBtn">▶️ Inizia Chat</button>
+      <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
+      <button id="reportBtn" disabled>🚩 Segnala Utente</button>
+    </div>
 
-      <div id="controls">
-        <button id="startBtn">▶️ Inizia Chat</button>
-        <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
-        <button id="reportBtn" disabled>🚩 Segnala Utente</button>
-      </div>
+    <div id="chat"></div>
 
-      <div id="chat"></div>
-
-      <div id="inputArea">
-        <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
-        <button id="sendBtn" disabled>📤 Invia</button>
-      </div>
+    <div id="inputArea">
+      <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
+      <button id="sendBtn" disabled>📤 Invia</button>
     </div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="script.js"></script>
   <script>
-    const menuToggle = document.getElementById('menuToggle');
-    const sidebar = document.getElementById('sidebar');
+    const toggle = document.getElementById("sidebarToggle");
+    const sidebar = document.getElementById("sidebar");
 
-    menuToggle.addEventListener('click', () => {
-      sidebar.classList.toggle('open');
+    toggle.addEventListener("click", () => {
+      sidebar.classList.toggle("open");
     });
   </script>
 </body>
