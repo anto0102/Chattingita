@@ -4,8 +4,13 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat Anonima</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    * {
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Inter', sans-serif;
       background: linear-gradient(to right, #667eea, #764ba2);
@@ -18,56 +23,60 @@
     }
 
     /* Sidebar */
-    .sidebar {
-      height: 100vh;
-      width: 0;
+    #sidebar {
       position: fixed;
-      z-index: 2;
       top: 0;
-      left: 0;
-      background-color: #1f2937;
-      overflow-x: hidden;
-      transition: 0.3s;
+      left: -220px;
+      width: 220px;
+      height: 100%;
+      background: #333;
+      transition: left 0.3s ease;
       padding-top: 60px;
+      z-index: 10;
     }
 
-    .sidebar a {
-      padding: 12px 24px;
-      text-decoration: none;
-      font-size: 18px;
-      color: #f3f4f6;
+    #sidebar.open {
+      left: 0;
+    }
+
+    #sidebar a {
       display: block;
-      transition: 0.2s;
+      padding: 15px 20px;
+      color: white;
+      text-decoration: none;
+      border-bottom: 1px solid #444;
+      transition: background 0.2s;
     }
 
-    .sidebar a:hover {
-      background-color: #374151;
+    #sidebar a:hover {
+      background: #444;
     }
 
-    .menu-toggle {
+    #menuToggle {
       position: fixed;
       top: 20px;
       left: 20px;
-      font-size: 28px;
-      cursor: pointer;
-      z-index: 3;
-      color: white;
-      background: none;
+      z-index: 20;
+      background: #4f46e5;
       border: none;
+      color: white;
+      padding: 10px 14px;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 18px;
     }
 
-    .main-content {
-      margin: auto;
+    #mainContent {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       padding: 2rem;
-      padding-top: 4rem;
-      flex-grow: 1;
       width: 100%;
-      max-width: 600px;
     }
 
     h1 {
-      text-align: center;
-      margin-top: 0;
+      margin-top: 2rem;
     }
 
     #container {
@@ -75,6 +84,9 @@
       backdrop-filter: blur(10px);
       border-radius: 20px;
       padding: 2rem;
+      width: 90%;
+      max-width: 600px;
+      margin-top: 2rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
@@ -84,17 +96,12 @@
       text-align: center;
     }
 
-    #onlineCounter {
-      text-align: center;
-      margin-bottom: 1rem;
-    }
-
     #controls {
       display: flex;
       justify-content: center;
       gap: 1rem;
-      flex-wrap: wrap;
       margin-bottom: 1rem;
+      flex-wrap: wrap;
     }
 
     button {
@@ -137,7 +144,7 @@
       color: #333;
       border-radius: 10px;
       padding: 1rem;
-      height: 400px;
+      height: 300px;
       overflow-y: auto;
       margin-bottom: 1rem;
     }
@@ -167,7 +174,7 @@
     }
 
     #inputArea {
-      display: flex;
+      display: none;
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
@@ -200,28 +207,33 @@
       button {
         width: 100%;
       }
+
+      #menuToggle {
+        top: 10px;
+        left: 10px;
+        padding: 8px 12px;
+      }
     }
   </style>
 </head>
 <body>
 
-  <!-- Sidebar -->
-  <div class="sidebar" id="sidebar">
+  <button id="menuToggle">☰</button>
+
+  <div id="sidebar">
     <a href="#">🏠 Home</a>
-    <a href="#">📄 Info</a>
-    <a href="#">🔒 Privacy</a>
+    <a href="#">📜 Regole</a>
+    <a href="#">🔗 Link</a>
+    <a href="#">ℹ️ Info</a>
   </div>
 
-  <!-- Menu Toggle -->
-  <button class="menu-toggle" onclick="toggleSidebar()">☰</button>
-
-  <!-- Main Content -->
-  <div class="main-content">
+  <div id="mainContent">
     <h1>💬 Chat Anonima</h1>
 
     <div id="container">
       <div id="status">Premi "Inizia Chat" per connetterti</div>
       <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
+
       <div id="controls">
         <button id="startBtn">▶️ Inizia Chat</button>
         <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
@@ -237,14 +249,15 @@
     </div>
   </div>
 
-  <script>
-    function toggleSidebar() {
-      const sidebar = document.getElementById("sidebar");
-      sidebar.style.width = sidebar.style.width === "250px" ? "0" : "250px";
-    }
-  </script>
-
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="script.js"></script>
+  <script>
+    const menuToggle = document.getElementById('menuToggle');
+    const sidebar = document.getElementById('sidebar');
+
+    menuToggle.addEventListener('click', () => {
+      sidebar.classList.toggle('open');
+    });
+  </script>
 </body>
 </html>
