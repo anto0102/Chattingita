@@ -143,18 +143,18 @@ h1 {
 #controls {
   display: flex;
   justify-content: center;
-  gap: 1.2rem; /* Spazio aumentato tra i bottoni */
+  gap: 0.8rem; /* Spazio ridotto tra i bottoni */
   margin: 1.5rem 0;
-  flex-wrap: wrap;
+  flex-wrap: wrap; /* Permette ai bottoni di andare a capo se non c'è spazio */
 }
 
 button {
-  padding: 0.8rem 1.5rem; /* Padding aumentato per un look più solido */
+  padding: 0.7rem 1.2rem; /* Padding leggermente ridotto per renderli più compatti */
   border: none;
   border-radius: 10px; /* Bordi arrotondati */
   font-weight: 700; /* Testo più bold */
   cursor: pointer;
-  font-size: 1.05rem; /* Dimensione leggermente maggiore */
+  font-size: 0.95rem; /* Dimensione leggermente più piccola per il testo */
   transition: all 0.3s ease; /* Transizioni uniformi per tutti gli stati */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombreggiatura ai bottoni */
 }
@@ -169,8 +169,8 @@ button {
   color: white;
 }
 
-#reportBtn { /* Nuovo pulsante, ma ho mantenuto il tuo colore originale */
-  background-color: #f59e0b;
+#reportBtn {
+  background-color: #f59e0b; /* Arancione per segnala */
   color: white;
 }
 
@@ -198,7 +198,7 @@ button:hover:not(:disabled) {
   color: #111;
   border-radius: 15px; /* Bordi più arrotondati */
   padding: 1.2rem;
-  height: 350px; /* Altezza leggermente maggiore */
+  height: 400px; /* **AUMENTATO L'ALTEZZA DELLA CHAT** */
   overflow-y: auto;
   margin-bottom: 1.5rem;
   box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15); /* Ombra interna più definita */
@@ -223,7 +223,6 @@ button:hover:not(:disabled) {
 #chat::-webkit-scrollbar-thumb:hover {
   background: #555;
 }
-
 
 .message {
   margin: 0.7rem 0; /* Spazio maggiore tra i messaggi */
@@ -301,7 +300,6 @@ body.light-mode .theme-toggle {
 body.light-mode .theme-toggle:hover {
   background-color: #d0d0d0;
 }
-
 
 body.light-mode .menu-toggle {
   background-color: #4338ca; /* Mantieni un colore vibrante */
