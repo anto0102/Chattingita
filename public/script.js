@@ -12,6 +12,11 @@ const onlineCount = document.getElementById('onlineCount');
 let connected = false;
 let typingIndicator = null;
 
+// **Variabile per salvare la cronologia chat del partner**
+let chatLog = [];
+// **Variabile per memorizzare IP partner, se disponibile**
+let partnerIp = null;
+
 function resetChat() {
   chat.innerHTML = '';
   input.value = '';
@@ -20,6 +25,10 @@ function resetChat() {
   chat.style.display = 'none';
   inputArea.style.display = 'none';
   removeTypingIndicator();
+
+  // Reset chat log e partner IP
+  chatLog = [];
+  partnerIp = null;
 }
 
 function addMessage(text, isYou = false) {
@@ -28,6 +37,11 @@ function addMessage(text, isYou = false) {
   msg.textContent = (isYou ? '🧑 ' : '👤 ') + text;
   chat.appendChild(msg);
   chat.scrollTop = chat.scrollHeight;
+
+  // Salva solo messaggi del partner (non i tuoi)
+  if (!isYou) {
+    chatLog.push(text);
+  }
 }
 
 function sendMessage() {
@@ -103,7 +117,7 @@ socket.on('waiting', () => {
   status.textContent = '🔄 In attesa di un altro utente...';
 });
 
-socket.on('match', () => {
+socket.on('match', (data) => {
   status.textContent = '✅ Connesso! Puoi iniziare a chattare.';
   chat.style.display = 'flex';
   chat.style.flexDirection = 'column';
@@ -112,6 +126,11 @@ socket.on('match', () => {
   sendBtn.disabled = false;
   disconnectBtn.disabled = false;
   connected = true;
+
+  // **Salva IP partner, se fornito dal server (modifica server per inviare ip)**
+  if (data && data.partnerIp) {
+    partnerIp = data.partnerIp;
+  }
 });
 
 socket.on('message', (msg) => {
@@ -133,6 +152,8 @@ socket.on('partner_disconnected', () => {
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
+  partnerIp = null;
+  chatLog = [];
 });
 
 socket.on('connect_error', (err) => {
@@ -141,9 +162,30 @@ socket.on('connect_error', (err) => {
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
+  partnerIp = null;
+  chatLog = [];
 });
 
 // ✅ ONLINE USERS COUNT
 socket.on('online_count', (count) => {
   onlineCount.textContent = count;
 });
+
+// -------------- NUOVA FUNZIONE REPORT --------------
+
+function reportUser() {
+  if (!partnerIp) {
+    alert("Nessun partner da segnalare.");
+    return;
+  }
+
+  socket.emit("report_user", {
+    partnerIp,
+    chatLog,
+  });
+
+  alert("Segnalazione inviata.");
+}
+
+// Aggiungi il bottone nel tuo HTML:
+// <button onclick="reportUser()">Segnala Utente</button>
