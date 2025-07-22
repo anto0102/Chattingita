@@ -1,82 +1,107 @@
 body {
-    font-family: Arial, sans-serif;
-    background: #f9f9f9;
-    color: #333;
-    margin: 20px;
+  margin: 0;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background: linear-gradient(135deg, #e3f2fd, #bbdefb);
+  color: #333;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
 }
 
-#status {
-    margin-bottom: 15px;
-    font-weight: bold;
-    font-size: 1.1em;
+.container {
+  text-align: center;
+  max-width: 600px;
+  width: 90%;
+  background: white;
+  padding: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 0 20px rgba(0,0,0,0.1);
+  animation: fadeIn 1s ease;
 }
 
-#chat {
-    border: 1px solid #ccc;
-    background: white;
-    height: 300px;
-    width: 100%;
-    max-width: 600px;
-    overflow-y: auto;
-    padding: 10px;
-    margin-bottom: 15px;
-    display: none; /* inizialmente nascosto */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+h1 {
+  margin-bottom: 0.5rem;
 }
 
-#input {
-    width: calc(100% - 90px);
-    max-width: 510px;
-    padding: 10px;
-    font-size: 1em;
-    margin-right: 10px;
-    border: 1px solid #ccc;
-    border-radius: 4px;
+#status, #onlineCounter {
+  font-size: 1rem;
+  margin: 0.5rem 0;
+}
+
+#controls {
+  margin: 1rem 0;
 }
 
 button {
-    padding: 10px 15px;
-    font-size: 1em;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
-    transition: background-color 0.2s ease;
+  background-color: #2196f3;
+  color: white;
+  border: none;
+  padding: 0.6rem 1.2rem;
+  border-radius: 8px;
+  margin: 0.3rem;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover:not(:disabled) {
+  background-color: #1976d2;
 }
 
 button:disabled {
-    background-color: #ccc;
-    cursor: not-allowed;
-}
-
-#startBtn {
-    background-color: #28a745;
-    color: white;
-    margin-right: 10px;
-}
-
-#startBtn:hover:not(:disabled) {
-    background-color: #218838;
-}
-
-#sendBtn {
-    background-color: #007bff;
-    color: white;
-    margin-right: 10px;
-}
-
-#sendBtn:hover:not(:disabled) {
-    background-color: #0069d9;
+  background-color: #ccc;
+  cursor: not-allowed;
 }
 
 #disconnectBtn {
-    background-color: #dc3545;
-    color: white;
+  background-color: #e53935;
 }
 
 #disconnectBtn:hover:not(:disabled) {
-    background-color: #c82333;
+  background-color: #c62828;
 }
 
-.controls {
-    margin-bottom: 15px;
+#chat {
+  border: 1px solid #ccc;
+  background: #fafafa;
+  padding: 1rem;
+  height: 300px;
+  overflow-y: auto;
+  text-align: left;
+  margin-top: 1rem;
+  border-radius: 8px;
+  animation: fadeIn 0.4s ease;
+}
+
+.chat-message {
+  margin-bottom: 0.5rem;
+  animation: slideIn 0.3s ease;
+}
+
+#inputArea {
+  margin-top: 1rem;
+}
+
+input[type="text"] {
+  padding: 0.6rem;
+  width: 70%;
+  max-width: 400px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.hidden {
+  display: none;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(10px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
 }
