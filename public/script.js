@@ -1,8 +1,7 @@
-const { createApp, ref, onMounted, onBeforeUnmount } = Vue; // Importa le funzioni necessarie da Vue
+const { createApp, ref, onMounted, onBeforeUnmount } = Vue;
 
 createApp({
     setup() {
-        // Stato dell'applicazione (queste variabili sono reattive)
         const userId = ref(null);
         const roomId = ref(null);
         const partnerId = ref(null);
@@ -11,37 +10,30 @@ createApp({
         const messages = ref([]);
         const messageInput = ref('');
 
-        let matchmakingInterval = null; // Per il polling del matchmaking
-        let chatSubscription = null; // Per la sottoscrizione Realtime Supabase
-        let supabase = null; // Inizializzato in onMounted
+        let matchmakingInterval = null;
+        let chatSubscription = null;
+        let supabase = null;
 
-        // Funzione per inizializzare Supabase (chiamata una sola volta)
         const initSupabase = () => {
-            const supabaseUrl = 'https://gekoqfinkwoysferyjwm.supabase.co'; // DEVI INSERIRE IL TUO VERO URL
-            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla29xZmlua3dveXNmZXJ5andtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNDk2NjQsImV4cCI6MjA2ODcyNTY2NH0.0gOgyjULefdGKXOANJQOPr1l17IDMYM_Iv2_BRYIeBA'; // DEVI INSERIRE LA TUA VERA CHIAVE ANONIMA (PUBLIC KEY)
-            supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
-            console.log("Supabase client inizializzato.");
+            const supabaseUrl = 'https://gekoqfinkwoysferyjwm.supabase.co';
+            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla29xZmlua3dveXNmZXJ5andtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNDk2NjQsImV4cCI6MjA2ODcyNTY2NH0.0gOgyjULefdGKXOANJQOPr1l17IDMYM_Iv2_BRYIeBA';
+            supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+            console.log("✅ Supabase client inizializzato.");
         };
 
-        // Funzione per generare un ID utente casuale
-        const generateUserId = () => {
-            return 'user_' + Math.random().toString(36).substring(2, 9);
-        };
+        const generateUserId = () => 'user_' + Math.random().toString(36).substring(2, 9);
 
-        // Funzione per avviare il matchmaking
         const startMatchmaking = async () => {
             userId.value = generateUserId();
             statusMessage.value = 'Ricerca di un partner...';
-            isMatched.value = false; // Assicurati che la chat non sia visibile
+            isMatched.value = false;
 
-            // Avvia il polling per il matchmaking
-            findMatch(); // Chiamata immediata
+            findMatch();
             if (!matchmakingInterval) {
-                matchmakingInterval = setInterval(findMatch, 3000); // Poll ogni 3 secondi
+                matchmakingInterval = setInterval(findMatch, 3000);
             }
         };
 
-        // Funzione per trovare un match (chiamata dal polling)
         const findMatch = async () => {
             try {
                 const response = await fetch(`/.netlify/functions/matchmaker?action=findMatch&userId=${userId.value}`);
@@ -50,72 +42,57 @@ createApp({
                 if (data.status === 'matched') {
                     roomId.value = data.roomId;
                     partnerId.value = data.partnerId;
-                    statusMessage.value = `Sei in chat con il partner ${partnerId.value}. Room ID: ${roomId.value}`;
-                    isMatched.value = true; // Mostra la chat
+                    statusMessage.value = `Connesso con ${partnerId.value} nella stanza ${roomId.value}`;
+                    isMatched.value = true;
 
-                    // Ferma il polling del matchmaking
                     if (matchmakingInterval) {
                         clearInterval(matchmakingInterval);
                         matchmakingInterval = null;
                     }
 
-                    // *** PARTE REALTIME: Sottoscriviti ai cambiamenti della stanza ***
                     subscribeToRoomMessages(roomId.value);
-
                 } else if (data.status === 'waiting') {
-                    statusMessage.value = 'Ricerca di un partner... (utente in attesa)';
+                    statusMessage.value = 'In attesa di un partner...';
                 } else if (data.error) {
-                    statusMessage.value = `Errore di matchmaking: ${data.error}`;
-                    console.error('Errore di matchmaking:', data.details || data.error);
-                    disconnect(); // Reset UI on error
+                    console.error('❌ Errore matchmaking:', data.details || data.error);
+                    statusMessage.value = `Errore: ${data.error}`;
+                    disconnect();
                 }
 
             } catch (error) {
-                console.error('Errore durante la chiamata a findMatch:', error);
-                statusMessage.value = 'Errore di connessione al servizio chat.';
-                disconnect(); // Reset UI on error
+                console.error('❌ Errore di rete:', error);
+                statusMessage.value = 'Errore di rete durante la connessione.';
+                disconnect();
             }
         };
 
-        // Sottoscrizione ai messaggi in tempo reale
         const subscribeToRoomMessages = (currentRoomId) => {
-            if (!supabase) {
-                console.error("Supabase client non inizializzato per Realtime.");
-                return;
-            }
-            if (chatSubscription) {
-                supabase.removeChannel(chatSubscription);
-            }
+            if (!supabase) return console.error("Supabase non inizializzato.");
+            if (chatSubscription) supabase.removeChannel(chatSubscription);
 
             chatSubscription = supabase
                 .channel(`room:${currentRoomId}`)
-                .on(
-                    'postgres_changes',
-                    {
-                        event: 'UPDATE',
-                        schema: 'public',
-                        table: 'rooms',
-                        filter: `room_id=eq.${currentRoomId}`
-                    },
-                    (payload) => {
-                        const updatedRoom = payload.new;
-                        if (updatedRoom && updatedRoom.messages) {
-                            messages.value = updatedRoom.messages; // Aggiorna l'array reattivo
-                            // Scorri la chatbox in fondo dopo un piccolo ritardo per permettere il rendering
-                            setTimeout(() => {
-                                const chatbox = document.getElementById('chatbox');
-                                if (chatbox) chatbox.scrollTop = chatbox.scrollHeight;
-                            }, 50);
-                        }
+                .on('postgres_changes', {
+                    event: 'UPDATE',
+                    schema: 'public',
+                    table: 'rooms',
+                    filter: `room_id=eq.${currentRoomId}`
+                }, (payload) => {
+                    const updatedRoom = payload.new;
+                    if (updatedRoom?.messages) {
+                        messages.value = updatedRoom.messages;
+                        setTimeout(() => {
+                            const chatbox = document.getElementById('chatbox');
+                            if (chatbox) chatbox.scrollTop = chatbox.scrollHeight;
+                        }, 50);
                     }
-                )
+                })
                 .subscribe();
 
-            console.log(`Sottoscritto ai cambiamenti della stanza: ${currentRoomId}`);
+            console.log(`📡 Subscribed to room: ${currentRoomId}`);
             getMessagesAndDisplayInitial(currentRoomId);
         };
 
-        // Recupera i messaggi iniziali una sola volta al match
         const getMessagesAndDisplayInitial = async (currentRoomId) => {
             try {
                 const response = await fetch(`/.netlify/functions/matchmaker?action=getMessages&roomId=${currentRoomId}`);
@@ -128,11 +105,10 @@ createApp({
                     }, 50);
                 }
             } catch (error) {
-                console.error('Errore nel recupero dei messaggi iniziali:', error);
+                console.error('Errore caricamento messaggi:', error);
             }
         };
 
-        // Funzione per inviare un messaggio
         const sendMessage = async () => {
             const text = messageInput.value.trim();
             if (text === '' || !roomId.value || !userId.value) return;
@@ -146,23 +122,21 @@ createApp({
                 const data = await response.json();
 
                 if (data.status === 'Message sent') {
-                    messageInput.value = ''; // Pulisci l'input
-                    // Il Realtime gestirà l'aggiornamento della chatbox
+                    messageInput.value = '';
                 } else if (data.error) {
-                    console.error('Errore nell\'invio del messaggio:', data.details || data.error);
-                    statusMessage.value = `Errore invio: ${data.error}`;
+                    console.error('Errore invio:', data.details || data.error);
+                    statusMessage.value = `Errore: ${data.error}`;
                 }
             } catch (error) {
-                console.error('Errore durante la chiamata a sendMessage:', error);
-                statusMessage.value = 'Errore di connessione al servizio chat.';
+                console.error('Errore di rete invio:', error);
+                statusMessage.value = 'Errore di rete.';
             }
         };
 
-        // Funzione per disconnettersi
         const disconnect = async () => {
             if (!roomId.value || !userId.value) {
-                 resetChat(); // Reset the UI even if no room/user
-                 return;
+                resetChat();
+                return;
             }
 
             try {
@@ -174,20 +148,19 @@ createApp({
                 const data = await response.json();
 
                 if (data.status === 'Disconnected') {
-                    alert('Ti sei disconnesso dalla chat.');
+                    alert('Disconnesso.');
                 } else if (data.error) {
-                    console.error('Errore nella disconnessione:', data.details || data.error);
-                    statusMessage.value = `Errore disconnessione: ${data.error}`;
+                    console.error('Errore disconnessione:', data.details || data.error);
+                    statusMessage.value = `Errore: ${data.error}`;
                 }
             } catch (error) {
-                console.error('Errore durante la chiamata a disconnect:', error);
-                statusMessage.value = 'Errore di connessione al servizio.';
+                console.error('Errore di rete disconnessione:', error);
+                statusMessage.value = 'Errore di rete.';
             } finally {
-                resetChat(); // Always reset UI after disconnect attempt
+                resetChat();
             }
         };
 
-        // Funzione per resettare lo stato della chat
         const resetChat = () => {
             userId.value = null;
             roomId.value = null;
@@ -207,19 +180,16 @@ createApp({
             }
         };
 
-        // Lifecycle hook di Vue: chiamato quando il componente è montato nel DOM
         onMounted(() => {
-            initSupabase(); // Inizializza Supabase all'avvio dell'app
-            resetChat(); // Imposta lo stato iniziale
+            initSupabase();
+            resetChat();
         });
 
-        // Lifecycle hook di Vue: chiamato prima che il componente sia smontato (per pulizia)
         onBeforeUnmount(() => {
             if (matchmakingInterval) clearInterval(matchmakingInterval);
             if (chatSubscription) supabase.removeChannel(chatSubscription);
         });
 
-        // Ritorna le variabili e le funzioni che saranno disponibili nel template HTML
         return {
             userId,
             roomId,
@@ -232,4 +202,4 @@ createApp({
             disconnect,
         };
     }
-}).mount('#app'); // Monta l'applicazione Vue sull'elemento con id="app"
+}).mount('#app');
