@@ -1,32 +1,42 @@
 <!DOCTYPE html>
 <html lang="it">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Chat Casuale Realtime (Vue)</title>
-    <link rel="stylesheet" href="style.css"> 
+    <link rel="stylesheet" href="style.css">
+    <style>
+      [v-cloak] { display: none; }
+    </style>
 </head>
 <body>
-    <div id="app" class="container"> <h1>Chat Casuale Semplice</h1>
-        
-        <div v-if="!isMatched"> <div id="status">{{ statusMessage }}</div> 
-            <button @click="startMatchmaking">Avvia Nuova Chat</button>
-        </div>
+    <div id="app" class="container" v-cloak>
+        <h1>Chat Casuale Semplice</h1>
 
-        <div v-else id="chat-container"> <div id="chatbox">
-                <p v-for="(msg, index) in messages" :key="index">
-                    <strong>{{ msg.senderId === userId ? 'Tu' : (msg.senderId === 'system' ? 'Sistema' : 'Partner') }}:</strong> {{ msg.text }}
-                </p>
+        <template v-if="!isMatched">
+            <div id="status">{{ statusMessage }}</div>
+            <button @click="startMatchmaking">Avvia Nuova Chat</button>
+        </template>
+
+        <template v-else>
+            <div id="chat-container">
+                <div id="chatbox">
+                    <p v-for="(msg, index) in messages" :key="index">
+                        <strong>{{ msg.senderId === userId ? 'Tu' : (msg.senderId === 'system' ? 'Sistema' : 'Partner') }}:</strong> {{ msg.text }}
+                    </p>
+                </div>
+                <input type="text" v-model="messageInput" @keyup.enter="sendMessage" placeholder="Digita il tuo messaggio...">
+                <button @click="sendMessage">Invia</button>
+                <button @click="disconnect">Disconnetti</button>
             </div>
-            <input type="text" v-model="messageInput" @keyup.enter="sendMessage" placeholder="Digita il tuo messaggio...">
-            <button @click="sendMessage">Invia</button>
-            <button @click="disconnect">Disconnetti</button>
-        </div>
+        </template>
     </div>
 
+    <!-- Vue 3 -->
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    
-    <script src="script.js"></script> 
+    <!-- Supabase UMD fix -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/dist/umd/supabase.min.js"></script>
+    <!-- Script -->
+    <script src="script.js"></script>
 </body>
 </html>
