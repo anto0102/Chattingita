@@ -4,6 +4,6 @@
   "description": "Netlify Functions for simple chat app",
   "main": "matchmaker.js",
   "dependencies": {
-    "@supabase/supabase-js": "^2.x.x"  <-- Questo è il pacchetto che ci serve
+    "@supabase/supabase-js": "^2.x.x"
   }
 }
