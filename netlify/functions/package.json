@@ -1,1 +1,9 @@
-
+{
+  "name": "netlify-chat-functions",
+  "version": "1.0.0",
+  "description": "Netlify Functions for simple chat app",
+  "main": "matchmaker.js",
+  "dependencies": {
+    "@supabase/supabase-js": "^2.x.x"
+  }
+}
