@@ -679,3 +679,192 @@ body.light-mode .content-section a:hover {
 
 
 /* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER LE SEZIONI DI CONTENUTO (generali) */
+.content-section {
+    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease;
+}
+
+.content-section.hidden {
+  display: none; /* Nasconde l'elemento */
+}
+
+.content-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.content-section .intro-text {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content-section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+/* *** STILI PER LA SEZIONE "CHI SIAMO" *** */
+#about-us-content .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colonne su desktop, 1 su mobile */
+    gap: 1.5rem; /* Spazio tra le card */
+    margin-top: 2rem;
+}
+
+.about-card {
+    background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente per le card */
+    border-radius: 18px;
+    padding: 1.8rem;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Ombra più pronunciata */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-card:hover {
+    transform: translateY(-8px); /* Effetto sollevamento all'hover */
+    background-color: rgba(255, 255, 255, 0.12); /* Sfondo leggermente più scuro all'hover */
+}
+
+.about-card .icon {
+    font-size: 3.5rem; /* Icone grandi */
+    color: #4f46e5; /* Blu primario della tua app */
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(79, 70, 229, 0.4); /* Bagliore leggero */
+}
+
+.about-card h3 {
+    font-size: 1.4rem;
+    color: #f0f0f0; /* Grigio chiaro per i titoli delle card */
+    margin-bottom: 0.8rem;
+}
+
+.about-card p {
+    font-size: 0.95rem;
+    color: #c0c0c0; /* Grigio più scuro per il testo delle card */
+    line-height: 1.5;
+    margin-bottom: 0; /* Rimuove il margin-bottom extra */
+}
+
+.about-outro {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.2rem;
+    color: #a78bfa; /* Un viola/blu per il testo di chiusura */
+    font-weight: 600;
+}
+
+.about-outro p {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem; /* leggermente più grande */
+}
+
+/* *** FINE STILI "CHI SIAMO" *** */
+
+/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
+/* (Copia qui gli stili delle FAQ che ti ho dato nell'ultimo messaggio,
+   inclusi .accordion, .faq-item, .faq-header, .faq-header h3,
+   .accordion-icon, .faq-body, .faq-body p, e .content-section a
+   che hai già applicato. Non li ripeto qui per brevità, ma assicurati che siano presenti.) */
+
+
+/* --- LIGHT MODE ADJUSTMENTS --- */
+body.light-mode .content-section {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content-section h2 {
+  color: #222;
+}
+
+body.light-mode .content-section .intro-text {
+    color: #555;
+}
+
+body.light-mode .content-section p {
+  color: #555;
+}
+
+/* --- LIGHT MODE per "CHI SIAMO" --- */
+body.light-mode .about-card {
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card .icon {
+    color: #4f46e5; /* Stesso blu primario */
+    text-shadow: none; /* Nessun bagliore in light mode */
+}
+
+body.light-mode .about-card h3 {
+    color: #333;
+}
+
+body.light-mode .about-card p {
+    color: #666;
+}
+
+body.light-mode .about-outro {
+    color: #4f46e5; /* Blu primario per il testo di chiusura */
+}
+
+/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
+/* (Copia qui gli stili LIGHT MODE per FAQ che ti ho dato nell'ultimo messaggio,
+   inclusi .faq-item, .faq-header, .faq-header h3,
+   .accordion-icon, .faq-body, .faq-body p, e .content-section a.
+   Non li ripeto qui per brevità.) */
+
+
+/* Media Queries per Responsività */
+@media (max-width: 768px) {
+  /* ... (Mantieni le tue media queries esistenti) ... */
+  #about-us-content .about-grid {
+      grid-template-columns: 1fr; /* Una colonna su schermi più piccoli */
+  }
+}
+
+@media (max-width: 480px) {
+  /* ... (Mantieni le tue media queries esistenti) ... */
+  .about-card {
+    padding: 1.2rem;
+  }
+  .about-card .icon {
+    font-size: 2.8rem;
+  }
+  .about-card h3 {
+    font-size: 1.2rem;
+  }
+  .about-outro {
+    font-size: 1rem;
+  }
+}
+
+/* Animazioni (mantieni quelle esistenti) */
+/* ... */
