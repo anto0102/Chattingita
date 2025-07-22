@@ -14,15 +14,16 @@
   <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
   <nav class="sidebar" id="sidebar">
-    <a href="#">🏠 Home</a>
-    <a href="#">❓ FAQ</a>
-    <a href="#">📩 Contatti</a>
+    <a href="#" onclick="showSection('home')">🏠 Home</a>
+    <a href="#" onclick="showSection('faq')">❓ FAQ</a>
+    <a href="#" onclick="showSection('contacts')">📩 Contatti</a>
     <button id="themeToggle" class="theme-toggle">☀️ Modalità Chiara</button>
   </nav>
 
   <div class="main-content">
     <h1>💬 Chat Anonima</h1>
-    <div id="container">
+
+    <div id="home-content" class="content-section">
       <div id="status">Premi "Inizia Chat" per connetterti</div>
       <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
       <div id="controls">
@@ -38,6 +39,77 @@
         <button id="sendBtn" disabled>📤 Invia</button>
       </div>
     </div>
+
+    <div id="faq-content" class="content-section hidden">
+      <h2>Domande Frequenti (FAQ)</h2>
+      <p class="intro-text">Qui puoi trovare le risposte alle domande più comuni sulla nostra chat anonima. Clicca su una domanda per espandere la risposta.</p>
+
+      <div class="accordion">
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>1. Cos'è Chat Anonima e come funziona? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>Chat Anonima è una piattaforma online che ti permette di connetterti e chattare con persone casuali da tutto il mondo, in modo completamente anonimo. Non è richiesta alcuna registrazione o informazione personale. Basta cliccare su "Inizia Chat" e sarai abbinato a un utente disponibile.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>2. La mia privacy è garantita? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>Assolutamente sì. La tua privacy è la nostra priorità. Non raccogliamo, né memorizziamo alcun dato personale o le conversazioni. Una volta che la chat termina (per tua scelta o dell'altro utente), tutti i messaggi vengono eliminati e non sono recuperabili.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>3. Posso scegliere con chi chattare o filtrare per interessi? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>No, le connessioni sono completamente casuali per mantenere l'anonimato e l'imprevedibilità dell'esperienza. Non ci sono filtri per età, genere, posizione o interessi. Ogni nuova chat è un'opportunità per incontrare qualcuno di diverso.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>4. Cosa succede se incontro un utente maleducato o offensivo? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>Se incontri un utente che viola le nostre linee guida (spam, linguaggio offensivo, molestie, ecc.), ti invitiamo a utilizzare il pulsante "Segnala Utente". Questo ci aiuta a mantenere la piattaforma sicura per tutti. La chat verrà terminata immediatamente.</p>
+          </div>
+        </div>
+
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>5. Le mie conversazioni vengono monitorate o registrate? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>No, le conversazioni non vengono monitorate attivamente né registrate. La natura anonima e temporanea della chat significa che i messaggi esistono solo per la durata della sessione tra i due utenti connessi. Nessun log viene mantenuto sui nostri server.</p>
+          </div>
+        </div>
+        
+        <div class="faq-item">
+          <div class="faq-header">
+            <h3>6. Posso condividere informazioni personali? <span class="accordion-icon">+</span></h3>
+          </div>
+          <div class="faq-body">
+            <p>Ti sconsigliamo vivamente di condividere qualsiasi informazione personale (nome, numero di telefono, indirizzo, ecc.) con utenti sconosciuti. Non possiamo garantire la sicurezza delle informazioni che scegli di divulgare. Agisci con cautela e a tuo rischio.</p>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div id="contacts-content" class="content-section hidden">
+      <h2>Contatti</h2>
+      <p>Se hai bisogno di contattarci per problemi tecnici, suggerimenti, segnalazioni importanti o feedback generale, non esitare a scriverci.</p>
+      <p>Faremo del nostro meglio per risponderti nel più breve tempo possibile.</p>
+      <p><strong>Email:</strong> <a href="mailto:supporto@tuasito.com">supporto@tuasito.com</a></p>
+      <p><strong>Telegram (solo per annunci e aggiornamenti):</strong> <a href="https://t.me/tuocanale" target="_blank">@tuocanale</a></p>
+    </div>
+
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
@@ -50,7 +122,6 @@
       body.classList.toggle('menu-open');
     }
 
-    // Theme Toggle Functionality (Nuovo)
     const themeToggleBtn = document.getElementById('themeToggle');
     themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('light-mode');
@@ -59,6 +130,55 @@
       } else {
         themeToggleBtn.textContent = '☀️ Modalità Chiara';
       }
+    });
+
+    function showSection(sectionId) {
+      document.querySelectorAll('.content-section').forEach(section => {
+        section.classList.add('hidden');
+      });
+
+      document.getElementById(sectionId + '-content').classList.remove('hidden');
+
+      const sidebar = document.getElementById('sidebar');
+      const body = document.body;
+      if (sidebar.classList.contains('open')) {
+        toggleMenu();
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        showSection('home'); // Mostra la sezione home all'inizio
+        
+        // *** NUOVO CODICE JAVASCRIPT PER L'ACCORDION ***
+        const faqHeaders = document.querySelectorAll('.faq-header');
+
+        faqHeaders.forEach(header => {
+            header.addEventListener('click', () => {
+                const faqItem = header.closest('.faq-item');
+                const faqBody = faqItem.querySelector('.faq-body');
+                const accordionIcon = header.querySelector('.accordion-icon');
+
+                // Chiudi tutte le altre FAQ aperte
+                document.querySelectorAll('.faq-item.active').forEach(item => {
+                    if (item !== faqItem) { // Chiudi solo se non è l'elemento cliccato
+                        item.classList.remove('active');
+                        item.querySelector('.faq-body').style.maxHeight = null;
+                        item.querySelector('.accordion-icon').textContent = '+';
+                    }
+                });
+
+                // Toggle della FAQ cliccata
+                faqItem.classList.toggle('active');
+                if (faqItem.classList.contains('active')) {
+                    faqBody.style.maxHeight = faqBody.scrollHeight + "px"; // Imposta l'altezza per l'animazione
+                    accordionIcon.textContent = '-';
+                } else {
+                    faqBody.style.maxHeight = null; // Rimuovi l'altezza per chiudere
+                    accordionIcon.textContent = '+';
+                }
+            });
+        });
+        // *** FINE NUOVO CODICE JAVASCRIPT PER L'ACCORDION ***
     });
   </script>
 </body>
