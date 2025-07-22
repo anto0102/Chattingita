@@ -1,162 +1,74 @@
-body {
-  margin: 0;
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #667eea, #764ba2);
-  color: #fff;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  min-height: 100vh;
-}
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Chat Anonima</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    /* Stili di base e Dark mode in style.css esterno, qui solo per fallback */
+  </style>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <h1>💬 Chat Anonima</h1>
 
-h1 {
-  margin-top: 2rem;
-  font-size: 2rem;
-  text-align: center;
-  animation: fadeIn 0.6s ease-in-out;
-}
+  <!-- SWITCH MODALITÀ -->
+  <div id="modeSwitchContainer" style="width: 90%; max-width: 600px; margin-top: 1rem; text-align: right;">
+    <label for="modeSwitch" style="cursor:pointer; user-select:none; color:inherit;">
+      🌙 <input type="checkbox" id="modeSwitch" style="vertical-align: middle; cursor:pointer;" /> ☀️
+    </label>
+  </div>
 
-#container {
-  background-color: #ffffff15;
-  backdrop-filter: blur(12px);
-  border-radius: 20px;
-  padding: 2rem;
-  width: 90%;
-  max-width: 600px;
-  margin-top: 2rem;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.25);
-  animation: fadeInUp 0.5s ease;
-}
+  <div id="container">
+    <div id="status">Premi "Inizia Chat" per connetterti</div>
+    <div id="onlineCounter">🟢 Utenti online: <span id="onlineCount">0</span></div>
+    <div id="controls">
+      <button id="startBtn">▶️ Inizia Chat</button>
+      <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
+    </div>
 
-#status, #onlineCounter {
-  text-align: center;
-  font-size: 1rem;
-  margin: 0.5rem 0;
-}
+    <div id="chat"></div>
 
-#controls {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin: 1rem 0;
-  flex-wrap: wrap;
-}
+    <div id="inputArea">
+      <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
+      <button id="sendBtn" disabled>📤 Invia</button>
+    </div>
+  </div>
 
-button {
-  padding: 0.6rem 1.2rem;
-  border: none;
-  border-radius: 10px;
-  font-weight: 600;
-  cursor: pointer;
-  font-size: 1rem;
-  transition: all 0.3s ease;
-}
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
+  <script>
+    // Toggle dark/light mode
+    const modeSwitch = document.getElementById('modeSwitch');
+    const body = document.body;
 
-#startBtn {
-  background-color: #4f46e5;
-  color: white;
-}
+    // Usa preferenza salvata o preferenza sistema
+    const savedMode = localStorage.getItem('mode');
+    if(savedMode === 'light') {
+      modeSwitch.checked = true;
+      body.classList.add('light-mode');
+    } else if (savedMode === 'dark') {
+      modeSwitch.checked = false;
+      body.classList.remove('light-mode');
+    } else {
+      // fallback su preferenza sistema
+      if(window.matchMedia && window.matchMedia('(prefers-color-scheme: light)').matches){
+        modeSwitch.checked = true;
+        body.classList.add('light-mode');
+      }
+    }
 
-#disconnectBtn {
-  background-color: #dc2626;
-  color: white;
-}
-
-#sendBtn {
-  background-color: #10b981;
-  color: white;
-}
-
-button:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-button:hover:not(:disabled) {
-  transform: scale(1.05);
-  filter: brightness(1.1);
-}
-
-#chat {
-  display: none;
-  background: #fff;
-  color: #111;
-  border-radius: 12px;
-  padding: 1rem;
-  height: 300px;
-  overflow-y: auto;
-  margin-bottom: 1rem;
-  box-shadow: inset 0 2px 10px rgba(0, 0, 0, 0.1);
-}
-
-.message {
-  margin: 0.5rem 0;
-  padding: 0.6rem 1rem;
-  border-radius: 20px;
-  max-width: 80%;
-  word-wrap: break-word;
-  animation: slideIn 0.3s ease;
-}
-
-.you {
-  background-color: #4f46e5;
-  color: white;
-  align-self: flex-end;
-  margin-left: auto;
-  text-align: right;
-}
-
-.other {
-  background-color: #e5e7eb;
-  color: #111;
-  align-self: flex-start;
-  margin-right: auto;
-  text-align: left;
-}
-
-#inputArea {
-  display: none;
-  justify-content: center;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
-input[type="text"] {
-  padding: 0.6rem;
-  border: none;
-  border-radius: 8px;
-  width: 70%;
-  max-width: 400px;
-  font-size: 1rem;
-}
-
-@media (max-width: 480px) {
-  #inputArea {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  input[type="text"] {
-    width: 100%;
-  }
-
-  button {
-    width: 100%;
-  }
-}
-
-/* Animazioni */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+    modeSwitch.addEventListener('change', () => {
+      if (modeSwitch.checked) {
+        body.classList.add('light-mode');
+        localStorage.setItem('mode', 'light');
+      } else {
+        body.classList.remove('light-mode');
+        localStorage.setItem('mode', 'dark');
+      }
+    });
+  </script>
+</body>
+</html>
