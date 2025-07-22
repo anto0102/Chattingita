@@ -4,82 +4,167 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat Anonima</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Arial, sans-serif;
-      background: #f0f0f0;
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(to right, #667eea, #764ba2);
+      color: #fff;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 2rem;
+    }
+
+    #container {
+      background-color: #ffffff10;
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
       padding: 2rem;
-      text-align: center;
+      width: 90%;
+      max-width: 600px;
+      margin-top: 2rem;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
     }
 
     #status {
+      font-size: 1rem;
       margin-bottom: 1rem;
-      font-size: 1.2rem;
+      text-align: center;
     }
 
-    #controls, #inputArea {
-      margin: 1rem 0;
-    }
-
-    #chat {
-      border: 1px solid #ccc;
-      padding: 1rem;
-      margin-top: 1rem;
-      background: white;
-      height: 300px;
-      width: 100%;
-      max-width: 600px;
-      overflow-y: auto;
-      margin-left: auto;
-      margin-right: auto;
-      text-align: left;
-      display: none;
-    }
-
-    input[type="text"] {
-      padding: 0.5rem;
-      width: 70%;
-      max-width: 400px;
+    #controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      margin-bottom: 1rem;
     }
 
     button {
-      padding: 0.5rem 1rem;
-      margin: 0 0.5rem;
-      font-size: 1rem;
+      padding: 0.6rem 1.2rem;
+      border: none;
+      border-radius: 8px;
+      font-weight: 600;
       cursor: pointer;
+      font-size: 1rem;
+      transition: background 0.3s, transform 0.2s;
     }
 
-    #sendBtn {
-      background-color: #4CAF50;
+    #startBtn {
+      background-color: #4f46e5;
       color: white;
     }
 
     #disconnectBtn {
-      background-color: #e53935;
+      background-color: #dc2626;
       color: white;
     }
 
-    #startBtn {
-      background-color: #1976d2;
+    button:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    button:hover:not(:disabled) {
+      transform: scale(1.05);
+    }
+
+    #chat {
+      display: none;
+      background: #fff;
+      color: #333;
+      border-radius: 10px;
+      padding: 1rem;
+      height: 300px;
+      overflow-y: auto;
+      margin-bottom: 1rem;
+    }
+
+    .message {
+      margin: 0.5rem 0;
+      padding: 0.6rem 1rem;
+      border-radius: 20px;
+      max-width: 80%;
+      word-wrap: break-word;
+    }
+
+    .you {
+      background-color: #4f46e5;
       color: white;
+      align-self: flex-end;
+      text-align: right;
+      margin-left: auto;
+    }
+
+    .other {
+      background-color: #e5e7eb;
+      color: #111;
+      align-self: flex-start;
+      text-align: left;
+      margin-right: auto;
+    }
+
+    #inputArea {
+      display: flex;
+      justify-content: center;
+      gap: 0.5rem;
+      flex-wrap: wrap;
+    }
+
+    input[type="text"] {
+      padding: 0.6rem;
+      border: none;
+      border-radius: 8px;
+      width: 70%;
+      max-width: 400px;
+      font-size: 1rem;
+    }
+
+    #sendBtn {
+      background-color: #10b981;
+      color: white;
+    }
+
+    @media (max-width: 480px) {
+      #inputArea {
+        flex-direction: column;
+        align-items: center;
+      }
+
+      input[type="text"] {
+        width: 100%;
+      }
+
+      button {
+        width: 100%;
+      }
     }
   </style>
 </head>
 <body>
   <h1>💬 Chat Anonima</h1>
 
-  <div id="status">Premi "Inizia Chat" per connetterti</div>
+  <div id="container">
+    <div id="status">Premi "Inizia Chat" per connetterti</div>
 
-  <div id="controls">
-    <button id="startBtn">▶️ Inizia Chat</button>
-    <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
-  </div>
+    <div id="controls">
+      <button id="startBtn">▶️ Inizia Chat</button>
+      <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
+    </div>
 
-  <div id="chat"></div>
+    <div id="chat"></div>
 
-  <div id="inputArea">
-    <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
-    <button id="sendBtn" disabled>📤 Invia</button>
+    <div id="inputArea">
+      <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
+      <button id="sendBtn" disabled>📤 Invia</button>
+    </div>
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
