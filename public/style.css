@@ -140,80 +140,80 @@ h1 {
   font-weight: 600;
 }
 
+/* *** MODIFICHE CRUCIALI PER I BOTTONI *** */
 #controls {
-  display: flex;
-  flex-wrap: wrap; /* Permette ai bottoni di andare a capo */
-  justify-content: center; /* Centra i bottoni */
+  display: grid; /* Usa CSS Grid per un controllo più preciso */
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 2 o 3 bottoni per riga, adattivi */
   gap: 0.8rem; /* Spazio uniforme tra i bottoni */
   margin: 1.5rem 0;
+  justify-items: center; /* Centra i bottoni all'interno delle loro celle di griglia */
 }
 
-#controls button { /* Applica questi stili specifici ai bottoni dentro #controls */
-  padding: 0.6rem 1rem; /* Padding più piccolo */
-  font-size: 0.9rem; /* Dimensione del testo più piccola */
-  width: calc(33.33% - 1rem); /* Prova a mettere 3 bottoni per riga, sottraendo il gap */
-  min-width: 120px; /* Larghezza minima per evitare che diventino troppo piccoli */
-  max-width: 160px; /* Larghezza massima per evitare che diventino troppo larghi */
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura più leggera */
+#controls button {
+  padding: 0.6rem 1rem; /* Padding appropriato per un bottone compatto */
+  font-size: 0.95rem; /* Testo più leggibile sui bottoni */
+  width: 100%; /* I bottoni riempiono la loro cella di griglia */
+  min-width: 120px; /* Larghezza minima per evitare il troncamento del testo */
+  max-width: 180px; /* Larghezza massima per evitare che diventino troppo larghi */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura leggera */
 }
 
-
-button { /* Stili base per tutti i bottoni, ma sovrascritti da #controls button dove necessario */
+/* Stili comuni per tutti i bottoni (sovrascritti sopra dove necessario) */
+button {
   border: none;
-  border-radius: 10px; /* Bordi arrotondati */
-  font-weight: 700; /* Testo più bold */
+  border-radius: 10px;
+  font-weight: 700;
   cursor: pointer;
-  transition: all 0.3s ease; /* Transizioni uniformi per tutti gli stati */
+  transition: all 0.3s ease;
 }
 
 #startBtn {
-  background-color: #4f46e5; /* Blu primario */
+  background-color: #4f46e5;
   color: white;
 }
 
 #disconnectBtn {
-  background-color: #dc2626; /* Rosso per disconnetti */
+  background-color: #dc2626;
   color: white;
 }
 
 #reportBtn {
-  background-color: #f59e0b; /* Arancione per segnala */
+  background-color: #f59e0b;
   color: white;
 }
 
 #sendBtn {
-  background-color: #10b981; /* Verde per invia */
+  background-color: #10b981;
   color: white;
-  padding: 0.7rem 1.5rem; /* Ripristino padding per il bottone Invia */
-  font-size: 1rem; /* Ripristino font-size per il bottone Invia */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombreggiatura per il bottone Invia */
+  padding: 0.7rem 1.5rem; /* Dimensioni leggermente più grandi per il bottone Invia */
+  font-size: 1rem;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
-
 
 button:disabled {
   opacity: 0.6;
   cursor: not-allowed;
-  transform: none; /* Rimuove l'effetto hover quando disabilitato */
-  box-shadow: none; /* Rimuove l'ombra quando disabilitato */
+  transform: none;
+  box-shadow: none;
 }
 
 button:hover:not(:disabled) {
-  transform: translateY(-3px); /* Effetto "alza" al passaggio del mouse */
-  filter: brightness(1.15); /* Rende il bottone leggermente più luminoso */
-  box-shadow: 0 5px 12px rgba(0,0,0,0.25); /* Ombreggiatura leggermente più pronunciata all'hover */
+  transform: translateY(-3px);
+  filter: brightness(1.15);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.25);
 }
 
 #chat {
   display: none; /* Gestito via JS */
   background: #fff;
   color: #111;
-  border-radius: 15px; /* Bordi più arrotondati */
+  border-radius: 15px;
   padding: 1.2rem;
-  height: 550px; /* **AUMENTATO ANCORA L'ALTEZZA DELLA CHAT** */
+  height: 550px; /* **ALTEZZA MASSIMA PER LA CHAT** */
   overflow-y: auto;
   margin-bottom: 1.5rem;
-  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15); /* Ombra interna più definita */
-  border: 1px solid #eee; /* Bordo sottile */
+  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15);
+  border: 1px solid #eee;
 }
 
 /* Scrollbar personalizzata per #chat */
@@ -236,13 +236,13 @@ button:hover:not(:disabled) {
 }
 
 .message {
-  margin: 0.7rem 0; /* Spazio maggiore tra i messaggi */
-  padding: 0.8rem 1.2rem; /* Padding maggiore */
-  border-radius: 22px; /* Messaggi più arrotondati */
-  max-width: 85%; /* Larghezza massima leggermente maggiore */
+  margin: 0.7rem 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 22px;
+  max-width: 85%;
   word-wrap: break-word;
-  animation: slideIn 0.3s ease forwards; /* animazione con forwards per mantenere lo stato finale */
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1); /* Ombreggiatura ai messaggi */
+  animation: slideIn 0.3s ease forwards;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
 .you {
@@ -260,27 +260,27 @@ button:hover:not(:disabled) {
 }
 
 #inputArea {
-  display: flex; /* Mostra l'area di input di default */
+  display: flex;
   justify-content: center;
-  gap: 0.8rem; /* Spazio tra input e bottone */
+  gap: 0.8rem;
   flex-wrap: wrap;
-  align-items: center; /* Allinea verticalmente */
+  align-items: center;
 }
 
 input[type="text"] {
-  padding: 0.8rem; /* Padding aumentato */
+  padding: 0.8rem;
   border: none;
-  border-radius: 10px; /* Bordi arrotondati */
-  width: 75%; /* Larghezza leggermente maggiore */
-  max-width: 450px; /* Max-width aumentata */
+  border-radius: 10px;
+  width: 75%;
+  max-width: 450px;
   font-size: 1rem;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1); /* Ombra interna */
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
 }
 
 input[type="text"]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4); /* Anello focus più morbido */
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
 }
 
 
@@ -291,7 +291,7 @@ body.light-mode {
 }
 
 body.light-mode .sidebar {
-  background-color: #f0f4f8; /* Sfondo chiaro per sidebar */
+  background-color: #f0f4f8;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -313,12 +313,171 @@ body.light-mode .theme-toggle:hover {
 }
 
 body.light-mode .menu-toggle {
-  background-color: #4338ca; /* Mantieni un colore vibrante */
+  background-color: #4338ca;
   color: #fff;
   box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
 body.light-mode h1 {
   color: #222;
-  text-shadow: 1px 1px 3px rgba(0
-                                
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
+}
+
+body.light-mode #container {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode #status,
+body.light-mode #onlineCounter {
+  color: #555;
+}
+
+body.light-mode #chat {
+  background: #f9f9f9;
+  color: #222;
+  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
+}
+
+body.light-mode #chat::-webkit-scrollbar-track {
+  background: #e9e9e9;
+}
+
+body.light-mode #chat::-webkit-scrollbar-thumb {
+  background: #aaa;
+}
+
+body.light-mode #chat::-webkit-scrollbar-thumb:hover {
+  background: #777;
+}
+
+body.light-mode .you {
+  background-color: #5a55ca;
+  color: white;
+}
+
+body.light-mode .other {
+  background-color: #ddd;
+  color: #222;
+}
+
+body.light-mode button#startBtn {
+  background-color: #5a55ca;
+  color: white;
+}
+
+body.light-mode button#disconnectBtn {
+  background-color: #bf4444;
+  color: white;
+}
+
+body.light-mode button#reportBtn {
+  background-color: #d97706;
+  color: white;
+}
+
+body.light-mode button#sendBtn {
+  background-color: #059669;
+  color: white;
+}
+
+body.light-mode input[type="text"] {
+  background-color: #f0f0f0;
+  color: #333;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+body.light-mode input[type="text"]:focus {
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3);
+}
+
+/* Media Queries per Responsività */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.5rem 1rem;
+    margin-left: 0;
+  }
+
+  body.menu-open .main-content {
+    margin-left: 0;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding-top: 5rem;
+  }
+
+  .menu-toggle {
+    left: 20px;
+  }
+
+  #controls {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Continua con 2/3 bottoni per riga */
+    /* Assicurati che il minmax sia sufficiente per il testo */
+  }
+
+  #controls button {
+    width: 100%; /* I bottoni riempiono la loro cella */
+    max-width: 180px; /* Mantieni un limite per la larghezza */
+  }
+}
+
+@media (max-width: 550px) { /* Nuova media query per schermi più piccoli */
+  #controls {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Assicurati che ce ne siano almeno 2 per riga */
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+    margin-top: 4.5rem;
+  }
+
+  #container {
+    padding: 1.5rem;
+    border-radius: 18px;
+  }
+
+  #controls {
+    grid-template-columns: 1fr; /* Su schermi molto piccoli, i bottoni vanno in singola colonna */
+    gap: 0.8rem;
+  }
+
+  #controls button {
+    width: 100%; /* Occupano tutta la larghezza disponibile */
+    max-width: none; /* Rimuovi la larghezza massima per riempire lo spazio */
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  #inputArea {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Animazioni */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
