@@ -5,223 +5,9 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Chat Anonima</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      font-family: 'Inter', sans-serif;
-      background: linear-gradient(to right, #667eea, #764ba2);
-      color: #fff;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      min-height: 100vh;
-      overflow-x: hidden;
-      transition: margin-left 0.3s ease;
-    }
-
-    /* === SIDEBAR === */
-    .sidebar {
-      position: fixed;
-      top: 0;
-      left: 0;
-      width: 220px;
-      height: 100%;
-      background-color: #1e1b4b;
-      padding: 2rem 1rem;
-      display: flex;
-      flex-direction: column;
-      gap: 1.2rem;
-      transform: translateX(-100%);
-      transition: transform 0.3s ease;
-      z-index: 1000;
-    }
-
-    .sidebar.open {
-      transform: translateX(0);
-    }
-
-    .sidebar a {
-      color: white;
-      text-decoration: none;
-      font-size: 1.1rem;
-      padding: 0.5rem 1rem;
-      border-radius: 6px;
-      transition: background 0.2s;
-    }
-
-    .sidebar a:hover {
-      background-color: #4f46e5;
-    }
-
-    .menu-toggle {
-      position: fixed;
-      top: 20px;
-      left: 20px;
-      z-index: 1001;
-      background-color: #4f46e5;
-      color: #fff;
-      border: none;
-      border-radius: 50%;
-      width: 45px;
-      height: 45px;
-      font-size: 24px;
-      cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-    }
-
-    .menu-toggle:hover {
-      background-color: #4338ca;
-    }
-
-    .main-content {
-      margin: 0 auto;
-      padding: 2rem 1rem;
-      max-width: 600px;
-      width: 100%;
-      transition: margin-left 0.3s ease;
-    }
-
-    body.menu-open .main-content {
-      margin-left: 220px;
-    }
-
-    h1 {
-      text-align: center;
-      margin-top: 3.5rem;
-    }
-
-    #container {
-      background-color: #ffffff10;
-      backdrop-filter: blur(10px);
-      border-radius: 20px;
-      padding: 2rem;
-      margin-top: 2rem;
-      box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-    }
-
-    #status {
-      font-size: 1rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    #controls {
-      display: flex;
-      justify-content: center;
-      gap: 1rem;
-      margin-bottom: 1rem;
-      flex-wrap: wrap;
-    }
-
-    button {
-      padding: 0.6rem 1.2rem;
-      border: none;
-      border-radius: 8px;
-      font-weight: 600;
-      cursor: pointer;
-      font-size: 1rem;
-      transition: background 0.3s, transform 0.2s;
-    }
-
-    #startBtn {
-      background-color: #4f46e5;
-      color: white;
-    }
-
-    #disconnectBtn {
-      background-color: #dc2626;
-      color: white;
-    }
-
-    #reportBtn {
-      background-color: #f59e0b;
-      color: white;
-    }
-
-    button:disabled {
-      opacity: 0.6;
-      cursor: not-allowed;
-    }
-
-    button:hover:not(:disabled) {
-      transform: scale(1.05);
-    }
-
-    #chat {
-      display: none;
-      background: #fff;
-      color: #333;
-      border-radius: 10px;
-      padding: 1rem;
-      height: 300px;
-      overflow-y: auto;
-      margin-bottom: 1rem;
-    }
-
-    .message {
-      margin: 0.5rem 0;
-      padding: 0.6rem 1rem;
-      border-radius: 20px;
-      max-width: 80%;
-      word-wrap: break-word;
-    }
-
-    .you {
-      background-color: #4f46e5;
-      color: white;
-      align-self: flex-end;
-      text-align: right;
-      margin-left: auto;
-    }
-
-    .other {
-      background-color: #e5e7eb;
-      color: #111;
-      align-self: flex-start;
-      text-align: left;
-      margin-right: auto;
-    }
-
-    #inputArea {
-      display: none;
-      justify-content: center;
-      gap: 0.5rem;
-      flex-wrap: wrap;
-    }
-
-    input[type="text"] {
-      padding: 0.6rem;
-      border: none;
-      border-radius: 8px;
-      width: 70%;
-      max-width: 400px;
-      font-size: 1rem;
-    }
-
-    #sendBtn {
-      background-color: #10b981;
-      color: white;
-    }
-
-    @media (max-width: 768px) {
-      body.menu-open .main-content {
-        margin-left: 0;
-      }
-
-      .sidebar {
-        width: 100%;
-        transform: translateX(-100%);
-      }
-
-      .sidebar.open {
-        transform: translateX(0);
-      }
-    }
-  </style>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
@@ -231,6 +17,7 @@
     <a href="#">🏠 Home</a>
     <a href="#">❓ FAQ</a>
     <a href="#">📩 Contatti</a>
+    <button id="themeToggle" class="theme-toggle">☀️ Modalità Chiara</button>
   </nav>
 
   <div class="main-content">
@@ -262,6 +49,17 @@
       sidebar.classList.toggle('open');
       body.classList.toggle('menu-open');
     }
+
+    // Theme Toggle Functionality (Nuovo)
+    const themeToggleBtn = document.getElementById('themeToggle');
+    themeToggleBtn.addEventListener('click', () => {
+      document.body.classList.toggle('light-mode');
+      if (document.body.classList.contains('light-mode')) {
+        themeToggleBtn.textContent = '🌙 Modalità Scura';
+      } else {
+        themeToggleBtn.textContent = '☀️ Modalità Chiara';
+      }
+    });
   </script>
 </body>
 </html>
