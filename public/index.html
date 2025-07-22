@@ -33,6 +33,7 @@
       margin-left: auto;
       margin-right: auto;
       text-align: left;
+      display: none;
     }
 
     input[type="text"] {
@@ -74,7 +75,7 @@
     <button id="disconnectBtn" disabled>⛔ Disconnetti</button>
   </div>
 
-  <div id="chat" style="display: none;"></div>
+  <div id="chat"></div>
 
   <div id="inputArea">
     <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
@@ -82,5 +83,6 @@
   </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
 </html>
