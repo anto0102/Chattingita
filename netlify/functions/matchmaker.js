@@ -1,248 +1,256 @@
 const { createClient } = require('@supabase/supabase-js');
 
-// Inizializza il client Supabase
-// Le credenziali verranno iniettate da Netlify dalle variabili d'ambiente
-const supabaseUrl = process.env.SUPABASE_URL;
-const supabaseKey = process.env.SUPABASE_SECRET_KEY;
-
-// Controlla se le variabili d'ambiente sono definite
-if (!supabaseUrl || !supabaseKey) {
-    console.error("Errore: Variabili d'ambiente SUPABASE_URL o SUPABASE_SECRET_KEY non definite.");
-    // In un ambiente di produzione, potresti voler restituire un errore 500
-    // o semplicemente lasciare che l'inizializzazione fallisca, che verrà catturata dal try/catch più avanti.
-}
-
-const supabase = createClient(supabaseUrl, supabaseKey);
-
 exports.handler = async (event, context) => {
-    const { httpMethod, queryStringParameters, body } = event;
+    // Variabili d'ambiente, verifica come prima
+    if (!process.env.SUPABASE_URL || !process.env.SUPABASE_SECRET_KEY) {
+        console.error('Errore: Variabili d\'ambiente SUPABASE_URL o SUPABASE_SECRET_KEY non definite.');
+        return {
+            statusCode: 500,
+            body: JSON.stringify({ error: 'Configurazione del server non valida.' }),
+        };
+    }
+
+    const supabaseUrl = process.env.SUPABASE_URL;
+    const supabaseKey = process.env.SUPABASE_SECRET_KEY;
+    const supabase = createClient(supabaseUrl, supabaseKey);
+
+    const { action } = event.queryStringParameters || {};
+    const { roomId, userId, senderId, text } = JSON.parse(event.body || '{}');
 
     try {
-        if (httpMethod === 'GET') {
-            const { action, userId, roomId } = queryStringParameters;
+        if (action === 'findMatch') {
+            const currentUserId = event.queryStringParameters.userId;
 
-            // --- Handle findMatch action (GET) ---
-            if (action === 'findMatch' && userId) {
-                // 1. Cerca un utente in stato 'waiting' che non sia l'utente corrente
-                const { data: waitingUsers, error: selectError } = await supabase
-                    .from('users')
-                    .select('user_id')
-                    .eq('status', 'waiting')
-                    .neq('user_id', userId) // Non abbinare con se stesso
-                    .limit(1); // Prendine solo uno
+            // 1. Cerca un utente in attesa (status: 'waiting') che non sia l'utente attuale
+            const { data: waitingUsers, error: fetchError } = await supabase
+                .from('users')
+                .select('*')
+                .eq('status', 'waiting')
+                .neq('user_id', currentUserId)
+                .limit(1);
 
-                if (selectError) {
-                    console.error('Errore durante la ricerca utenti in attesa:', selectError);
-                    // Lancia un errore per fermare l'esecuzione e restituire un 500
-                    throw new Error('Errore nel database durante la ricerca partner.');
-                }
-
-                if (waitingUsers && waitingUsers.length > 0) {
-                    // Trovato un partner!
-                    const partnerId = waitingUsers[0].user_id;
-                    const newRoomId = `room_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`;
-
-                    // 2. Aggiorna lo stato del partner a 'matched' e assegna la room_id
-                    const { error: updatePartnerError } = await supabase
-                        .from('users')
-                        .update({ status: 'matched', room_id: newRoomId })
-                        .eq('user_id', partnerId);
-
-                    if (updatePartnerError) {
-                        console.error('Errore aggiornamento partner:', updatePartnerError);
-                        throw new Error('Errore nel database durante l\'aggiornamento del partner.');
-                    }
-
-                    // 3. Crea la nuova chat room
-                    const { error: createRoomError } = await supabase
-                        .from('rooms')
-                        .insert([
-                            { room_id: newRoomId, users_in_room: [partnerId, userId], messages: [] }
-                        ]);
-
-                    if (createRoomError) {
-                        console.error('Errore creazione room:', createRoomError);
-                        throw new Error('Errore nel database durante la creazione della room.');
-                    }
-
-                    // 4. Aggiorna o crea l'utente corrente come 'matched' e assegna la room_id
-                    // Tentativo di aggiornare se l'utente esiste già (es. era in attesa ma ha ricaricato)
-                    const { data: updatedUser, error: updateSelfError } = await supabase
-                        .from('users')
-                        .update({ status: 'matched', room_id: newRoomId })
-                        .eq('user_id', userId)
-                        .select(); // Aggiunto .select() per ottenere il dato dell'aggiornamento
-
-                    // Se non ci sono righe aggiornate, significa che l'utente non esisteva, quindi lo inseriamo
-                    if (updateSelfError || !updatedUser || updatedUser.length === 0) {
-                        const { error: insertSelfError } = await supabase
-                            .from('users')
-                            .insert([{ user_id: userId, status: 'matched', room_id: newRoomId }]);
-                        if (insertSelfError) {
-                            console.error('Errore insert self:', insertSelfError);
-                            throw new Error('Errore nel database durante l\'inserimento dell\'utente.');
-                        }
-                    }
-
-
-                    console.log(`Matched ${partnerId} with ${userId} in room ${newRoomId}`);
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify({ roomId: newRoomId, status: 'matched', partnerId: partnerId })
-                    };
-
-                } else {
-                    // Nessun partner trovato, metti l'utente corrente in attesa
-                    // Tentativo di aggiornare lo stato dell'utente se esiste già
-                    const { data: updatedUser, error: updateExistingUserError } = await supabase
-                        .from('users')
-                        .update({ status: 'waiting', room_id: null })
-                        .eq('user_id', userId)
-                        .select(); // Aggiunto .select()
-
-                    // Se non ci sono righe aggiornate, significa che l'utente non esisteva, quindi lo inseriamo
-                    if (updateExistingUserError || !updatedUser || updatedUser.length === 0) {
-                        const { error: insertUserError } = await supabase
-                            .from('users')
-                            .insert([{ user_id: userId, status: 'waiting', room_id: null }]);
-                        if (insertUserError) {
-                            console.error('Errore insert user (waiting):', insertUserError);
-                            throw new Error('Errore nel database durante l\'inserimento utente in attesa.');
-                        }
-                    }
-
-                    console.log(`${userId} è in attesa.`);
-                    return {
-                        statusCode: 200,
-                        body: JSON.stringify({ status: 'waiting', message: 'In attesa di un partner...' })
-                    };
-                }
+            if (fetchError) {
+                console.error('Errore durante la ricerca utenti in attesa:', fetchError);
+                return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante la ricerca di un partner.', details: fetchError.message }) };
             }
 
-            // --- Handle getMessages action (GET) ---
-            if (action === 'getMessages' && roomId) {
-                const { data: roomData, error } = await supabase
-                    .from('rooms')
-                    .select('messages')
-                    .eq('room_id', roomId)
-                    .single(); // Assumiamo che room_id sia unico
+            if (waitingUsers && waitingUsers.length > 0) {
+                // Partner trovato! Effettua il match
+                const partner = waitingUsers[0];
+                const newRoomId = `room_${Date.now()}_${Math.random().toString(36).substring(2, 5)}`; // Genera un Room ID unico
 
-                if (error) {
-                    console.error('Errore durante il recupero dei messaggi:', error);
-                    return {
-                        statusCode: 404,
-                        body: JSON.stringify({ error: 'Room non trovata o errore nel recupero messaggi.', details: error.message })
-                    };
+                // Inizia una transazione per assicurare che gli aggiornamenti siano atomici
+                // Nota: Supabase non ha transazioni dirette lato JS per insert/update multiple come un ORM classico.
+                // Gestiamo gli errori per rollback logico.
+
+                // A. Aggiorna lo stato del partner a 'matched' e assegna la room_id
+                const { error: updatePartnerError } = await supabase
+                    .from('users')
+                    .update({ status: 'matched', room_id: newRoomId })
+                    .eq('user_id', partner.user_id);
+
+                if (updatePartnerError) {
+                    console.error('Errore aggiornamento partner:', updatePartnerError);
+                    return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'aggiornamento del partner.', details: updatePartnerError.message }) };
                 }
+
+                // B. Aggiorna lo stato dell'utente attuale a 'matched' e assegna la room_id
+                const { error: updateSelfError } = await supabase
+                    .from('users')
+                    .update({ status: 'matched', room_id: newRoomId })
+                    .eq('user_id', currentUserId);
+
+                if (updateSelfError) {
+                    console.error('Errore aggiornamento self:', updateSelfError);
+                    // Considera un rollback per il partner qui se necessario in una vera transazione
+                    return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'aggiornamento dell\'utente corrente.', details: updateSelfError.message }) };
+                }
+
+                // C. Crea una nuova room
+                const { error: createRoomError } = await supabase
+                    .from('rooms')
+                    .insert({ room_id: newRoomId, users_in_room: [currentUserId, partner.user_id], messages: [] });
+
+                if (createRoomError) {
+                    console.error('Errore creazione room:', createRoomError);
+                    // Considera un rollback per gli utenti qui se necessario
+                    return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante la creazione della stanza.', details: createRoomError.message }) };
+                }
+
+                console.info(`Matched ${currentUserId} with ${partner.user_id} in room ${newRoomId}`);
                 return {
                     statusCode: 200,
-                    body: JSON.stringify({ messages: roomData.messages || [] })
+                    body: JSON.stringify({ status: 'matched', roomId: newRoomId, partnerId: partner.user_id }),
                 };
-            }
 
-        } else if (httpMethod === 'POST') {
-            const { action, roomId, senderId, text, userId: disconnectUserId } = JSON.parse(body);
+            } else {
+                // Nessun partner trovato, metti l'utente in attesa o aggiorna il suo stato a 'waiting'
+                const { data: existingUser, error: checkUserError } = await supabase
+                    .from('users')
+                    .select('user_id, status')
+                    .eq('user_id', currentUserId)
+                    .limit(1);
 
-            // --- Handle sendMessage action (POST) ---
-            if (action === 'sendMessage' && roomId && senderId && text) {
-                // Recupera i messaggi esistenti e aggiungi il nuovo
-                const { data: roomData, error: selectRoomError } = await supabase
-                    .from('rooms')
-                    .select('messages')
-                    .eq('room_id', roomId)
-                    .single();
-
-                if (selectRoomError) {
-                    console.error('Errore nel recupero room per invio messaggio:', selectRoomError);
-                    return {
-                        statusCode: 404,
-                        body: JSON.stringify({ error: 'Room non trovata per invio messaggio.', details: selectRoomError.message })
-                    };
+                if (checkUserError) {
+                    console.error('Errore nella verifica utente esistente:', checkUserError);
+                    return { statusCode: 500, body: JSON.stringify({ error: 'Errore nella verifica dello stato utente.', details: checkUserError.message }) };
                 }
 
-                const currentMessages = roomData.messages || [];
-                const newMessage = { senderId, text, timestamp: Date.now() };
-                const updatedMessages = [...currentMessages, newMessage];
+                if (existingUser && existingUser.length > 0) {
+                    // Utente esiste, aggiorna a waiting se non lo è già
+                    if (existingUser[0].status !== 'waiting') {
+                        const { error: updateWaitingError } = await supabase
+                            .from('users')
+                            .update({ status: 'waiting', room_id: null }) // Rimuovi room_id se torna in attesa
+                            .eq('user_id', currentUserId);
+                        if (updateWaitingError) {
+                            console.error('Errore aggiornamento utente a waiting:', updateWaitingError);
+                            return { statusCode: 500, body: JSON.stringify({ error: 'Errore aggiornamento stato utente.', details: updateWaitingError.message }) };
+                        }
+                    }
+                } else {
+                    // Utente non esiste, inserisci come waiting
+                    const { error: insertUserError } = await supabase
+                        .from('users')
+                        .insert([{ user_id: currentUserId, status: 'waiting', room_id: null }]);
+                    if (insertUserError) {
+                        console.error('Errore insert user (waiting):', insertUserError);
+                        return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'inserimento utente in attesa.', details: insertUserError.message }) };
+                    }
+                }
 
-                const { error: updateError } = await supabase
+                console.info(`${currentUserId} è in attesa.`);
+                return {
+                    statusCode: 200,
+                    body: JSON.stringify({ status: 'waiting' }),
+                };
+            }
+        } else if (action === 'sendMessage') {
+            // Aggiungi il messaggio all'array 'messages' della room
+            const { data: room, error: fetchRoomError } = await supabase
+                .from('rooms')
+                .select('messages')
+                .eq('room_id', roomId)
+                .single();
+
+            if (fetchRoomError) {
+                console.error('Errore nel recupero room per invio messaggio:', fetchRoomError);
+                return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'invio del messaggio.', details: fetchRoomError.message }) };
+            }
+
+            const newMessages = room.messages ? [...room.messages, { senderId, text, timestamp: new Date().toISOString() }] : [{ senderId, text, timestamp: new Date().toISOString() }];
+
+            const { error: updateMessagesError } = await supabase
+                .from('rooms')
+                .update({ messages: newMessages })
+                .eq('room_id', roomId);
+
+            if (updateMessagesError) {
+                console.error('Errore durante l\'invio del messaggio:', updateMessagesError);
+                return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'invio del messaggio.', details: updateMessagesError.message }) };
+            }
+
+            console.info(`Message in room ${roomId} from ${senderId}: ${text}`);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ status: 'Message sent' }),
+            };
+        } else if (action === 'getMessages') { // Questa azione verrà rimossa o modificata dal frontend
+            const { data: room, error: fetchRoomError } = await supabase
+                .from('rooms')
+                .select('messages')
+                .eq('room_id', roomId)
+                .single();
+
+            if (fetchRoomError) {
+                // Se la stanza non esiste o errore, restituisci un array vuoto
+                console.warn(`Errore o stanza non trovata per i messaggi (${roomId}):`, fetchRoomError.message);
+                return { statusCode: 200, body: JSON.stringify({ messages: [] }) };
+            }
+
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ messages: room ? room.messages : [] }),
+            };
+        } else if (action === 'disconnect') {
+            const { data: room, error: fetchRoomError } = await supabase
+                .from('rooms')
+                .select('users_in_room')
+                .eq('room_id', roomId)
+                .single();
+
+            if (fetchRoomError) {
+                console.error('Errore nel recupero room per disconnessione:', fetchRoomError);
+                return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante la disconnessione.', details: fetchRoomError.message }) };
+            }
+
+            let updatedUsersInRoom = room.users_in_room.filter(id => id !== userId);
+            let userStatus = 'disconnected'; // Assume disconnesso di default
+            
+            // Se c'è ancora un utente nella stanza, aggiorna il suo stato a 'waiting'
+            // Questo gestisce il caso in cui un utente rimane da solo e deve essere rimesso in coda
+            if (updatedUsersInRoom.length > 0) {
+                userStatus = 'waiting';
+                // Aggiorna lo stato dell'utente rimasto a 'waiting'
+                const { error: updateRemainingUserError } = await supabase
+                    .from('users')
+                    .update({ status: 'waiting', room_id: null })
+                    .eq('user_id', updatedUsersInRoom[0]);
+                if (updateRemainingUserError) {
+                    console.error('Errore aggiornamento utente rimasto a waiting:', updateRemainingUserError);
+                }
+            } else {
+                 // Se nessuno rimane, elimina la stanza
+                const { error: deleteRoomError } = await supabase
                     .from('rooms')
-                    .update({ messages: updatedMessages })
+                    .delete()
                     .eq('room_id', roomId);
-
-                if (updateError) {
-                    console.error('Errore durante l\'invio del messaggio:', updateError);
-                    throw new Error('Errore nel database durante l\'invio del messaggio.');
+                if (deleteRoomError) {
+                    console.error('Errore eliminazione room:', deleteRoomError);
                 }
-                console.log(`Message in room ${roomId} from ${senderId}: ${text}`);
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ status: 'Message sent' })
-                };
+            }
+            
+            // Aggiorna lo stato dell'utente che si è disconnesso
+            const { error: updateUserError } = await supabase
+                .from('users')
+                .update({ status: 'disconnected', room_id: null }) // L'utente che si disconnette è 'disconnected'
+                .eq('user_id', userId);
+
+            if (updateUserError) {
+                console.error('Errore aggiornamento utente disconnesso:', updateUserError);
+                return { statusCode: 500, body: JSON.stringify({ error: 'Errore durante l\'aggiornamento dello stato dell\'utente disconnesso.', details: updateUserError.message }) };
             }
 
-            // --- Handle disconnect action (POST) ---
-            if (action === 'disconnect' && roomId && disconnectUserId) {
-                // Aggiorna lo stato dell'utente disconnesso a 'disconnected'
-                const { error: updateUserError } = await supabase
-                    .from('users')
-                    .update({ status: 'disconnected', room_id: null })
-                    .eq('user_id', disconnectUserId);
-
-                if (updateUserError) {
-                    console.error('Errore nell\'aggiornare lo stato dell\'utente disconnesso:', updateUserError);
-                    // Non bloccare il flusso se c'è un errore qui, l'importante è che l'utente si stia disconnettendo
-                }
-
-                // Recupera la room per aggiornare gli utenti e aggiungere un messaggio di sistema
-                const { data: roomData, error: selectRoomError } = await supabase
+            // Aggiorna o elimina la stanza a seconda di quanti utenti rimangono
+            if (updatedUsersInRoom.length > 0) {
+                const { error: updateRoomError } = await supabase
                     .from('rooms')
-                    .select('users_in_room, messages')
-                    .eq('room_id', roomId)
-                    .single();
-
-                if (!selectRoomError && roomData) {
-                    const updatedUsersInRoom = roomData.users_in_room.filter(id => id !== disconnectUserId);
-                    const currentMessages = roomData.messages || [];
-                    const systemMessage = { senderId: 'system', text: `Il tuo partner si è disconnesso.`, timestamp: Date.now() };
-                    const updatedMessages = [...currentMessages, systemMessage];
-
-                    if (updatedUsersInRoom.length === 0) {
-                        // Elimina la room se non ci sono più utenti
-                        const { error: deleteRoomError } = await supabase
-                            .from('rooms')
-                            .delete()
-                            .eq('room_id', roomId);
-                        if (deleteRoomError) console.error('Errore nell\'eliminare la room:', deleteRoomError);
-                        console.log(`Room ${roomId} eliminata.`);
-                    } else {
-                        // Aggiorna la room con gli utenti rimanenti e il messaggio di sistema
-                        const { error: updateRoomError } = await supabase
-                            .from('rooms')
-                            .update({ users_in_room: updatedUsersInRoom, messages: updatedMessages })
-                            .eq('room_id', roomId);
-                        if (updateRoomError) console.error('Errore nell\'aggiornare la room:', updateRoomError);
-                        console.log(`Utente ${disconnectUserId} disconnesso da room ${roomId}. Rimangono: ${updatedUsersInRoom.join(', ')}`);
-                    }
-                } else {
-                    console.log(`Room ${roomId} non trovata per disconnessione o errore.`);
+                    .update({ users_in_room: updatedUsersInRoom })
+                    .eq('room_id', roomId);
+                if (updateRoomError) {
+                    console.error('Errore aggiornamento room dopo disconnessione:', updateRoomError);
                 }
-
-                return {
-                    statusCode: 200,
-                    body: JSON.stringify({ status: 'Disconnected' })
-                };
+            } else {
+                // La stanza viene eliminata se non ci sono utenti, gestito sopra
             }
+
+            console.info(`Utente ${userId} disconnesso da room ${roomId}. Rimangono: ${updatedUsersInRoom.join(', ')}`);
+            return {
+                statusCode: 200,
+                body: JSON.stringify({ status: 'Disconnected' }),
+            };
         }
 
         return {
             statusCode: 400,
-            body: JSON.stringify({ error: 'Azione non valida o parametri mancanti.' })
+            body: JSON.stringify({ error: 'Azione non valida.' }),
         };
+
     } catch (error) {
-        console.error('Errore nella funzione Netlify:', error);
+        console.error('Errore generale nella funzione:', error);
         return {
             statusCode: 500,
-            body: JSON.stringify({ error: 'Errore interno del server.', details: error.message })
+            body: JSON.stringify({ error: 'Errore interno del server.', details: error.message }),
         };
     }
 };
