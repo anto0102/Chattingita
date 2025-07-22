@@ -3,10 +3,10 @@ const socket = io("https://chattingapp-backend.onrender.com");
 const status = document.getElementById('status');
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
-
 const startBtn = document.getElementById('startBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
+const onlineCounter = document.getElementById('onlineCounter');
 
 let connected = false;
 
@@ -15,32 +15,13 @@ function resetChat() {
   input.value = '';
   input.disabled = true;
   sendBtn.disabled = true;
-  chat.style.display = 'none';
-}
-
-function addMessage(text, isYou = false) {
-  const msg = document.createElement('div');
-  msg.className = 'message ' + (isYou ? 'you' : 'other');
-  msg.textContent = (isYou ? '🧑 ' : '👤 ') + text;
-  chat.appendChild(msg);
-  chat.scrollTop = chat.scrollHeight;
-}
-
-function sendMessage() {
-  const msg = input.value.trim();
-  if (msg && connected) {
-    addMessage(msg, true);
-    socket.emit('message', msg);
-    input.value = '';
-  }
+  chat.classList.add("hidden");
 }
 
 startBtn.addEventListener('click', () => {
-  if (!connected) {
-    socket.emit('start_chat');
-    status.textContent = '🔄 In attesa di un altro utente...';
-    startBtn.disabled = true;
-  }
+  socket.emit('start_chat');
+  status.textContent = '🔄 In attesa di un altro utente...';
+  startBtn.disabled = true;
 });
 
 disconnectBtn.addEventListener('click', () => {
@@ -60,16 +41,30 @@ input.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// SOCKET.IO Events
+function sendMessage() {
+  const msg = input.value.trim();
+  if (msg && connected) {
+    appendMessage('🧑 Tu: ' + msg);
+    socket.emit('message', msg);
+    input.value = '';
+  }
+}
+
+function appendMessage(text) {
+  const el = document.createElement('div');
+  el.textContent = text;
+  el.className = "chat-message";
+  chat.appendChild(el);
+  chat.scrollTop = chat.scrollHeight;
+}
 
 socket.on('waiting', () => {
   status.textContent = '🔄 In attesa di un altro utente...';
 });
 
-socket.on('match', () => {
+socket.on('partner-found', () => {
   status.textContent = '✅ Connesso! Puoi iniziare a chattare.';
-  chat.style.display = 'flex';
-  chat.style.flexDirection = 'column';
+  chat.classList.remove("hidden");
   input.disabled = false;
   sendBtn.disabled = false;
   disconnectBtn.disabled = false;
@@ -77,15 +72,19 @@ socket.on('match', () => {
 });
 
 socket.on('message', (msg) => {
-  addMessage(msg, false);
+  appendMessage('👤 ' + msg);
 });
 
-socket.on('partner_disconnected', () => {
+socket.on('partner-disconnected', () => {
   status.textContent = '❌ Il tuo partner si è disconnesso.';
   resetChat();
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
+});
+
+socket.on('online-count', (count) => {
+  onlineCounter.textContent = `🟢 Utenti online: ${count}`;
 });
 
 socket.on('connect_error', (err) => {
