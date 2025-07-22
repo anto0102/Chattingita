@@ -17,7 +17,6 @@
       flex-direction: column;
       align-items: center;
       min-height: 100vh;
-      overflow-x: hidden; /* previene scroll orizzontale */
     }
 
     h1 {
@@ -33,17 +32,11 @@
       max-width: 600px;
       margin-top: 2rem;
       box-shadow: 0 10px 30px rgba(0,0,0,0.2);
-      z-index: 10;
-      position: relative;
+      z-index: 1;
     }
 
     #status {
       font-size: 1rem;
-      margin-bottom: 1rem;
-      text-align: center;
-    }
-
-    #onlineCounter {
       margin-bottom: 1rem;
       text-align: center;
     }
@@ -53,7 +46,6 @@
       justify-content: center;
       gap: 1rem;
       margin-bottom: 1rem;
-      flex-wrap: wrap;
     }
 
     button {
@@ -126,14 +118,10 @@
     }
 
     #inputArea {
-      display: none; /* di default nascosto, si mostra solo con chat attiva */
+      display: none; /* sistemato: non mostrare input a inizio */
       justify-content: center;
       gap: 0.5rem;
       flex-wrap: wrap;
-    }
-
-    #inputArea.active {
-      display: flex;
     }
 
     input[type="text"] {
@@ -165,90 +153,74 @@
       }
     }
 
-    /* Hamburger Button */
-    #hamburgerBtn {
+    /* === SLIDER MENU === */
+    .menu-toggle {
       position: fixed;
-      top: 1.5rem;
-      left: 1rem;
-      width: 36px;
-      height: 30px;
-      cursor: pointer;
-      z-index: 1101;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    #hamburgerBtn .bar {
-      display: block;
-      height: 4px;
+      top: 20px;
+      left: 20px;
+      z-index: 1000;
       background-color: #4f46e5;
-      border-radius: 2px;
-      transition: all 0.3s ease;
-    }
-    #hamburgerBtn.open .bar:nth-child(1) {
-      transform: rotate(45deg) translate(6px, 6px);
-    }
-    #hamburgerBtn.open .bar:nth-child(2) {
-      opacity: 0;
-    }
-    #hamburgerBtn.open .bar:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
+      color: #fff;
+      border: none;
+      border-radius: 50%;
+      width: 45px;
+      height: 45px;
+      font-size: 24px;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      transition: background 0.3s;
     }
 
-    /* Slider Menu */
-    #sliderMenu {
+    .menu-toggle:hover {
+      background-color: #4338ca;
+    }
+
+    .sidebar {
       position: fixed;
       top: 0;
-      left: 0;
-      height: 100vh;
+      left: -250px;
       width: 220px;
-      background: rgba(111, 66, 193, 0.85);
-      backdrop-filter: blur(12px);
-      box-shadow: 2px 0 12px rgba(0,0,0,0.4);
-      border-top-right-radius: 12px;
-      border-bottom-right-radius: 12px;
-      padding: 3rem 1.5rem;
-      transform: translateX(-240px);
-      transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      height: 100vh;
+      background-color: #1e1b4b;
+      color: white;
+      padding: 2rem 1rem;
+      box-shadow: 4px 0 12px rgba(0, 0, 0, 0.3);
+      transition: left 0.3s ease;
+      z-index: 999;
       display: flex;
       flex-direction: column;
       gap: 1.2rem;
-      z-index: 1100;
     }
-    #sliderMenu.open {
-      transform: translateX(0);
+
+    .sidebar.open {
+      left: 0;
     }
-    #sliderMenu a {
-      color: white;
-      font-weight: 600;
+
+    .sidebar a {
+      color: #fff;
       text-decoration: none;
-      font-size: 1.15rem;
-      padding: 0.6rem 1rem;
-      border-radius: 8px;
-      transition: background-color 0.25s ease;
+      font-size: 1.1rem;
+      padding: 0.4rem 0.8rem;
+      border-radius: 6px;
+      transition: background 0.3s;
     }
-    #sliderMenu a:hover,
-    #sliderMenu a:focus {
-      background-color: #7c5dfa;
-      outline: none;
+
+    .sidebar a:hover {
+      background-color: #4f46e5;
     }
   </style>
 </head>
 <body>
 
-  <!-- Hamburger Button -->
-  <div id="hamburgerBtn" aria-label="Apri menu" role="button" tabindex="0" aria-expanded="false" aria-controls="sliderMenu">
-    <span class="bar"></span>
-    <span class="bar"></span>
-    <span class="bar"></span>
-  </div>
+  <!-- MENU TOGGLE BUTTON -->
+  <button class="menu-toggle" onclick="toggleMenu()">☰</button>
 
-  <!-- Slider Menu -->
-  <nav id="sliderMenu" aria-hidden="true" tabindex="-1">
-    <a href="index.html">🏠 Home</a>
-    <a href="about.html">ℹ️ Info</a>
-    <a href="faq.html">❓ FAQ</a>
-    <a href="contact.html">✉️ Contatti</a>
+  <!-- SIDEBAR MENU -->
+  <nav class="sidebar" id="sidebar">
+    <a href="#">🏠 Home</a>
+    <a href="#">❓ FAQ</a>
+    <a href="#">📩 Contatti</a>
+    <a href="#">🚪 Logout</a>
   </nav>
 
   <h1>💬 Chat Anonima</h1>
@@ -272,21 +244,10 @@
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="script.js"></script>
-
   <script>
-    // Menu slider JS
-    const hamburgerBtn = document.getElementById('hamburgerBtn');
-    const sliderMenu = document.getElementById('sliderMenu');
-
     function toggleMenu() {
-      const isOpen = sliderMenu.classList.toggle('open');
-      hamburgerBtn.classList.toggle('open', isOpen);
-      hamburgerBtn.setAttribute('aria-expanded', isOpen);
-      sliderMenu.setAttribute('aria-hidden', !isOpen);
+      document.getElementById('sidebar').classList.toggle('open');
     }
-
-    hamburgerBtn.addEventListener('click', toggleMenu);
-
-    // Chiudi menu cliccando fuori
-    document.addEventListener('click', (e) => {
-      if (!sliderMenu.contains(e.target) && !hamb
+  </script>
+</body>
+</html>
