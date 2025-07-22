@@ -1,186 +1,199 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const startChatBtn = document.getElementById('startChatBtn');
+    const startMatchmakingButton = document.getElementById('start-matchmaking');
     const statusDiv = document.getElementById('status');
-    const chatWindow = document.getElementById('chatWindow');
-    const messagesDiv = document.getElementById('messages');
-    const messageInput = document.getElementById('messageInput');
-    const sendMessageBtn = document.getElementById('sendMessageBtn');
-    const disconnectBtn = document.getElementById('disconnectBtn');
+    const chatContainer = document.getElementById('chat-container');
+    const chatbox = document.getElementById('chatbox');
+    const messageInput = document.getElementById('message-input');
+    const sendButton = document.getElementById('send-button');
+    const disconnectButton = document.getElementById('disconnect-button');
 
-    let currentRoomId = null;
-    let userId = null; // Un ID univoco per questo utente
-    let pollingInterval = null; // Per il polling dei messaggi
+    let userId = null;
+    let roomId = null;
+    let partnerId = null; // Potrebbe essere utile per mostrare all'utente con chi sta parlando
 
-    // Genera un ID utente casuale una volta al caricamento della pagina
-    userId = `user_${Math.random().toString(36).substring(2, 9)}`;
+    let matchmakingInterval = null; // Per il polling del matchmaking
+    let messagePollingInterval = null; // Per il polling dei messaggi
 
-    const API_BASE_URL = '/.netlify/functions'; // Percorso per le Netlify Functions
-
-    /**
-     * Invia un messaggio alla chat.
-     * @param {string} type 'self' o 'other'
-     * @param {string} text Il contenuto del messaggio
-     */
-    function displayMessage(type, text) {
-        const messageElement = document.createElement('div');
-        messageElement.classList.add('message', type);
-        messageElement.textContent = text;
-        messagesDiv.appendChild(messageElement);
-        messagesDiv.scrollTop = messagesDiv.scrollHeight; // Scorri in fondo
+    // Funzione per generare un ID utente casuale
+    function generateUserId() {
+        return 'user_' + Math.random().toString(36).substring(2, 9);
     }
 
-    /**
-     * Avvia il polling per i nuovi messaggi.
-     */
-    async function startPolling() {
-        if (pollingInterval) clearInterval(pollingInterval);
-
-        let lastMessageIndex = 0; // Tieni traccia dell'ultimo messaggio letto
-
-        // La funzione di polling
-        const pollForMessages = async () => {
-            if (!currentRoomId) return;
-
-            try {
-                const response = await fetch(`${API_BASE_URL}/matchmaker?action=getMessages&roomId=${currentRoomId}`);
-                const data = await response.json();
-
-                if (data.messages && data.messages.length > lastMessageIndex) {
-                    // Elabora solo i nuovi messaggi
-                    for (let i = lastMessageIndex; i < data.messages.length; i++) {
-                        const msg = data.messages[i];
-                        if (msg.senderId === userId) {
-                            displayMessage('self', msg.text);
-                        } else {
-                            displayMessage('other', msg.text);
-                        }
-                    }
-                    lastMessageIndex = data.messages.length; // Aggiorna l'indice dell'ultimo messaggio letto
-                }
-            } catch (error) {
-                console.error('Errore durante il polling dei messaggi:', error);
-                // Puoi aggiungere una logica per gestire la disconnessione
-            }
-        };
-
-        // Esegui il polling ogni 2 secondi
-        pollingInterval = setInterval(pollForMessages, 2000);
-        pollForMessages(); // Esegui subito una volta all'avvio
-    }
-
-    /**
-     * Ferma il polling.
-     */
-    function stopPolling() {
-        if (pollingInterval) {
-            clearInterval(pollingInterval);
-            pollingInterval = null;
+    // Funzione per inizializzare l'interfaccia utente
+    function initializeUI() {
+        chatContainer.style.display = 'none';
+        disconnectButton.style.display = 'none';
+        startMatchmakingButton.style.display = 'block';
+        statusDiv.textContent = '';
+        chatbox.innerHTML = '';
+        messageInput.value = '';
+        messageInput.disabled = true;
+        sendButton.disabled = true;
+        
+        // Pulisci gli intervalli precedenti se esistono
+        if (matchmakingInterval) {
+            clearInterval(matchmakingInterval);
+            matchmakingInterval = null;
+        }
+        if (messagePollingInterval) {
+            clearInterval(messagePollingInterval);
+            messagePollingInterval = null;
         }
     }
 
-    /**
-     * Resetta l'interfaccia utente allo stato iniziale.
-     */
-    function resetUI() {
-        stopPolling();
-        currentRoomId = null;
-        messagesDiv.innerHTML = '';
-        messageInput.value = '';
-        chatWindow.style.display = 'none';
-        startChatBtn.style.display = 'block';
-        startChatBtn.textContent = 'Avvia Nuova Chat';
-        statusDiv.textContent = 'Clicca "Avvia Nuova Chat" per trovare qualcuno.';
-        startChatBtn.disabled = false;
-    }
+    // Chiamata iniziale per impostare l'interfaccia
+    initializeUI();
 
-    startChatBtn.addEventListener('click', async () => {
-        startChatBtn.disabled = true;
+    // Gestore per il pulsante "Avvia Nuova Chat"
+    startMatchmakingButton.addEventListener('click', async () => {
+        userId = generateUserId(); // Genera un nuovo ID utente per ogni nuova chat
         statusDiv.textContent = 'Ricerca di un partner...';
-        messagesDiv.innerHTML = ''; // Pulisci i messaggi precedenti
+        startMatchmakingButton.style.display = 'none'; // Nascondi il pulsante
 
+        // Avvia il polling per il matchmaking
+        // La prima chiamata avviene immediatamente, poi ogni 3 secondi
+        findMatch(); // Chiamata immediata
+        if (!matchmakingInterval) { // Impedisce di avviare più intervalli
+            matchmakingInterval = setInterval(findMatch, 3000); // Poll ogni 3 secondi
+        }
+    });
+
+    // Funzione per la chiamata alla Netlify Function per il matchmaking
+    async function findMatch() {
         try {
-            const response = await fetch(`${API_BASE_URL}/matchmaker?action=findMatch&userId=${userId}`);
+            const response = await fetch(`/.netlify/functions/matchmaker?action=findMatch&userId=${userId}`);
             const data = await response.json();
 
-            if (data.roomId) {
-                currentRoomId = data.roomId;
-                statusDiv.textContent = `Connesso alla chat room ${currentRoomId}.`;
-                chatWindow.style.display = 'block';
-                startChatBtn.style.display = 'none'; // Nasconde il bottone Avvia Chat
-                startPolling(); // Inizia a ricevere messaggi
+            if (data.status === 'matched') {
+                // Partner trovato, aggiorna l'interfaccia e inizia la chat
+                roomId = data.roomId;
+                partnerId = data.partnerId;
+                statusDiv.textContent = `Sei in chat con il partner ${partnerId}. Room ID: ${roomId}`;
+                
+                chatContainer.style.display = 'block';
+                disconnectButton.style.display = 'block';
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+
+                // Ferma il polling del matchmaking
+                if (matchmakingInterval) {
+                    clearInterval(matchmakingInterval);
+                    matchmakingInterval = null;
+                }
+
+                // Avvia il polling per i messaggi (se non è già attivo)
+                if (!messagePollingInterval) {
+                    messagePollingInterval = setInterval(getMessagesAndDisplay, 1500); // Poll ogni 1.5 secondi
+                }
+                getMessagesAndDisplay(); // Recupera subito i messaggi iniziali
+                
+
             } else if (data.status === 'waiting') {
-                statusDiv.textContent = 'Nessun partner trovato, in attesa di qualcuno...';
-                // Puoi aggiungere un meccanismo di polling qui per controllare lo stato del matchmaking
-                // Per semplicità, in questo esempio l'utente dovrà cliccare di nuovo o aspettare
-                // una notifica push (non implementata qui)
-                startChatBtn.disabled = false; // Permetti di ritentare
+                // Nessun partner trovato, rimane in attesa
+                statusDiv.textContent = 'Ricerca di un partner... (utente in attesa)';
+                // Continua il polling per findMatch (gestito dall'intervallo sopra)
+
+            } else if (data.error) {
+                statusDiv.textContent = `Errore di matchmaking: ${data.error}`;
+                console.error('Errore di matchmaking:', data.details || data.error);
+                // In caso di errore grave, ferma il polling e resetta l'UI
+                initializeUI();
+            }
+
+        } catch (error) {
+            console.error('Errore durante la chiamata a findMatch:', error);
+            statusDiv.textContent = 'Errore di connessione al servizio chat.';
+            // In caso di errore di rete, potresti voler riprovare o dare un messaggio all'utente
+            initializeUI(); // Resetta l'UI in caso di errore critico
+        }
+    }
+
+    // Funzione per recuperare e visualizzare i messaggi
+    async function getMessagesAndDisplay() {
+        if (!roomId) return; // Non recuperare messaggi se non c'è una roomId
+
+        try {
+            const response = await fetch(`/.netlify/functions/matchmaker?action=getMessages&roomId=${roomId}`);
+            const data = await response.json();
+
+            if (data.messages) {
+                // Aggiorna solo se ci sono nuovi messaggi per evitare flicker
+                const currentMessagesCount = chatbox.children.length;
+                if (data.messages.length > currentMessagesCount) {
+                    chatbox.innerHTML = ''; // Pulisci la chatbox
+                    data.messages.forEach(msg => {
+                        const p = document.createElement('p');
+                        const sender = msg.senderId === userId ? 'Tu' : (msg.senderId === 'system' ? 'Sistema' : 'Partner');
+                        p.textContent = `${sender}: ${msg.text}`;
+                        chatbox.appendChild(p);
+                    });
+                    chatbox.scrollTop = chatbox.scrollHeight; // Scorri fino in fondo
+                }
             }
         } catch (error) {
-            console.error('Errore durante la ricerca di un partner:', error);
-            statusDiv.textContent = 'Errore di connessione. Riprova.';
-            startChatBtn.disabled = false;
+            console.error('Errore durante il recupero dei messaggi:', error);
+            // Non resettare l'UI qui, ma potresti mostrare un piccolo avviso temporaneo
         }
-    });
+    }
 
-    sendMessageBtn.addEventListener('click', async () => {
-        const messageText = messageInput.value.trim();
-        if (messageText && currentRoomId) {
-            try {
-                // Invia il messaggio tramite una Netlify Function
-                await fetch(`${API_BASE_URL}/matchmaker`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'sendMessage',
-                        roomId: currentRoomId,
-                        senderId: userId,
-                        text: messageText,
-                        timestamp: Date.now()
-                    })
-                });
-                messageInput.value = ''; // Pulisci l'input
-                // Il messaggio verrà visualizzato dal polling, non aggiungerlo qui direttamente per evitare duplicati
-            } catch (error) {
-                console.error('Errore durante l\'invio del messaggio:', error);
-            }
-        }
-    });
-
+    // Gestore per l'invio del messaggio
+    sendButton.addEventListener('click', sendMessage);
     messageInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
-            sendMessageBtn.click();
+            sendMessage();
         }
     });
 
-    disconnectBtn.addEventListener('click', async () => {
-        if (currentRoomId) {
-            try {
-                // Notifica al server la disconnessione
-                await fetch(`${API_BASE_URL}/matchmaker`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        action: 'disconnect',
-                        roomId: currentRoomId,
-                        userId: userId
-                    })
-                });
-            } catch (error) {
-                console.error('Errore durante la disconnessione:', error);
-            } finally {
-                resetUI(); // Resetta l'interfaccia utente
+    async function sendMessage() {
+        const text = messageInput.value.trim();
+        if (text === '' || !roomId || !userId) return;
+
+        try {
+            const response = await fetch('/.netlify/functions/matchmaker', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'sendMessage', roomId, senderId: userId, text })
+            });
+            const data = await response.json();
+
+            if (data.status === 'Message sent') {
+                messageInput.value = ''; // Pulisci l'input
+                getMessagesAndDisplay(); // Aggiorna subito i messaggi dopo averne inviato uno
+            } else if (data.error) {
+                console.error('Errore nell\'invio del messaggio:', data.details || data.error);
+                statusDiv.textContent = `Errore invio: ${data.error}`;
             }
-        } else {
-            resetUI();
+        } catch (error) {
+            console.error('Errore durante la chiamata a sendMessage:', error);
+            statusDiv.textContent = 'Errore di connessione al servizio chat.';
+        }
+    }
+
+    // Gestore per il pulsante "Disconnetti"
+    disconnectButton.addEventListener('click', async () => {
+        if (!roomId || !userId) return;
+
+        try {
+            const response = await fetch('/.netlify/functions/matchmaker', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ action: 'disconnect', roomId, userId: userId })
+            });
+            const data = await response.json();
+
+            if (data.status === 'Disconnected') {
+                alert('Ti sei disconnesso dalla chat.');
+                initializeUI(); // Resetta l'interfaccia
+                userId = null;
+                roomId = null;
+                partnerId = null;
+            } else if (data.error) {
+                console.error('Errore nella disconnessione:', data.details || data.error);
+                statusDiv.textContent = `Errore disconnessione: ${data.error}`;
+            }
+        } catch (error) {
+            console.error('Errore durante la chiamata a disconnect:', error);
+            statusDiv.textContent = 'Errore di connessione al servizio.';
         }
     });
-
-    // Inizializza l'interfaccia
-    resetUI();
 });
-
-
