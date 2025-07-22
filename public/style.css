@@ -140,24 +140,6 @@ h1 {
   font-weight: 600;
 }
 
-/* *** MODIFICHE CRUCIALI PER I BOTTONI *** */
-#controls {
-  display: grid; /* Usa CSS Grid per un controllo più preciso */
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 2 o 3 bottoni per riga, adattivi */
-  gap: 0.8rem; /* Spazio uniforme tra i bottoni */
-  margin: 1.5rem 0;
-  justify-items: center; /* Centra i bottoni all'interno delle loro celle di griglia */
-}
-
-#controls button {
-  padding: 0.6rem 1rem; /* Padding appropriato per un bottone compatto */
-  font-size: 0.95rem; /* Testo più leggibile sui bottoni */
-  width: 100%; /* I bottoni riempiono la loro cella di griglia */
-  min-width: 120px; /* Larghezza minima per evitare il troncamento del testo */
-  max-width: 180px; /* Larghezza massima per evitare che diventino troppo larghi */
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura leggera */
-}
-
 /* Stili comuni per tutti i bottoni (sovrascritti sopra dove necessario) */
 button {
   border: none;
@@ -414,20 +396,19 @@ body.light-mode input[type="text"]:focus {
     left: 20px;
   }
 
-  #controls {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Continua con 2/3 bottoni per riga */
-    /* Assicurati che il minmax sia sufficiente per il testo */
+  /* I bottoni in chat-active si comportano come prima */
+  #controls.chat-active {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
   }
-
-  #controls button {
-    width: 100%; /* I bottoni riempiono la loro cella */
-    max-width: 180px; /* Mantieni un limite per la larghezza */
+  #controls.chat-active button {
+    width: 100%;
+    max-width: 180px;
   }
 }
 
 @media (max-width: 550px) { /* Nuova media query per schermi più piccoli */
-  #controls {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Assicurati che ce ne siano almeno 2 per riga */
+  #controls.chat-active {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
     gap: 0.6rem;
   }
 }
@@ -443,14 +424,14 @@ body.light-mode input[type="text"]:focus {
     border-radius: 18px;
   }
 
-  #controls {
-    grid-template-columns: 1fr; /* Su schermi molto piccoli, i bottoni vanno in singola colonna */
+  /* Qui anche in chat-active vanno in singola colonna */
+  #controls.chat-active {
+    grid-template-columns: 1fr;
     gap: 0.8rem;
   }
-
-  #controls button {
-    width: 100%; /* Occupano tutta la larghezza disponibile */
-    max-width: none; /* Rimuovi la larghezza massima per riempire lo spazio */
+  #controls.chat-active button {
+    width: 100%;
+    max-width: none;
     padding: 0.7rem 1rem;
     font-size: 0.95rem;
   }
@@ -481,7 +462,6 @@ body.light-mode input[type="text"]:focus {
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
 
 /* NUOVI STILI PER LE SEZIONI DI CONTENUTO */
 .content-section {
@@ -513,6 +493,9 @@ body.light-mode input[type="text"]:focus {
     margin-bottom: 2rem;
     color: #e0e0e0;
     font-size: 1.1rem;
+    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .content-section p {
@@ -678,51 +661,7 @@ body.light-mode .content-section a:hover {
 }
 
 
-/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
-
-/* NUOVI STILI PER LE SEZIONI DI CONTENUTO (generali) */
-.content-section {
-    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
-    backdrop-filter: blur(15px);
-    border-radius: 25px;
-    padding: 2.5rem;
-    margin-top: 2rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease;
-}
-
-.content-section.hidden {
-  display: none; /* Nasconde l'elemento */
-}
-
-.content-section h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-}
-
-.content-section .intro-text {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
-    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.content-section p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  font-size: 1.1rem;
-  color: #e0e0e0;
-}
-
-/* *** STILI PER LA SEZIONE "CHI SIAMO" *** */
+/* --- STILI PER LA SEZIONE "CHI SIAMO" --- */
 #about-us-content .about-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colonne su desktop, 1 su mobile */
@@ -778,35 +717,6 @@ body.light-mode .content-section a:hover {
     font-size: 1.1rem; /* leggermente più grande */
 }
 
-/* *** FINE STILI "CHI SIAMO" *** */
-
-/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
-/* (Copia qui gli stili delle FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .accordion, .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a
-   che hai già applicato. Non li ripeto qui per brevità, ma assicurati che siano presenti.) */
-
-
-/* --- LIGHT MODE ADJUSTMENTS --- */
-body.light-mode .content-section {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .content-section h2 {
-  color: #222;
-}
-
-body.light-mode .content-section .intro-text {
-    color: #555;
-}
-
-body.light-mode .content-section p {
-  color: #555;
-}
-
 /* --- LIGHT MODE per "CHI SIAMO" --- */
 body.light-mode .about-card {
     background-color: rgba(0, 0, 0, 0.05);
@@ -835,44 +745,9 @@ body.light-mode .about-outro {
     color: #4f46e5; /* Blu primario per il testo di chiusura */
 }
 
-/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
-/* (Copia qui gli stili LIGHT MODE per FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a.
-   Non li ripeto qui per brevità.) */
-
-
-/* Media Queries per Responsività */
-@media (max-width: 768px) {
-  /* ... (Mantieni le tue media queries esistenti) ... */
-  #about-us-content .about-grid {
-      grid-template-columns: 1fr; /* Una colonna su schermi più piccoli */
-  }
-}
-
-@media (max-width: 480px) {
-  /* ... (Mantieni le tue media queries esistenti) ... */
-  .about-card {
-    padding: 1.2rem;
-  }
-  .about-card .icon {
-    font-size: 2.8rem;
-  }
-  .about-card h3 {
-    font-size: 1.2rem;
-  }
-  .about-outro {
-    font-size: 1rem;
-  }
-}
-
-/* Animazioni (mantieni quelle esistenti) */
-/* ... */
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
-
-/* NUOVI STILI PER IL LAYOUT INIZIALE DEI BOTTONI */
+/* NUOVI STILI PER IL LAYOUT INIZIALE DEI BOTTONI (AGGIORNATI) */
 #controls {
-  display: flex;
+  display: flex; /* Flexbox per centrare il singolo bottone */
   justify-content: center;
   align-items: center;
   margin: 1.5rem 0;
@@ -880,12 +755,17 @@ body.light-mode .about-outro {
   /* NOTA: Non più display: grid qui di default, sarà gestito da chat-active */
 }
 
-/* Nascondi di default i bottoni di disconnessione e segnalazione */
-#disconnectBtn, #reportBtn {
-    display: none;
+/* Nascondi di default i bottoni di disconnessione e segnalazione, e mostra startBtn */
+#startBtn {
+    display: block; /* Visibile di default */
+}
+#disconnectBtn,
+#reportBtn {
+    display: none; /* Nascosti di default */
 }
 
-/* Stile per il bottone principale "Inizia Chat" quando è l'unico */
+/* Stile per il bottone principale "Inizia Chat" quando è l'unico visibile */
+/* Questa classe dovrebbe essere applicata a #startBtn via JS quando la chat non è attiva */
 #startBtn.initial-state {
     padding: 1.5rem 3rem; /* Grande e accattivante */
     font-size: 1.8rem; /* Testo grande */
@@ -903,34 +783,35 @@ body.light-mode .about-outro {
 }
 
 /* Stili per i bottoni normali quando la chat è attiva */
+/* Questa classe dovrebbe essere applicata al contenitore #controls via JS quando la chat è attiva */
 #controls.chat-active {
-    display: grid; /* Torna a grid per i 3 bottoni (anche se startBtn è display: none) */
+    display: grid; /* Torna a grid per i 2 bottoni (startBtn sarà nascosto via JS) */
     grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
     gap: 0.8rem;
     justify-items: center;
 }
 
 #controls.chat-active #startBtn {
-    display: none !important; /* Forza la scomparsa di startBtn quando chat-active */
+    display: none; /* Nasconde startBtn quando chat-active è sul contenitore */
 }
 
 #controls.chat-active #disconnectBtn,
 #controls.chat-active #reportBtn {
-    display: block !important; /* Forza la comparsa dei bottoni quando chat-active */
+    display: block; /* Mostra i bottoni di disconnessione e segnalazione */
     padding: 0.6rem 1rem;
     font-size: 0.95rem;
     width: 100%;
     min-width: 120px;
     max-width: 180px;
-    /* Assicurati che questi stili siano coerenti con gli altri bottoni */
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura leggera */
 }
+
 
 /* NUOVO: Nascondi chat e inputArea di default */
 #chat,
 #inputArea {
     display: none;
 }
-
 
 /* Adattamenti per la light-mode */
 body.light-mode #startBtn.initial-state {
@@ -942,8 +823,6 @@ body.light-mode #startBtn.initial-state:hover {
     filter: brightness(1.1);
     box-shadow: 0 12px 35px rgba(67, 56, 202, 0.5);
 }
-
-/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
 
 /* MEDIA QUERIES per i bottoni - Aggiustamenti */
 @media (max-width: 480px) {
