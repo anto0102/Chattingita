@@ -142,17 +142,19 @@ h1 {
 
 #controls {
   display: flex;
-  justify-content: center;
-  gap: 0.6rem; /* Spazio ulteriormente ridotto tra i bottoni */
-  margin: 1.5rem 0;
   flex-wrap: wrap; /* Permette ai bottoni di andare a capo */
+  justify-content: center; /* Centra i bottoni */
+  gap: 0.8rem; /* Spazio uniforme tra i bottoni */
+  margin: 1.5rem 0;
 }
 
 #controls button { /* Applica questi stili specifici ai bottoni dentro #controls */
-  padding: 0.5rem 1rem; /* Padding più piccolo */
+  padding: 0.6rem 1rem; /* Padding più piccolo */
   font-size: 0.9rem; /* Dimensione del testo più piccola */
-  flex-basis: auto; /* Permette al bottone di restringersi/allargarsi */
+  width: calc(33.33% - 1rem); /* Prova a mettere 3 bottoni per riga, sottraendo il gap */
   min-width: 120px; /* Larghezza minima per evitare che diventino troppo piccoli */
+  max-width: 160px; /* Larghezza massima per evitare che diventino troppo larghi */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura più leggera */
 }
 
 
@@ -162,7 +164,6 @@ button { /* Stili base per tutti i bottoni, ma sovrascritti da #controls button 
   font-weight: 700; /* Testo più bold */
   cursor: pointer;
   transition: all 0.3s ease; /* Transizioni uniformi per tutti gli stati */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombreggiatura ai bottoni */
 }
 
 #startBtn {
@@ -185,6 +186,7 @@ button { /* Stili base per tutti i bottoni, ma sovrascritti da #controls button 
   color: white;
   padding: 0.7rem 1.5rem; /* Ripristino padding per il bottone Invia */
   font-size: 1rem; /* Ripristino font-size per il bottone Invia */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombreggiatura per il bottone Invia */
 }
 
 
@@ -198,7 +200,7 @@ button:disabled {
 button:hover:not(:disabled) {
   transform: translateY(-3px); /* Effetto "alza" al passaggio del mouse */
   filter: brightness(1.15); /* Rende il bottone leggermente più luminoso */
-  box-shadow: 0 6px 15px rgba(0,0,0,0.3);
+  box-shadow: 0 5px 12px rgba(0,0,0,0.25); /* Ombreggiatura leggermente più pronunciata all'hover */
 }
 
 #chat {
@@ -207,7 +209,7 @@ button:hover:not(:disabled) {
   color: #111;
   border-radius: 15px; /* Bordi più arrotondati */
   padding: 1.2rem;
-  height: 450px; /* **AUMENTATO ULTERIORMENTE L'ALTEZZA DELLA CHAT** */
+  height: 550px; /* **AUMENTATO ANCORA L'ALTEZZA DELLA CHAT** */
   overflow-y: auto;
   margin-bottom: 1.5rem;
   box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15); /* Ombra interna più definita */
@@ -318,151 +320,5 @@ body.light-mode .menu-toggle {
 
 body.light-mode h1 {
   color: #222;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-
-body.light-mode #container {
-  background-color: rgba(255, 255, 255, 0.85); /* Leggermente più opaco */
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode #status,
-body.light-mode #onlineCounter {
-  color: #555;
-}
-
-body.light-mode #chat {
-  background: #f9f9f9;
-  color: #222;
-  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e0e0e0;
-}
-
-body.light-mode #chat::-webkit-scrollbar-track {
-  background: #e9e9e9;
-}
-
-body.light-mode #chat::-webkit-scrollbar-thumb {
-  background: #aaa;
-}
-
-body.light-mode #chat::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
-
-body.light-mode .you {
-  background-color: #5a55ca; /* Mantieni il blu per distinzione */
-  color: white;
-}
-
-body.light-mode .other {
-  background-color: #ddd;
-  color: #222;
-}
-
-body.light-mode button#startBtn {
-  background-color: #5a55ca;
-  color: white;
-}
-
-body.light-mode button#disconnectBtn {
-  background-color: #bf4444;
-  color: white;
-}
-
-body.light-mode button#reportBtn {
-  background-color: #d97706; /* Scurezza leggermente per contrasto */
-  color: white;
-}
-
-body.light-mode button#sendBtn {
-  background-color: #059669;
-  color: white;
-}
-
-body.light-mode input[type="text"] {
-  background-color: #f0f0f0;
-  color: #333;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-}
-
-body.light-mode input[type="text"]:focus {
-  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3);
-}
-
-/* Media Queries per Responsività */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1.5rem 1rem;
-    margin-left: 0; /* Resetta il margine per schermi piccoli */
-  }
-
-  body.menu-open .main-content {
-    margin-left: 0; /* Il contenuto non si sposta, solo la sidebar si apre sopra */
-  }
-
-  .sidebar {
-    width: 100%; /* La sidebar prende tutta la larghezza */
-    padding-top: 5rem; /* Spazio per il menu-toggle */
-  }
-
-  .menu-toggle {
-    left: 20px; /* Posizione fissa a sinistra */
-  }
-
-  #controls button {
-    min-width: unset; /* Rimuovi min-width per mobile */
-    flex-basis: 100%; /* I bottoni prendono tutta la larghezza su schermi piccoli */
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 2.2rem;
-    margin-top: 4.5rem; /* Sposta il titolo un po' più in basso per il menu toggle */
-  }
-
-  #container {
-    padding: 1.5rem;
-    border-radius: 18px;
-  }
-
-  #controls {
-    flex-direction: column; /* I pulsanti si impilano */
-    gap: 0.8rem;
-  }
-
-  button {
-    width: 100%; /* I pulsanti prendono tutta la larghezza */
-    padding: 0.7rem 1rem;
-    font-size: 0.95rem;
-  }
-
-  #inputArea {
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-/* Animazioni */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
-}
+  text-shadow: 1px 1px 3px rgba(0
+                                
