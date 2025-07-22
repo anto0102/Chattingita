@@ -143,18 +143,24 @@ h1 {
 #controls {
   display: flex;
   justify-content: center;
-  gap: 0.8rem; /* Spazio ridotto tra i bottoni */
+  gap: 0.6rem; /* Spazio ulteriormente ridotto tra i bottoni */
   margin: 1.5rem 0;
-  flex-wrap: wrap; /* Permette ai bottoni di andare a capo se non c'è spazio */
+  flex-wrap: wrap; /* Permette ai bottoni di andare a capo */
 }
 
-button {
-  padding: 0.7rem 1.2rem; /* Padding leggermente ridotto per renderli più compatti */
+#controls button { /* Applica questi stili specifici ai bottoni dentro #controls */
+  padding: 0.5rem 1rem; /* Padding più piccolo */
+  font-size: 0.9rem; /* Dimensione del testo più piccola */
+  flex-basis: auto; /* Permette al bottone di restringersi/allargarsi */
+  min-width: 120px; /* Larghezza minima per evitare che diventino troppo piccoli */
+}
+
+
+button { /* Stili base per tutti i bottoni, ma sovrascritti da #controls button dove necessario */
   border: none;
   border-radius: 10px; /* Bordi arrotondati */
   font-weight: 700; /* Testo più bold */
   cursor: pointer;
-  font-size: 0.95rem; /* Dimensione leggermente più piccola per il testo */
   transition: all 0.3s ease; /* Transizioni uniformi per tutti gli stati */
   box-shadow: 0 4px 10px rgba(0,0,0,0.2); /* Ombreggiatura ai bottoni */
 }
@@ -177,7 +183,10 @@ button {
 #sendBtn {
   background-color: #10b981; /* Verde per invia */
   color: white;
+  padding: 0.7rem 1.5rem; /* Ripristino padding per il bottone Invia */
+  font-size: 1rem; /* Ripristino font-size per il bottone Invia */
 }
+
 
 button:disabled {
   opacity: 0.6;
@@ -198,7 +207,7 @@ button:hover:not(:disabled) {
   color: #111;
   border-radius: 15px; /* Bordi più arrotondati */
   padding: 1.2rem;
-  height: 400px; /* **AUMENTATO L'ALTEZZA DELLA CHAT** */
+  height: 450px; /* **AUMENTATO ULTERIORMENTE L'ALTEZZA DELLA CHAT** */
   overflow-y: auto;
   margin-bottom: 1.5rem;
   box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15); /* Ombra interna più definita */
@@ -401,6 +410,11 @@ body.light-mode input[type="text"]:focus {
 
   .menu-toggle {
     left: 20px; /* Posizione fissa a sinistra */
+  }
+
+  #controls button {
+    min-width: unset; /* Rimuovi min-width per mobile */
+    flex-basis: 100%; /* I bottoni prendono tutta la larghezza su schermi piccoli */
   }
 }
 
