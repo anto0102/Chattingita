@@ -3,10 +3,11 @@ const socket = io("https://chattingapp-backend.onrender.com");
 const status = document.getElementById('status');
 const chat = document.getElementById('chat');
 const input = document.getElementById('input');
-
+const inputArea = document.getElementById('inputArea');
 const startBtn = document.getElementById('startBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
+const onlineCount = document.getElementById('onlineCount');
 
 let connected = false;
 
@@ -16,6 +17,7 @@ function resetChat() {
   input.disabled = true;
   sendBtn.disabled = true;
   chat.style.display = 'none';
+  inputArea.style.display = 'none';
 }
 
 function addMessage(text, isYou = false) {
@@ -60,7 +62,7 @@ input.addEventListener('keypress', (e) => {
   if (e.key === 'Enter') sendMessage();
 });
 
-// SOCKET.IO Events
+// === SOCKET EVENTS ===
 
 socket.on('waiting', () => {
   status.textContent = '🔄 In attesa di un altro utente...';
@@ -70,6 +72,7 @@ socket.on('match', () => {
   status.textContent = '✅ Connesso! Puoi iniziare a chattare.';
   chat.style.display = 'flex';
   chat.style.flexDirection = 'column';
+  inputArea.style.display = 'flex';
   input.disabled = false;
   sendBtn.disabled = false;
   disconnectBtn.disabled = false;
@@ -94,4 +97,9 @@ socket.on('connect_error', (err) => {
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
+});
+
+// ✅ ONLINE USERS COUNT
+socket.on('online_count', (count) => {
+  onlineCount.textContent = count;
 });
