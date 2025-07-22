@@ -92,3 +92,11 @@ socket.on('connect_error', (err) => {
     startBtn.disabled = false;
     disconnectBtn.disabled = true;
 });
+startBtn.addEventListener('click', () => {
+    console.log("▶ Bottone cliccato");
+    if (!connected) {
+        socket.emit('start_chat');
+        status.textContent = '🔄 In attesa di un altro utente...';
+        startBtn.disabled = true;
+    }
+});
