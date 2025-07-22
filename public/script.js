@@ -8,11 +8,10 @@ const startBtn = document.getElementById('startBtn');
 const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
+const reportBtn = document.getElementById('reportBtn');
 
 let connected = false;
 let typingIndicator = null;
-
-// Variabili per la cronologia chat e IP partner
 let chatLog = [];
 let partnerIp = null;
 
@@ -71,6 +70,10 @@ function removeTypingIndicator() {
   }
 }
 
+function updateReportBtn() {
+  reportBtn.disabled = !connected;
+}
+
 startBtn.addEventListener('click', () => {
   if (!connected) {
     socket.emit('start_chat');
@@ -85,8 +88,9 @@ disconnectBtn.addEventListener('click', () => {
     status.textContent = '⛔ Disconnesso.';
     resetChat();
     connected = false;
-    startBtn.disabled = false;  // Riabilita il bottone
+    startBtn.disabled = false;
     disconnectBtn.disabled = true;
+    updateReportBtn();
   }
 });
 
@@ -105,6 +109,20 @@ input.addEventListener('input', () => {
   }
 });
 
+reportBtn.addEventListener('click', () => {
+  if (!partnerIp) {
+    alert("Nessun partner da segnalare.");
+    return;
+  }
+  socket.emit("report_user", {
+    partnerIp,
+    chatLog,
+  });
+  alert("Segnalazione inviata.");
+});
+
+// SOCKET EVENTS
+
 socket.on('waiting', () => {
   status.textContent = '🔄 In attesa di un altro utente...';
 });
@@ -118,6 +136,7 @@ socket.on('match', (data) => {
   sendBtn.disabled = false;
   disconnectBtn.disabled = false;
   connected = true;
+  updateReportBtn();
 
   if (data && data.partnerIp) {
     partnerIp = data.partnerIp;
@@ -141,37 +160,24 @@ socket.on('partner_disconnected', () => {
   status.textContent = '❌ Il tuo partner si è disconnesso.';
   resetChat();
   connected = false;
-  startBtn.disabled = false;  // Riabilita il bottone
+  startBtn.disabled = false;
   disconnectBtn.disabled = true;
   partnerIp = null;
   chatLog = [];
+  updateReportBtn();
 });
 
 socket.on('connect_error', (err) => {
   status.textContent = '❌ Errore di connessione: ' + err.message;
   resetChat();
   connected = false;
-  startBtn.disabled = false;  // Riabilita il bottone
+  startBtn.disabled = false;
   disconnectBtn.disabled = true;
   partnerIp = null;
   chatLog = [];
+  updateReportBtn();
 });
 
 socket.on('online_count', (count) => {
   onlineCount.textContent = count;
 });
-
-// Funzione per segnalare utente
-function reportUser() {
-  if (!partnerIp) {
-    alert("Nessun partner da segnalare.");
-    return;
-  }
-
-  socket.emit("report_user", {
-    partnerIp,
-    chatLog,
-  });
-
-  alert("Segnalazione inviata.");
-}
