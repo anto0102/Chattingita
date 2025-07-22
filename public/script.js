@@ -17,8 +17,8 @@ createApp({
 
         // Funzione per inizializzare Supabase (chiamata una sola volta)
         const initSupabase = () => {
-            const supabaseUrl = 'IL_TUO_URL_SUPABASE'; // DEVI INSERIRE IL TUO VERO URL
-            const supabaseAnonKey = 'LA_TUA_CHIAVE_ANONIMA_SUPABASE'; // DEVI INSERIRE LA TUA VERA CHIAVE ANONIMA (PUBLIC KEY)
+            const supabaseUrl = 'https://gekoqfinkwoysferyjwm.supabase.co'; // DEVI INSERIRE IL TUO VERO URL
+            const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla29xZmlua3dveXNmZXJ5andtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNDk2NjQsImV4cCI6MjA2ODcyNTY2NH0.0gOgyjULefdGKXOANJQOPr1l17IDMYM_Iv2_BRYIeBA'; // DEVI INSERIRE LA TUA VERA CHIAVE ANONIMA (PUBLIC KEY)
             supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
             console.log("Supabase client inizializzato.");
         };
