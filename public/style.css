@@ -117,8 +117,16 @@ h1 {
   text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Ombra al testo */
 }
 
-/* Ho rimosso il selettore #container dal CSS perché non è presente nel tuo HTML fornito.
-   Se la tua HTML avesse un div #container, ripristinalo. */
+#container {
+  background-color: rgba(255, 255, 255, 0.15); /* Leggermente più opaco */
+  backdrop-filter: blur(15px); /* Blur aumentato */
+  border-radius: 25px; /* Bordi più arrotondati */
+  padding: 2.5rem; /* Padding generoso */
+  margin-top: 2rem;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); /* Ombra più pronunciata e moderna */
+  animation: fadeInUp 0.6s ease;
+  border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo sottile per effetto vetro */
+}
 
 #status, #onlineCounter {
   text-align: center;
@@ -132,44 +140,52 @@ h1 {
   font-weight: 600;
 }
 
-/* Stili comuni per tutti i bottoni */
+/* *** MODIFICHE CRUCIALI PER I BOTTONI *** */
+#controls {
+  display: grid; /* Usa CSS Grid per un controllo più preciso */
+  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 2 o 3 bottoni per riga, adattivi */
+  gap: 0.8rem; /* Spazio uniforme tra i bottoni */
+  margin: 1.5rem 0;
+  justify-items: center; /* Centra i bottoni all'interno delle loro celle di griglia */
+}
+
+#controls button {
+  padding: 0.6rem 1rem; /* Padding appropriato per un bottone compatto */
+  font-size: 0.95rem; /* Testo più leggibile sui bottoni */
+  width: 100%; /* I bottoni riempiono la loro cella di griglia */
+  min-width: 120px; /* Larghezza minima per evitare il troncamento del testo */
+  max-width: 180px; /* Larghezza massima per evitare che diventino troppo larghi */
+  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura leggera */
+}
+
+/* Stili comuni per tutti i bottoni (sovrascritti sopra dove necessario) */
 button {
   border: none;
   border-radius: 10px;
   font-weight: 700;
   cursor: pointer;
   transition: all 0.3s ease;
-  padding: 0.7rem 1.5rem; /* AGGIUNTO: Padding uniforme per tutti i bottoni */
-}
-
-/* Stili specifici per i bottoni di controllo */
-#controls {
-  display: flex; /* Rende i bottoni affiancati */
-  justify-content: center; /* Centra i bottoni orizzontalmente */
-  gap: 15px; /* Spazio tra i bottoni */
-  margin-top: 20px; /* Spazio sopra i bottoni */
-  flex-wrap: wrap; /* Permette ai bottoni di andare a capo su schermi piccoli */
 }
 
 #startBtn {
-  background-color: #4f46e5; /* Indaco */
+  background-color: #4f46e5;
   color: white;
 }
 
 #disconnectBtn {
-  background-color: #dc2626; /* Rosso */
+  background-color: #dc2626;
   color: white;
 }
 
 #reportBtn {
-  background-color: #f59e0b; /* Ambra */
+  background-color: #f59e0b;
   color: white;
 }
 
 #sendBtn {
-  background-color: #10b981; /* Verde smeraldo */
+  background-color: #10b981;
   color: white;
-  padding: 0.7rem 1.5rem; /* Già presente, ma ora coerente con il globale */
+  padding: 0.7rem 1.5rem; /* Dimensioni leggermente più grandi per il bottone Invia */
   font-size: 1rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
 }
@@ -188,66 +204,16 @@ button:hover:not(:disabled) {
 }
 
 #chat {
-  display: none; /* Gestito via JS, inizialmente nascosto */
+  display: none; /* Gestito via JS */
   background: #fff;
   color: #111;
   border-radius: 15px;
   padding: 1.2rem;
-  height: 550px; /* ALTEZZA MASSIMA PER LA CHAT */
+  height: 550px; /* **ALTEZZA MASSIMA PER LA CHAT** */
   overflow-y: auto;
   margin-bottom: 1.5rem;
   box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15);
   border: 1px solid #eee;
-}
-
-/* Stili per i messaggi della chat */
-.message {
-  padding: 0.6rem 0.9rem;
-  margin-bottom: 0.8rem;
-  border-radius: 12px;
-  line-height: 1.4;
-  word-wrap: break-word; /* Assicura che i messaggi lunghi vadano a capo */
-  max-width: 90%; /* Limita la larghezza dei messaggi */
-}
-
-.message.you {
-  background-color: #4f46e5; /* Indaco per i tuoi messaggi */
-  color: white;
-  align-self: flex-end; /* Allinea a destra i tuoi messaggi */
-  border-bottom-right-radius: 4px; /* Angolo più acuto in basso a destra */
-}
-
-.message.other {
-  background-color: #e2e8f0; /* Grigio chiaro per i messaggi del partner */
-  color: #111;
-  align-self: flex-start; /* Allinea a sinistra i messaggi del partner */
-  border-bottom-left-radius: 4px; /* Angolo più acuto in basso a sinistra */
-}
-
-#typingIndicator {
-  align-self: flex-start; /* Allinea a sinistra l'indicatore */
-  margin-top: 5px;
-  margin-bottom: 10px;
-}
-
-#inputArea {
-  display: none; /* Gestito via JS, inizialmente nascosto */
-  gap: 10px; /* Spazio tra input e bottone */
-  margin-top: 1.5rem; /* Spazio sopra l'area di input */
-}
-
-#input {
-  flex-grow: 1; /* Permette all'input di occupare lo spazio disponibile */
-  padding: 0.8rem 1.2rem;
-  border: 1px solid #ccc;
-  border-radius: 10px;
-  font-size: 1rem;
-  outline: none; /* Rimuove il bordo blu al focus */
-  transition: border-color 0.3s;
-}
-
-#input:focus {
-  border-color: #4f46e5; /* Bordo indaco al focus */
 }
 
 /* Scrollbar personalizzata per #chat */
@@ -269,281 +235,99 @@ button:hover:not(:disabled) {
   background: #555;
 }
 
-/* Animazioni */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+.message {
+  margin: 0.7rem 0;
+  padding: 0.8rem 1.2rem;
+  border-radius: 22px;
+  max-width: 85%;
+  word-wrap: break-word;
+  animation: slideIn 0.3s ease forwards;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
 }
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(20px); }
-  to { opacity: 1; transform: translateY(0); }
+.you {
+  background-color: #4f46e5;
+  color: white;
+  margin-left: auto;
+  text-align: right;
 }
 
-@keyframes fade-in-down {
-  from {
-    opacity: 0;
-    transform: translateY(-20px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
+.other {
+  background-color: #e5e7eb;
+  color: #111;
+  margin-right: auto;
+  text-align: left;
 }
 
-/* === Sezioni Contenuto (Chi Siamo, FAQ, Contatti) === */
-.content-section {
-  background-color: rgba(255, 255, 255, 0.15); /* Leggermente più opaco */
-  backdrop-filter: blur(15px); /* Blur aumentato */
-  border-radius: 25px; /* Bordi più arrotondati */
-  padding: 2.5rem; /* Padding generoso */
-  margin-top: 2rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); /* Ombra più pronunciata e moderna */
-  animation: fadeInUp 0.6s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo sottile per effetto vetro */
-}
-
-.content-section.hidden {
-  display: none;
-}
-
-.content-section h2 {
-  font-size: 2.2rem;
-  margin-bottom: 1.5rem;
-  text-align: center;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-
-.content-section p {
-  font-size: 1.05rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  color: #e0e0e0;
-}
-
-.intro-text {
-  font-style: italic;
-  text-align: center;
-  margin-bottom: 2rem;
-}
-
-/* About Us Grid */
-.about-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-  gap: 2rem;
-  margin-top: 2rem;
-}
-
-.about-card {
-  background-color: rgba(255, 255, 255, 0.1);
-  border-radius: 15px;
-  padding: 1.8rem;
-  text-align: center;
-  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.2);
-  transition: transform 0.3s ease, background-color 0.3s ease;
+#inputArea {
   display: flex;
-  flex-direction: column;
+  justify-content: center;
+  gap: 0.8rem;
+  flex-wrap: wrap;
   align-items: center;
 }
 
-.about-card:hover {
-  transform: translateY(-8px);
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.about-card .icon {
-  font-size: 3rem;
-  color: #a78bfa; /* Viola chiaro */
-  margin-bottom: 1rem;
-}
-
-.about-card h3 {
-  font-size: 1.4rem;
-  margin-bottom: 0.8rem;
-  color: #fff;
-}
-
-.about-outro {
-  text-align: center;
-  margin-top: 2.5rem;
-  border-top: 1px dashed rgba(255, 255, 255, 0.3);
-  padding-top: 1.5rem;
-}
-
-.about-outro p:last-child {
-  font-weight: 700;
-  color: #a78bfa;
-}
-
-/* FAQ Accordion */
-.accordion {
-  margin-top: 2rem;
-}
-
-.faq-item {
-  background-color: rgba(255, 255, 255, 0.1);
+input[type="text"] {
+  padding: 0.8rem;
+  border: none;
   border-radius: 10px;
-  margin-bottom: 1rem;
-  overflow: hidden; /* Nasconde il contenuto in eccesso */
-  transition: background-color 0.3s ease;
+  width: 75%;
+  max-width: 450px;
+  font-size: 1rem;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+  transition: all 0.3s ease;
 }
 
-.faq-item:hover {
-  background-color: rgba(255, 255, 255, 0.15);
+input[type="text"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
 }
 
-.faq-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 1rem 1.5rem;
-  cursor: pointer;
-  background-color: rgba(255, 255, 255, 0.05); /* Sfondo leggermente più scuro per l'header */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
 
-.faq-header h3 {
-  margin: 0;
-  font-size: 1.15rem;
-  color: #fff;
-  flex-grow: 1; /* Permette al titolo di occupare lo spazio */
-}
-
-.accordion-icon {
-  font-size: 1.8rem;
-  font-weight: bold;
-  color: #a78bfa;
-  transition: transform 0.3s ease;
-}
-
-.faq-item.active .accordion-icon {
-  transform: rotate(45deg); /* Trasforma il '+' in 'x' o '-' */
-}
-
-.faq-body {
-  max-height: 0; /* Inizialmente nascosto */
-  overflow: hidden;
-  transition: max-height 0.3s ease-out, padding 0.3s ease-out; /* Transizione per l'apertura/chiusura */
-  padding: 0 1.5rem; /* Padding iniziale 0, si espanderà */
-}
-
-.faq-item.active .faq-body {
-  padding: 1rem 1.5rem 1.5rem; /* Padding quando aperto */
-  /* max-height viene gestito dal JS in base al contenuto */
-}
-
-.faq-body p {
-  margin-bottom: 0; /* Rimuove il margin-bottom extra dai paragrafi interni */
-}
-
-/* Contatti */
-.content-section a {
-  color: #a78bfa;
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.3s ease;
-}
-
-.content-section a:hover {
-  color: #c4b5fd;
-  text-decoration: underline;
-}
-
-/* Media Queries per Responsività */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1.5rem 1rem;
-    margin: 0 auto; /* Centra il contenuto quando la sidebar è chiusa */
-    max-width: 90%;
-  }
-
-  body.menu-open .main-content {
-    margin-left: 0; /* La sidebar si sovrappone, il contenuto non si sposta */
-  }
-
-  h1 {
-    font-size: 2.2rem;
-    margin-top: 5rem; /* Sposta il titolo sotto il toggle */
-  }
-
-  .sidebar {
-    width: 200px; /* Sidebar più stretta su mobile */
-    padding: 1.5rem 0.8rem;
-  }
-
-  .menu-toggle {
-    top: 15px;
-    left: 15px;
-    width: 45px;
-    height: 45px;
-    font-size: 22px;
-  }
-
-  #controls {
-    flex-direction: column; /* Bottoni impilati su schermi piccoli */
-    align-items: center; /* Centra i bottoni impilati */
-    gap: 10px; /* Spazio ridotto tra i bottoni impilati */
-  }
-
-  #controls button {
-    width: 90%; /* Occupa quasi tutta la larghezza */
-    margin-right: 0; /* Rimuovi il margine orizzontale */
-  }
-
-  #inputArea {
-    flex-direction: column;
-    gap: 10px;
-  }
-
-  #sendBtn {
-    width: 100%; /* Invia bottone a tutta larghezza */
-  }
-}
-
-/* --- LIGHT MODE STYLES --- */
+/* --- LIGHT MODE --- */
 body.light-mode {
-  background: linear-gradient(135deg, #a7b7fe 0%, #b2a4d4 100%);
+  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
   color: #333;
 }
 
 body.light-mode .sidebar {
-  background-color: #f0f0f0;
+  background-color: #f0f4f8;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
 body.light-mode .sidebar a {
-  color: #444;
+  color: #333;
 }
 
 body.light-mode .sidebar a:hover {
-  background-color: #e0e0e0;
+  background-color: #bbdefb;
+  color: #1a202c;
 }
 
 body.light-mode .theme-toggle {
-  background-color: #ddd;
+  background-color: #e0e0e0;
   color: #333;
 }
-
 body.light-mode .theme-toggle:hover {
-  background-color: #ccc;
+  background-color: #d0d0d0;
 }
 
 body.light-mode .menu-toggle {
-  background-color: #667eea;
+  background-color: #4338ca;
   color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
 }
 
-body.light-mode .menu-toggle:hover {
-  background-color: #5a6ed1;
+body.light-mode h1 {
+  color: #222;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
-body.light-mode h1,
-body.light-mode .content-section h2 {
+body.light-mode #container {
+  background-color: rgba(255, 255, 255, 0.85);
   color: #333;
-  text-shadow: none;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 body.light-mode #status,
@@ -552,96 +336,513 @@ body.light-mode #onlineCounter {
 }
 
 body.light-mode #chat {
-  background: #fdfdfd;
-  border: 1px solid #ddd;
-  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.05);
+  background: #f9f9f9;
+  color: #222;
+  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.08);
+  border: 1px solid #e0e0e0;
 }
 
-body.light-mode .message.other {
-  background-color: #e6f7ff; /* Azzurro chiaro */
-  color: #111;
-}
-
-body.light-mode #typingIndicator {
-  color: #777;
-}
-
-body.light-mode #input {
-  border-color: #ccc;
-  background-color: #fff;
-  color: #333;
-}
-
-body.light-mode #input:focus {
-  border-color: #667eea;
-}
-
-body.light-mode .content-section {
-  background-color: rgba(255, 255, 255, 0.8);
-  backdrop-filter: blur(10px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.1);
-  border: 1px solid rgba(255, 255, 255, 0.5);
-}
-
-body.light-mode .content-section p,
-body.light-mode .content-section a {
-  color: #555;
-}
-
-body.light-mode .about-card {
-  background-color: rgba(255, 255, 255, 0.7);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .about-card:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-body.light-mode .about-card .icon {
-  color: #667eea;
-}
-
-body.light-mode .about-card h3 {
-  color: #333;
-}
-
-body.light-mode .about-outro p:last-child {
-  color: #667eea;
-}
-
-body.light-mode .faq-item {
-  background-color: rgba(255, 255, 255, 0.7);
-}
-
-body.light-mode .faq-item:hover {
-  background-color: rgba(255, 255, 255, 0.9);
-}
-
-body.light-mode .faq-header {
-  background-color: rgba(255, 255, 255, 0.6);
-  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .faq-header h3 {
-  color: #333;
-}
-
-body.light-mode .accordion-icon {
-  color: #667eea;
-}
-
-body.light-mode .content-section a {
-  color: #667eea;
-}
-
-body.light-mode .content-section a:hover {
-  color: #5a6ed1;
+body.light-mode #chat::-webkit-scrollbar-track {
+  background: #e9e9e9;
 }
 
 body.light-mode #chat::-webkit-scrollbar-thumb {
-  background: #bbb;
+  background: #aaa;
 }
 
 body.light-mode #chat::-webkit-scrollbar-thumb:hover {
-  background: #999;
+  background: #777;
 }
+
+body.light-mode .you {
+  background-color: #5a55ca;
+  color: white;
+}
+
+body.light-mode .other {
+  background-color: #ddd;
+  color: #222;
+}
+
+body.light-mode button#startBtn {
+  background-color: #5a55ca;
+  color: white;
+}
+
+body.light-mode button#disconnectBtn {
+  background-color: #bf4444;
+  color: white;
+}
+
+body.light-mode button#reportBtn {
+  background-color: #d97706;
+  color: white;
+}
+
+body.light-mode button#sendBtn {
+  background-color: #059669;
+  color: white;
+}
+
+body.light-mode input[type="text"] {
+  background-color: #f0f0f0;
+  color: #333;
+  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
+}
+
+body.light-mode input[type="text"]:focus {
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3);
+}
+
+/* Media Queries per Responsività */
+@media (max-width: 768px) {
+  .main-content {
+    padding: 1.5rem 1rem;
+    margin-left: 0;
+  }
+
+  body.menu-open .main-content {
+    margin-left: 0;
+  }
+
+  .sidebar {
+    width: 100%;
+    padding-top: 5rem;
+  }
+
+  .menu-toggle {
+    left: 20px;
+  }
+
+  #controls {
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Continua con 2/3 bottoni per riga */
+    /* Assicurati che il minmax sia sufficiente per il testo */
+  }
+
+  #controls button {
+    width: 100%; /* I bottoni riempiono la loro cella */
+    max-width: 180px; /* Mantieni un limite per la larghezza */
+  }
+}
+
+@media (max-width: 550px) { /* Nuova media query per schermi più piccoli */
+  #controls {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Assicurati che ce ne siano almeno 2 per riga */
+    gap: 0.6rem;
+  }
+}
+
+@media (max-width: 480px) {
+  h1 {
+    font-size: 2.2rem;
+    margin-top: 4.5rem;
+  }
+
+  #container {
+    padding: 1.5rem;
+    border-radius: 18px;
+  }
+
+  #controls {
+    grid-template-columns: 1fr; /* Su schermi molto piccoli, i bottoni vanno in singola colonna */
+    gap: 0.8rem;
+  }
+
+  #controls button {
+    width: 100%; /* Occupano tutta la larghezza disponibile */
+    max-width: none; /* Rimuovi la larghezza massima per riempire lo spazio */
+    padding: 0.7rem 1rem;
+    font-size: 0.95rem;
+  }
+
+  #inputArea {
+    flex-direction: column;
+    gap: 0.6rem;
+  }
+
+  input[type="text"] {
+    width: 100%;
+    max-width: none;
+  }
+}
+
+/* Animazioni */
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(15px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fadeInUp {
+  from { opacity: 0; transform: translateY(25px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER LE SEZIONI DI CONTENUTO */
+.content-section {
+    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease;
+}
+
+.content-section.hidden {
+  display: none; /* Nasconde l'elemento */
+}
+
+/* Stili specifici per FAQ e Contatti (se vuoi un look diverso) */
+.content-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  color: #fff; /* Colore bianco per il titolo H2 delle sezioni */
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.content-section .intro-text {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #e0e0e0;
+    font-size: 1.1rem;
+}
+
+.content-section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
+.accordion {
+    margin-top: 1.5rem;
+}
+
+.faq-item {
+  background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente */
+  border-radius: 15px;
+  margin-bottom: 0.8rem;
+  overflow: hidden;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+  border: 1px solid rgba(255, 255, 255, 0.1); /* Bordo sottile per definizione */
+}
+
+.faq-header {
+  padding: 1rem 1.2rem;
+  cursor: pointer;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-weight: 600;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.faq-item.active .faq-header {
+    border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro quando attivo */
+}
+
+
+.faq-header:hover {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.faq-header h3 {
+  color: #c0c0c0; /* Grigio chiaro per il titolo della domanda (Dark Mode) */
+  margin: 0;
+  font-size: 1.2rem;
+  flex-grow: 1;
+}
+
+.accordion-icon {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #c0c0c0; /* Stesso colore del titolo (Dark Mode) */
+    transition: transform 0.3s ease, color 0.3s ease;
+    margin-left: 1rem;
+}
+
+.faq-item.active .accordion-icon {
+    transform: rotate(45deg);
+    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Dark Mode) */
+}
+
+.faq-body {
+  max-height: 0;
+  padding: 0 1.2rem;
+  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+  background-color: rgba(255, 255, 255, 0.05); /* Sfondo leggermente più scuro per il corpo */
+}
+
+.faq-item.active .faq-body {
+  max-height: 500px;
+  padding-top: 0.8rem;
+  padding-bottom: 1rem;
+}
+
+.faq-body p {
+  color: #e0e0e0; /* Colore testo leggermente più chiaro per le risposte */
+  font-size: 1rem;
+  margin: 0;
+}
+
+
+.content-section a {
+  color: #a78bfa; /* Un viola chiaro/blu per i link, coeso con il tema generale */
+  text-decoration: none;
+  font-weight: 600;
+  transition: color 0.2s ease;
+}
+
+.content-section a:hover {
+  color: #c4b5fd;
+  text-decoration: underline;
+}
+
+
+/* --- LIGHT MODE ADJUSTMENTS FOR NEW SECTIONS --- */
+body.light-mode .content-section {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content-section h2 {
+  color: #222;
+}
+
+body.light-mode .content-section .intro-text {
+    color: #555;
+}
+
+body.light-mode .content-section p {
+  color: #555;
+}
+
+body.light-mode .faq-item {
+  background-color: rgba(0, 0, 0, 0.05); /* Sfondo chiaro per FAQ in light mode */
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .faq-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .faq-item.active .faq-header {
+    border-bottom: none;
+    background-color: rgba(0, 0, 0, 0.08); /* Sfondo più scuro per header attivo in light mode */
+}
+
+body.light-mode .faq-header:hover {
+  background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .faq-header h3 {
+  color: #444; /* Grigio scuro per il titolo della domanda (Light Mode) */
+}
+
+body.light-mode .accordion-icon {
+    color: #444; /* Stesso colore del titolo (Light Mode) */
+}
+
+body.light-mode .faq-item.active .accordion-icon {
+    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Light Mode) */
+}
+
+body.light-mode .faq-body {
+  background-color: rgba(0, 0, 0, 0.03);
+}
+
+body.light-mode .faq-body p {
+  color: #444;
+}
+
+body.light-mode .content-section a {
+  color: #4f46e5; /* Blu primario per i link in light mode */
+}
+
+body.light-mode .content-section a:hover {
+  color: #4338ca;
+}
+
+
+/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER LE SEZIONI DI CONTENUTO (generali) */
+.content-section {
+    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
+    backdrop-filter: blur(15px);
+    border-radius: 25px;
+    padding: 2.5rem;
+    margin-top: 2rem;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    animation: fadeInUp 0.6s ease;
+}
+
+.content-section.hidden {
+  display: none; /* Nasconde l'elemento */
+}
+
+.content-section h2 {
+  text-align: center;
+  margin-bottom: 1.5rem;
+  font-size: 2.2rem;
+  color: #fff;
+  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
+}
+
+.content-section .intro-text {
+    text-align: center;
+    margin-bottom: 2rem;
+    color: #e0e0e0;
+    font-size: 1.1rem;
+    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.content-section p {
+  margin-bottom: 1rem;
+  line-height: 1.6;
+  font-size: 1.1rem;
+  color: #e0e0e0;
+}
+
+/* *** STILI PER LA SEZIONE "CHI SIAMO" *** */
+#about-us-content .about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colonne su desktop, 1 su mobile */
+    gap: 1.5rem; /* Spazio tra le card */
+    margin-top: 2rem;
+}
+
+.about-card {
+    background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente per le card */
+    border-radius: 18px;
+    padding: 1.8rem;
+    text-align: center;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Ombra più pronunciata */
+    transition: transform 0.3s ease, background-color 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.about-card:hover {
+    transform: translateY(-8px); /* Effetto sollevamento all'hover */
+    background-color: rgba(255, 255, 255, 0.12); /* Sfondo leggermente più scuro all'hover */
+}
+
+.about-card .icon {
+    font-size: 3.5rem; /* Icone grandi */
+    color: #4f46e5; /* Blu primario della tua app */
+    margin-bottom: 1rem;
+    text-shadow: 0 0 10px rgba(79, 70, 229, 0.4); /* Bagliore leggero */
+}
+
+.about-card h3 {
+    font-size: 1.4rem;
+    color: #f0f0f0; /* Grigio chiaro per i titoli delle card */
+    margin-bottom: 0.8rem;
+}
+
+.about-card p {
+    font-size: 0.95rem;
+    color: #c0c0c0; /* Grigio più scuro per il testo delle card */
+    line-height: 1.5;
+    margin-bottom: 0; /* Rimuove il margin-bottom extra */
+}
+
+.about-outro {
+    text-align: center;
+    margin-top: 3rem;
+    font-size: 1.2rem;
+    color: #a78bfa; /* Un viola/blu per il testo di chiusura */
+    font-weight: 600;
+}
+
+.about-outro p {
+    margin-bottom: 0.5rem;
+    font-size: 1.1rem; /* leggermente più grande */
+}
+
+/* *** FINE STILI "CHI SIAMO" *** */
+
+/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
+/* (Copia qui gli stili delle FAQ che ti ho dato nell'ultimo messaggio,
+   inclusi .accordion, .faq-item, .faq-header, .faq-header h3,
+   .accordion-icon, .faq-body, .faq-body p, e .content-section a
+   che hai già applicato. Non li ripeto qui per brevità, ma assicurati che siano presenti.) */
+
+
+/* --- LIGHT MODE ADJUSTMENTS --- */
+body.light-mode .content-section {
+  background-color: rgba(255, 255, 255, 0.85);
+  color: #333;
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+body.light-mode .content-section h2 {
+  color: #222;
+}
+
+body.light-mode .content-section .intro-text {
+    color: #555;
+}
+
+body.light-mode .content-section p {
+  color: #555;
+}
+
+/* --- LIGHT MODE per "CHI SIAMO" --- */
+body.light-mode .about-card {
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card .icon {
+    color: #4f46e5; /* Stesso blu primario */
+    text-shadow: none; /* Nessun bagliore in light mode */
+}
+
+body.light-mode .about-card h3 {
+    color: #333;
+}
+
+body.light-mode .about-card p {
+    color: #666;
+}
+
+body.light-mode .about-outro {
+    color: #4f46e5; /* Blu primario per il testo di chiusura */
+}
+
+/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
+/* (Copia qui gli stili LIGHT MODE per FAQ che ti ho dato nell'ultimo messaggio,
+   inclusi .faq-item, .faq-header, .faq-header h3,
+   .accordion-icon, .faq-body, .faq-body p, e .content-section a.
+   Non li ripeto qui per brevità.) */
+
+
+/* Media Queries per Responsività */
+@media (max-width: 768px) {
+  /* ... (Mantieni le tue media queries esistenti) ... */
+  #about-us-content .about-grid
