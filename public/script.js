@@ -10,6 +10,8 @@ const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
 
 let connected = false;
+let typingTimeout = null;
+let partnerTyping = false;
 
 function resetChat() {
   chat.innerHTML = '';
@@ -18,6 +20,7 @@ function resetChat() {
   sendBtn.disabled = true;
   chat.style.display = 'none';
   inputArea.style.display = 'none';
+  clearTypingStatus();
 }
 
 function addMessage(text, isYou = false) {
@@ -34,8 +37,28 @@ function sendMessage() {
     addMessage(msg, true);
     socket.emit('message', msg);
     input.value = '';
+    socket.emit('stop_typing');
   }
 }
+
+function clearTypingStatus() {
+  if (partnerTyping) {
+    status.textContent = status.textContent.replace('💬 Il tuo partner sta scrivendo...', '').trim();
+    partnerTyping = false;
+  }
+}
+
+// Eventi per gestire il "sta scrivendo"
+input.addEventListener('input', () => {
+  if (!connected) return;
+
+  socket.emit('typing');
+
+  if (typingTimeout) clearTimeout(typingTimeout);
+  typingTimeout = setTimeout(() => {
+    socket.emit('stop_typing');
+  }, 1000);
+});
 
 startBtn.addEventListener('click', () => {
   if (!connected) {
@@ -99,7 +122,19 @@ socket.on('connect_error', (err) => {
   disconnectBtn.disabled = true;
 });
 
-// ✅ ONLINE USERS COUNT
+// Online users count
 socket.on('online_count', (count) => {
   onlineCount.textContent = count;
+});
+
+// Nuovi eventi typing
+socket.on('typing', () => {
+  if (!partnerTyping) {
+    status.textContent += ' 💬 Il tuo partner sta scrivendo...';
+    partnerTyping = true;
+  }
+});
+
+socket.on('stop_typing', () => {
+  clearTypingStatus();
 });
