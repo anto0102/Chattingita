@@ -868,3 +868,96 @@ body.light-mode .about-outro {
 
 /* Animazioni (mantieni quelle esistenti) */
 /* ... */
+/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+
+/* NUOVI STILI PER IL LAYOUT INIZIALE DEI BOTTONI */
+#controls {
+  display: flex; /* Cambiato da grid a flex per un controllo più semplice dell'unico bottone */
+  justify-content: center; /* Centra il bottone */
+  align-items: center;
+  margin: 1.5rem 0;
+  min-height: 100px; /* Assicura uno spazio minimo per il bottone */
+}
+
+/* Nascondi di default i bottoni di disconnessione e segnalazione */
+#disconnectBtn, #reportBtn {
+    display: none;
+}
+
+/* Stile per il bottone principale "Inizia Chat" quando è l'unico */
+#startBtn.initial-state {
+    padding: 1.5rem 3rem; /* Grande e accattivante */
+    font-size: 1.8rem; /* Testo grande */
+    border-radius: 15px; /* Bordi più arrotondati */
+    box-shadow: 0 8px 25px rgba(79, 70, 229, 0.4); /* Ombra più pronunciata e colorata */
+    background-color: #4f46e5;
+    color: white;
+    transition: all 0.3s ease;
+}
+
+#startBtn.initial-state:hover {
+    transform: translateY(-5px) scale(1.02); /* Effetto hover più evidente */
+    filter: brightness(1.2);
+    box-shadow: 0 12px 35px rgba(79, 70, 229, 0.6);
+}
+
+/* Stili per i bottoni normali quando la chat è attiva */
+#controls.chat-active {
+    display: grid; /* Torna a grid per i 3 bottoni */
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 0.8rem;
+    justify-items: center;
+}
+
+#controls.chat-active #startBtn {
+    display: none; /* Nascondi il bottone start quando la chat è attiva */
+}
+
+#controls.chat-active #disconnectBtn,
+#controls.chat-active #reportBtn {
+    display: block; /* Mostra i bottoni quando la chat è attiva */
+    padding: 0.6rem 1rem;
+    font-size: 0.95rem;
+    width: 100%;
+    min-width: 120px;
+    max-width: 180px;
+    box-shadow: 0 3px 8px rgba(0,0,0,0.15);
+    /* Assicurati che questi stili siano coerenti con gli altri bottoni */
+}
+
+
+/* Adattamenti per la light-mode */
+body.light-mode #startBtn.initial-state {
+    background-color: #4338ca;
+    box-shadow: 0 8px 25px rgba(67, 56, 202, 0.3);
+}
+
+body.light-mode #startBtn.initial-state:hover {
+    filter: brightness(1.1);
+    box-shadow: 0 12px 35px rgba(67, 56, 202, 0.5);
+}
+
+/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
+
+/* MEDIA QUERIES per i bottoni - Aggiustamenti */
+@media (max-width: 480px) {
+  /* Assicurati che il bottone iniziale rimanga grande e centrato */
+  #startBtn.initial-state {
+    padding: 1.2rem 2.5rem;
+    font-size: 1.5rem;
+    width: 90%; /* Occupa quasi tutta la larghezza */
+    max-width: none;
+  }
+
+  /* Quando la chat è attiva, i bottoni tornano a impilarsi */
+  #controls.chat-active {
+    grid-template-columns: 1fr;
+    gap: 0.8rem;
+  }
+
+  #controls.chat-active #disconnectBtn,
+  #controls.chat-active #reportBtn {
+    width: 100%;
+    max-width: none;
+  }
+}
