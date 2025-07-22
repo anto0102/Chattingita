@@ -14,6 +14,7 @@ let connected = false;
 let typingIndicator = null;
 let chatLog = [];
 let partnerIp = null;
+let reportSent = false;
 
 function resetChat() {
   chat.innerHTML = '';
@@ -26,6 +27,7 @@ function resetChat() {
 
   chatLog = [];
   partnerIp = null;
+  reportSent = false;
 }
 
 function addMessage(text, isYou = false) {
@@ -114,11 +116,18 @@ reportBtn.addEventListener('click', () => {
     alert("Nessun partner da segnalare.");
     return;
   }
+
+  if (reportSent) {
+    alert("Hai già segnalato questo utente. La segnalazione è in revisione.");
+    return;
+  }
+
   socket.emit("report_user", {
     partnerIp,
     chatLog,
   });
   alert("Segnalazione inviata.");
+  reportSent = true;
 });
 
 // SOCKET EVENTS
@@ -137,6 +146,7 @@ socket.on('match', (data) => {
   disconnectBtn.disabled = false;
   connected = true;
   updateReportBtn();
+  reportSent = false;
 
   if (data && data.partnerIp) {
     partnerIp = data.partnerIp;
@@ -162,8 +172,6 @@ socket.on('partner_disconnected', () => {
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
-  partnerIp = null;
-  chatLog = [];
   updateReportBtn();
 });
 
@@ -173,8 +181,6 @@ socket.on('connect_error', (err) => {
   connected = false;
   startBtn.disabled = false;
   disconnectBtn.disabled = true;
-  partnerIp = null;
-  chatLog = [];
   updateReportBtn();
 });
 
