@@ -42,6 +42,7 @@
         <button id="sendBtn" disabled>📤 Invia</button>
       </div>
     </div>
+
     <div id="about-us-content" class="content-section hidden">
       <h2>Chi Siamo</h2>
       <p class="intro-text">Siamo un piccolo team di appassionati sviluppatori, animati dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa esprimersi liberamente e connettersi senza barriere.</p>
@@ -74,6 +75,7 @@
         <p>Il Team di Chat Anonima ❤️</p>
       </div>
     </div>
+
     <div id="faq-content" class="content-section hidden">
       <h2>Domande Frequenti (FAQ)</h2>
       <p class="intro-text">Qui puoi trovare le risposte alle domande più comuni sulla nostra chat anonima. Clicca su una domanda per espandere la risposta.</p>
@@ -135,6 +137,7 @@
 
       </div>
     </div>
+
     <div id="contacts-content" class="content-section hidden">
       <h2>Contatti</h2>
       <p>Se hai bisogno di contattarci per problemi tecnici, suggerimenti, segnalazioni importanti o feedback generale, non esitare a scriverci.</p>
@@ -142,12 +145,12 @@
       <p><strong>Email:</strong> <a href="mailto:supporto@tuasito.com">supporto@tuasito.com</a></p>
       <p><strong>Telegram (solo per annunci e aggiornamenti):</strong> <a href="https://t.me/tuocanale" target="_blank">@tuocanale</a></p>
     </div>
-    </div>
+
+  </div>
 
   <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
   <script src="script.js"></script>
   <script>
-    // Funzione per mostrare/nascondere la sidebar
     function toggleMenu() {
       const sidebar = document.getElementById('sidebar');
       const body = document.body;
@@ -155,7 +158,6 @@
       body.classList.toggle('menu-open');
     }
 
-    // Funzione per gestire il toggle del tema chiaro/scuro
     const themeToggleBtn = document.getElementById('themeToggle');
     themeToggleBtn.addEventListener('click', () => {
       document.body.classList.toggle('light-mode');
@@ -166,25 +168,22 @@
       }
     });
 
-    // Funzione per mostrare le diverse sezioni di contenuto (Home, Chi Siamo, FAQ, Contatti)
     function showSection(sectionId) {
       document.querySelectorAll('.content-section').forEach(section => {
-        section.classList.add('hidden'); // Nasconde tutte le sezioni
+        section.classList.add('hidden');
       });
 
-      document.getElementById(sectionId + '-content').classList.remove('hidden'); // Mostra la sezione desiderata
+      document.getElementById(sectionId + '-content').classList.remove('hidden');
 
-      // Chiude la sidebar se è aperta, per migliorare l'esperienza utente su mobile
       const sidebar = document.getElementById('sidebar');
       const body = document.body;
       if (sidebar.classList.contains('open')) {
-        toggleMenu(); 
+        toggleMenu();
       }
     }
 
-    // Funzionalità Accordion per le FAQ
     document.addEventListener('DOMContentLoaded', () => {
-        showSection('home'); // Mostra la sezione home all'inizio del caricamento della pagina
+        showSection('home');
         
         const faqHeaders = document.querySelectorAll('.faq-header');
 
@@ -194,23 +193,20 @@
                 const faqBody = faqItem.querySelector('.faq-body');
                 const accordionIcon = header.querySelector('.accordion-icon');
 
-                // Chiudi tutte le altre FAQ aperte
                 document.querySelectorAll('.faq-item.active').forEach(item => {
-                    if (item !== faqItem) { // Assicurati di non chiudere l'elemento attualmente cliccato
+                    if (item !== faqItem) {
                         item.classList.remove('active');
                         item.querySelector('.faq-body').style.maxHeight = null;
                         item.querySelector('.accordion-icon').textContent = '+';
                     }
                 });
 
-                // Toggle della FAQ cliccata
                 faqItem.classList.toggle('active');
                 if (faqItem.classList.contains('active')) {
-                    // Imposta maxHeight a scrollHeight per l'animazione di apertura fluida
-                    faqBody.style.maxHeight = faqBody.scrollHeight + "px"; 
+                    faqBody.style.maxHeight = faqBody.scrollHeight + "px";
                     accordionIcon.textContent = '-';
                 } else {
-                    faqBody.style.maxHeight = null; // Rimuovi maxHeight per l'animazione di chiusura
+                    faqBody.style.maxHeight = null;
                     accordionIcon.textContent = '+';
                 }
             });
