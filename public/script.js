@@ -16,8 +16,8 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Inizializza il client Supabase nel frontend
     // DEVI SOSTITUIRE QUESTI VALORI CON LA TUA SUPABASE_URL E SUPABASE_ANON_KEY (PUBLIC KEY!)
-    const supabaseUrl = 'TUA_SUPABASE_URL'; // Es: 'https://abcdefghijk.supabase.co'
-    const supabaseAnonKey = 'TUA_SUPABASE_ANON_KEY'; // La 'anon' o 'public' key
+    const supabaseUrl = 'https://gekoqfinkwoysferyjwm.supabase.co'; // Es: 'https://abcdefghijk.supabase.co'
+    const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla29xZmlua3dveXNmZXJ5andtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNDk2NjQsImV4cCI6MjA2ODcyNTY2NH0.0gOgyjULefdGKXOANJQOPr1l17IDMYM_Iv2_BRYIeBA'; // La 'anon' o 'public' key
     const supabase = Supabase.createClient(supabaseUrl, supabaseAnonKey);
 
 
