@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -15,6 +16,7 @@
 
   <nav class="sidebar" id="sidebar">
     <a href="#" onclick="showSection('home')">🏠 Home</a>
+    <a href="#" onclick="showSection('about-us')">✨ Chi Siamo</a>
     <a href="#" onclick="showSection('faq')">❓ FAQ</a>
     <a href="#" onclick="showSection('contacts')">📩 Contatti</a>
     <button id="themeToggle" class="theme-toggle">☀️ Modalità Chiara</button>
@@ -37,6 +39,39 @@
       <div id="inputArea">
         <input id="input" type="text" placeholder="Scrivi un messaggio..." disabled />
         <button id="sendBtn" disabled>📤 Invia</button>
+      </div>
+    </div>
+
+    <div id="about-us-content" class="content-section hidden">
+      <h2>Chi Siamo</h2>
+      <p class="intro-text">Siamo un piccolo team di appassionati sviluppatori, animati dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa esprimersi liberamente e connettersi senza barriere.</p>
+      
+      <div class="about-grid">
+        <div class="about-card">
+          <i class="fas fa-user-secret icon"></i>
+          <h3>La Nostra Missione: Anonimato e Libertà</h3>
+          <p>Crediamo fermamente nel diritto di ciascuno di esprimere pensieri e sentimenti in un ambiente privo di giudizio. Chat Anonima nasce per offrirti questa libertà, garantendo la totale assenza di registrazione e tracciamento.</p>
+        </div>
+        <div class="about-card">
+          <i class="fas fa-hands-helping icon"></i>
+          <h3>Il Nostro Valore: Comunità e Rispetto</h3>
+          <p>Promuoviamo una comunità basata sul rispetto reciproco e sull'apertura. Ci impegniamo a mantenere la piattaforma pulita e sicura, con strumenti semplici per segnalare comportamenti inappropriati, assicurando un'esperienza positiva per tutti.</p>
+        </div>
+        <div class="about-card">
+          <i class="fas fa-shield-alt icon"></i>
+          <h3>La Nostra Promessa: Sicurezza e Fiducia</h3>
+          <p>Ogni chat è effimera, nessun dato viene memorizzato. La tua privacy non è solo una caratteristica, è il fondamento del nostro servizio. Vogliamo che tu ti senta sicuro e libero di esplorare nuove connessioni.</p>
+        </div>
+        <div class="about-card">
+          <i class="fas fa-code icon"></i>
+          <h3>La Nostra Visione: Innovazione Continua</h3>
+          <p>Siamo costantemente al lavoro per migliorare e innovare. Il feedback dei nostri utenti è essenziale. Vogliamo evolvere Chat Anonima rendendola sempre più intuitiva, funzionale e all'avanguardia.</p>
+        </div>
+      </div>
+
+      <div class="about-outro">
+        <p>Grazie per far parte della nostra comunità. Siamo qui per te, pronti ad ascoltare e a crescere insieme.</p>
+        <p>Il Team di Chat Anonima ❤️</p>
       </div>
     </div>
 
@@ -149,7 +184,6 @@
     document.addEventListener('DOMContentLoaded', () => {
         showSection('home'); // Mostra la sezione home all'inizio
         
-        // *** NUOVO CODICE JAVASCRIPT PER L'ACCORDION ***
         const faqHeaders = document.querySelectorAll('.faq-header');
 
         faqHeaders.forEach(header => {
@@ -158,27 +192,24 @@
                 const faqBody = faqItem.querySelector('.faq-body');
                 const accordionIcon = header.querySelector('.accordion-icon');
 
-                // Chiudi tutte le altre FAQ aperte
                 document.querySelectorAll('.faq-item.active').forEach(item => {
-                    if (item !== faqItem) { // Chiudi solo se non è l'elemento cliccato
+                    if (item !== faqItem) {
                         item.classList.remove('active');
                         item.querySelector('.faq-body').style.maxHeight = null;
                         item.querySelector('.accordion-icon').textContent = '+';
                     }
                 });
 
-                // Toggle della FAQ cliccata
                 faqItem.classList.toggle('active');
                 if (faqItem.classList.contains('active')) {
-                    faqBody.style.maxHeight = faqBody.scrollHeight + "px"; // Imposta l'altezza per l'animazione
+                    faqBody.style.maxHeight = faqBody.scrollHeight + "px";
                     accordionIcon.textContent = '-';
                 } else {
-                    faqBody.style.maxHeight = null; // Rimuovi l'altezza per chiudere
+                    faqBody.style.maxHeight = null;
                     accordionIcon.textContent = '+';
                 }
             });
         });
-        // *** FINE NUOVO CODICE JAVASCRIPT PER L'ACCORDION ***
     });
   </script>
 </body>
