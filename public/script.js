@@ -17,7 +17,9 @@ createApp({
         const initSupabase = () => {
             const supabaseUrl = 'https://gekoqfinkwoysferyjwm.supabase.co';
             const supabaseAnonKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imdla29xZmlua3dveXNmZXJ5andtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTMxNDk2NjQsImV4cCI6MjA2ODcyNTY2NH0.0gOgyjULefdGKXOANJQOPr1l17IDMYM_Iv2_BRYIeBA';
-            supabase = supabase.createClient(supabaseUrl, supabaseAnonKey);
+
+            const { createClient } = window.supabase;
+            supabase = createClient(supabaseUrl, supabaseAnonKey);
             console.log("✅ Supabase client inizializzato.");
         };
 
