@@ -117,16 +117,17 @@ h1 {
   text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Ombra al testo */
 }
 
-#container {
-  background-color: rgba(255, 255, 255, 0.15); /* Leggermente più opaco */
-  backdrop-filter: blur(15px); /* Blur aumentato */
-  border-radius: 25px; /* Bordi più arrotondati */
-  padding: 2.5rem; /* Padding generoso */
+/* Nota: ho rimosso #container perché ora ogni content-section ha i propri stili */
+/* #container {
+  background-color: rgba(255, 255, 255, 0.15);
+  backdrop-filter: blur(15px);
+  border-radius: 25px;
+  padding: 2.5rem;
   margin-top: 2rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); /* Ombra più pronunciata e moderna */
+  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
   animation: fadeInUp 0.6s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo sottile per effetto vetro */
-}
+  border: 1px solid rgba(255, 255, 255, 0.2);
+} */
 
 #status, #onlineCounter {
   text-align: center;
@@ -182,12 +183,14 @@ button {
   color: white;
 }
 
+/* Stili specifici per il bottone Invia */
 #sendBtn {
   background-color: #10b981;
   color: white;
-  padding: 0.7rem 1.5rem; /* Dimensioni leggermente più grandi per il bottone Invia */
+  padding: 0.7rem 1.5rem;
   font-size: 1rem;
   box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+  min-width: 80px; /* Larghezza minima per il pulsante Invia */
 }
 
 button:disabled {
@@ -259,29 +262,35 @@ button:hover:not(:disabled) {
   text-align: left;
 }
 
+/* *** INIZIO MODIFICHE PER INPUT E SEND BTN AFFIANCATI *** */
 #inputArea {
-  display: flex;
-  justify-content: center;
-  gap: 0.8rem;
-  flex-wrap: wrap;
-  align-items: center;
+  display: flex; /* Mette input e bottone sulla stessa riga */
+  align-items: center; /* Allinea verticalmente input e bottone */
+  gap: 0.8rem; /* Spazio tra input e bottone */
+  padding: 0.8rem 1rem; /* Padding all'area input/send */
+  background-color: rgba(255, 255, 255, 0.1); /* Leggero sfondo per l'area input */
+  border-radius: 25px; /* Angoli arrotondati per l'area input */
+  margin-top: 1.5rem; /* Spazio sopra l'area input/send */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.2); /* Ombra leggera */
 }
 
 input[type="text"] {
-  padding: 0.8rem;
+  flex-grow: 1; /* Fa in modo che l'input occupi tutto lo spazio disponibile */
+  padding: 0.8rem 1.2rem; /* Padding interno aumentato */
   border: none;
-  border-radius: 10px;
-  width: 75%;
-  max-width: 450px;
+  border-radius: 20px; /* Angoli più arrotondati per l'input */
   font-size: 1rem;
+  background-color: #fff; /* Sfondo bianco per l'input in dark mode */
+  color: #333; /* Colore testo scuro per l'input in dark mode */
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
   transition: all 0.3s ease;
 }
 
 input[type="text"]:focus {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
+  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.6); /* Bagliore blu più visibile al focus */
 }
+/* *** FINE MODIFICHE PER INPUT E SEND BTN AFFIANCATI *** */
 
 
 /* --- LIGHT MODE --- */
@@ -323,12 +332,12 @@ body.light-mode h1 {
   text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
 }
 
-body.light-mode #container {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
+/* body.light-mode #container { */
+/* background-color: rgba(255, 255, 255, 0.85); */
+/* color: #333; */
+/* box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15); */
+/* border: 1px solid rgba(0, 0, 0, 0.1); */
+/* } */
 
 body.light-mode #status,
 body.light-mode #onlineCounter {
@@ -384,15 +393,23 @@ body.light-mode button#sendBtn {
   color: white;
 }
 
+/* *** LIGHT MODE per INPUT E SEND BTN AFFIANCATI *** */
+body.light-mode #inputArea {
+  background-color: rgba(0, 0, 0, 0.05); /* Sfondo leggermente scuro in light mode */
+  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+}
+
 body.light-mode input[type="text"] {
-  background-color: #f0f0f0;
+  background-color: #f0f0f0; /* Sfondo chiaro per l'input in light mode */
   color: #333;
   box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
 }
 
 body.light-mode input[type="text"]:focus {
-  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3);
+  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3); /* Bagliore blu per il focus in light mode */
 }
+/* *** FINE LIGHT MODE per INPUT E SEND BTN AFFIANCATI *** */
+
 
 /* Media Queries per Responsività */
 @media (max-width: 768px) {
@@ -430,7 +447,27 @@ body.light-mode input[type="text"]:focus {
     grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Assicurati che ce ne siano almeno 2 per riga */
     gap: 0.6rem;
   }
+
+  /* Rendi l'inputArea adattiva */
+  #inputArea {
+    flex-direction: column; /* Impila input e bottone su schermi molto piccoli */
+    gap: 0.6rem;
+    padding: 0.8rem; /* Riduci il padding */
+    border-radius: 15px; /* Angoli leggermente meno arrotondati per schermi piccoli */
+  }
+
+  input[type="text"] {
+    width: 100%; /* Occupano tutta la larghezza */
+    max-width: none; /* Rimuovi il max-width */
+  }
+
+  #sendBtn {
+    width: 100%; /* Il pulsante invia occupa tutta la larghezza */
+    max-width: none; /* Rimuovi il max-width */
+    min-width: unset; /* Rimuovi il min-width se preferisci che si adatti */
+  }
 }
+
 
 @media (max-width: 480px) {
   h1 {
@@ -438,7 +475,8 @@ body.light-mode input[type="text"]:focus {
     margin-top: 4.5rem;
   }
 
-  #container {
+  /* Non c'è più #container, ma .content-section è la sua funzione */
+  .content-section {
     padding: 1.5rem;
     border-radius: 18px;
   }
@@ -455,12 +493,18 @@ body.light-mode input[type="text"]:focus {
     font-size: 0.95rem;
   }
 
+  /* Questo sovrascrive il 550px per schermi ancora più piccoli, se necessario */
   #inputArea {
     flex-direction: column;
     gap: 0.6rem;
   }
 
   input[type="text"] {
+    width: 100%;
+    max-width: none;
+  }
+
+  #sendBtn {
     width: 100%;
     max-width: none;
   }
@@ -481,7 +525,6 @@ body.light-mode input[type="text"]:focus {
   from { opacity: 0; transform: translateY(25px); }
   to { opacity: 1; transform: translateY(0); }
 }
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
 
 /* NUOVI STILI PER LE SEZIONI DI CONTENUTO */
 .content-section {
@@ -513,6 +556,9 @@ body.light-mode input[type="text"]:focus {
     margin-bottom: 2rem;
     color: #e0e0e0;
     font-size: 1.1rem;
+    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .content-section p {
@@ -536,6 +582,12 @@ body.light-mode input[type="text"]:focus {
   border: 1px solid rgba(255, 255, 255, 0.1); /* Bordo sottile per definizione */
 }
 
+.faq-item.active .faq-header {
+    border-bottom: none;
+    background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro quando attivo */
+}
+
+
 .faq-header {
   padding: 1rem 1.2rem;
   cursor: pointer;
@@ -546,12 +598,6 @@ body.light-mode input[type="text"]:focus {
   transition: background-color 0.3s ease, color 0.3s ease;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
-
-.faq-item.active .faq-header {
-    border-bottom: none;
-    background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro quando attivo */
-}
-
 
 .faq-header:hover {
   background-color: rgba(255, 255, 255, 0.15);
@@ -630,6 +676,35 @@ body.light-mode .content-section p {
   color: #555;
 }
 
+/* --- LIGHT MODE per "CHI SIAMO" --- */
+body.light-mode .about-card {
+    background-color: rgba(0, 0, 0, 0.05);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
+    border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card:hover {
+    background-color: rgba(0, 0, 0, 0.08);
+}
+
+body.light-mode .about-card .icon {
+    color: #4f46e5; /* Stesso blu primario */
+    text-shadow: none; /* Nessun bagliore in light mode */
+}
+
+body.light-mode .about-card h3 {
+    color: #333;
+}
+
+body.light-mode .about-card p {
+    color: #666;
+}
+
+body.light-mode .about-outro {
+    color: #4f46e5; /* Blu primario per il testo di chiusura */
+}
+
+/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
 body.light-mode .faq-item {
   background-color: rgba(0, 0, 0, 0.05); /* Sfondo chiaro per FAQ in light mode */
   box-shadow: 0 4px 10px rgba(0,0,0,0.05);
@@ -677,172 +752,39 @@ body.light-mode .content-section a:hover {
   color: #4338ca;
 }
 
-
-/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
-
-/* NUOVI STILI PER LE SEZIONI DI CONTENUTO (generali) */
-.content-section {
-    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
-    backdrop-filter: blur(15px);
-    border-radius: 25px;
-    padding: 2.5rem;
-    margin-top: 2rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease;
-}
-
-.content-section.hidden {
-  display: none; /* Nasconde l'elemento */
-}
-
-.content-section h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-}
-
-.content-section .intro-text {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
-    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
-    margin-left: auto;
-    margin-right: auto;
-}
-
-.content-section p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  font-size: 1.1rem;
-  color: #e0e0e0;
-}
-
-/* *** STILI PER LA SEZIONE "CHI SIAMO" *** */
-#about-us-content .about-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colonne su desktop, 1 su mobile */
-    gap: 1.5rem; /* Spazio tra le card */
-    margin-top: 2rem;
-}
-
-.about-card {
-    background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente per le card */
-    border-radius: 18px;
-    padding: 1.8rem;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Ombra più pronunciata */
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.about-card:hover {
-    transform: translateY(-8px); /* Effetto sollevamento all'hover */
-    background-color: rgba(255, 255, 255, 0.12); /* Sfondo leggermente più scuro all'hover */
-}
-
-.about-card .icon {
-    font-size: 3.5rem; /* Icone grandi */
-    color: #4f46e5; /* Blu primario della tua app */
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(79, 70, 229, 0.4); /* Bagliore leggero */
-}
-
-.about-card h3 {
-    font-size: 1.4rem;
-    color: #f0f0f0; /* Grigio chiaro per i titoli delle card */
-    margin-bottom: 0.8rem;
-}
-
-.about-card p {
-    font-size: 0.95rem;
-    color: #c0c0c0; /* Grigio più scuro per il testo delle card */
-    line-height: 1.5;
-    margin-bottom: 0; /* Rimuove il margin-bottom extra */
-}
-
-.about-outro {
-    text-align: center;
-    margin-top: 3rem;
-    font-size: 1.2rem;
-    color: #a78bfa; /* Un viola/blu per il testo di chiusura */
-    font-weight: 600;
-}
-
-.about-outro p {
-    margin-bottom: 0.5rem;
-    font-size: 1.1rem; /* leggermente più grande */
-}
-
-/* *** FINE STILI "CHI SIAMO" *** */
-
-/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
-/* (Copia qui gli stili delle FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .accordion, .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a
-   che hai già applicato. Non li ripeto qui per brevità, ma assicurati che siano presenti.) */
-
-
-/* --- LIGHT MODE ADJUSTMENTS --- */
-body.light-mode .content-section {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .content-section h2 {
-  color: #222;
-}
-
-body.light-mode .content-section .intro-text {
-    color: #555;
-}
-
-body.light-mode .content-section p {
-  color: #555;
-}
-
-/* --- LIGHT MODE per "CHI SIAMO" --- */
-body.light-mode .about-card {
-    background-color: rgba(0, 0, 0, 0.05);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .about-card:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .about-card .icon {
-    color: #4f46e5; /* Stesso blu primario */
-    text-shadow: none; /* Nessun bagliore in light mode */
-}
-
-body.light-mode .about-card h3 {
-    color: #333;
-}
-
-body.light-mode .about-card p {
-    color: #666;
-}
-
-body.light-mode .about-outro {
-    color: #4f46e5; /* Blu primario per il testo di chiusura */
-}
-
-/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
-/* (Copia qui gli stili LIGHT MODE per FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a.
-   Non li ripeto qui per brevità.) */
-
-
 /* Media Queries per Responsività */
 @media (max-width: 768px) {
   /* ... (Mantieni le tue media queries esistenti) ... */
-  #about-us-content .about-grid
+  #about-us-content .about-grid {
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); /* Riduci leggermente il minmax per spazio */
+  }
+
+  .about-card {
+      padding: 1.5rem; /* Riduci il padding delle card */
+  }
+}
+
+@media (max-width: 550px) {
+    /* sovrascrive le impostazioni precedenti per schermi più piccoli */
+    #inputArea {
+        flex-direction: column; /* Torna a impilare input e bottone */
+        gap: 0.6rem;
+        padding: 0.8rem;
+        border-radius: 15px;
+    }
+
+    input[type="text"] {
+        width: 100%;
+        max-width: none;
+    }
+
+    #sendBtn {
+        width: 100%;
+        max-width: none;
+        min-width: unset; /* Assicurati che non ci siano vincoli di larghezza */
+    }
+
+    #about-us-content .about-grid {
+        grid-template-columns: 1fr; /* Una colonna su schermi molto piccoli */
+    }
+  }
