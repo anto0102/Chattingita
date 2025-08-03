@@ -18,17 +18,24 @@
       <div class="circle circle-3"></div>
   </div>
 
-  <nav class="navbar">
-      <a href="#" class="logo">ChatAnonima</a>
-      <div class="nav-links">
-          <button id="themeToggle" class="nav-btn">
-              <i class="fas fa-moon"></i>
-          </button>
-          <a href="#" class="nav-btn active" onclick="showSection('chat')">Chat</a>
-          <a href="#" class="nav-btn" onclick="showSection('about')">Chi Siamo</a>
-          <a href="#" class="nav-btn" onclick="showSection('faq')">FAQ</a>
-      </div>
-  </nav>
+  <header class="header-main">
+    <nav class="navbar">
+        <a href="#" class="logo">ChatAnonima</a>
+        <div class="nav-links" id="nav-links">
+            <a href="#" class="nav-btn active" onclick="showSection('chat')">Chat</a>
+            <a href="#" class="nav-btn" onclick="showSection('about')">Chi Siamo</a>
+            <a href="#" class="nav-btn" onclick="showSection('faq')">FAQ</a>
+            <button id="themeToggle" class="nav-btn theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+        <button class="hamburger" id="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+    </nav>
+  </header>
 
   <main class="container">
       <div id="chat-section" class="content-section active">
