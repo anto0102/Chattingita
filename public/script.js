@@ -4,6 +4,9 @@ const socket = io("https://chattingapp-backend.onrender.com");
 const chatSection = document.getElementById('chat-section');
 const aboutSection = document.getElementById('about-section');
 const faqSection = document.getElementById('faq-section');
+const navLinks = document.getElementById('nav-links');
+const hamburger = document.getElementById('hamburger');
+const themeToggleBtn = document.getElementById('themeToggle');
 
 // Elementi della chat
 const status = document.getElementById('status');
@@ -39,6 +42,12 @@ function showSection(sectionId) {
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => btn.classList.remove('active'));
     document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    
+    // Chiudi il menu su mobile
+    if (window.innerWidth <= 768) {
+        navLinks.classList.remove('open');
+        hamburger.classList.remove('open');
+    }
 }
 
 function resetChat() {
@@ -79,7 +88,14 @@ function showTypingIndicator() {
     if (!typingIndicator) {
         typingIndicator = document.createElement('div');
         typingIndicator.className = 'typing-indicator';
-        typingIndicator.textContent = 'Il partner sta scrivendo...';
+        typingIndicator.innerHTML = `
+            <span>Il partner sta scrivendo</span>
+            <div class="typing-dots">
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+                <span class="typing-dot"></span>
+            </div>
+        `;
         chatMessages.appendChild(typingIndicator);
         chatMessages.scrollTop = chatMessages.scrollHeight;
     }
@@ -148,17 +164,21 @@ document.addEventListener('DOMContentLoaded', () => {
     document.querySelectorAll('.faq-header').forEach(header => {
         header.addEventListener('click', () => {
             const faqItem = header.closest('.faq-item');
-            const body = faqItem.querySelector('.faq-body');
             faqItem.classList.toggle('active');
         });
     });
 
     // Gestione tema
-    const themeToggleBtn = document.getElementById('themeToggle');
     themeToggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         const isLightMode = document.body.classList.contains('light-mode');
         themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    });
+
+    // Gestione hamburger menu
+    hamburger.addEventListener('click', () => {
+        navLinks.classList.toggle('open');
+        hamburger.classList.toggle('open');
     });
 });
 
