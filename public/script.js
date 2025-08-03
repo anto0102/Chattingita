@@ -5,6 +5,7 @@ const navLinks = document.getElementById('nav-links');
 const hamburger = document.getElementById('hamburger');
 const themeToggleBtn = document.getElementById('themeToggle');
 const activeIndicator = document.querySelector('.active-indicator');
+const navButtons = document.querySelectorAll('.nav-btn');
 
 // Elementi della chat
 const status = document.getElementById('status');
@@ -23,11 +24,12 @@ let typingIndicator = null;
 let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
+let isTyping = false;
 
 // --- FUNZIONI UTILITY ---
 function moveActiveIndicator(element) {
-    const navBar = document.querySelector('.nav-links');
     if (element && window.innerWidth > 768) {
+        const navBar = document.querySelector('.nav-links');
         activeIndicator.style.width = `${element.offsetWidth}px`;
         activeIndicator.style.transform = `translateX(${element.offsetLeft - navBar.offsetLeft}px)`;
         activeIndicator.style.opacity = 1;
@@ -47,13 +49,12 @@ function showSection(sectionId, element) {
         activeSection.classList.add('active');
     }
     
-    const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => btn.classList.remove('active'));
-    element.classList.add('active');
-
-    moveActiveIndicator(element);
+    if (element) {
+        element.classList.add('active');
+        moveActiveIndicator(element);
+    }
     
-    // Chiudi il menu su mobile
     if (window.innerWidth <= 768) {
         navLinks.classList.remove('open');
         hamburger.classList.remove('open');
@@ -70,6 +71,7 @@ function resetChat() {
     chatLog = [];
     partnerIp = null;
     reportSent = false;
+    isTyping = false;
 }
 
 function addMessage(text, isYou = false) {
@@ -81,6 +83,17 @@ function addMessage(text, isYou = false) {
 
     if (!isYou) {
         chatLog.push(text);
+    }
+}
+
+function sendMessage() {
+    const message = input.value.trim();
+    if (message !== '' && connected) {
+        socket.emit('message', message);
+        addMessage(message, true);
+        input.value = '';
+        socket.emit('stop_typing');
+        isTyping = false;
     }
 }
 
@@ -114,12 +127,16 @@ startBtn.addEventListener('click', () => {
         socket.emit('start_chat');
         status.textContent = 'In attesa di un altro utente...';
         startBtn.disabled = true;
+        disconnectBtn.disabled = false;
     }
 });
 
 disconnectBtn.addEventListener('click', () => {
     if (connected) {
         socket.emit('disconnect_chat');
+        status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
+    } else {
+        socket.emit('cancel_waiting'); // Aggiunto per annullare l'attesa
         status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
         resetChat();
         connected = false;
@@ -137,10 +154,12 @@ input.addEventListener('keypress', (e) => {
 
 input.addEventListener('input', () => {
     if (!connected) return;
-    if (input.value.trim().length > 0) {
+    if (input.value.trim().length > 0 && !isTyping) {
         socket.emit('typing');
-    } else {
+        isTyping = true;
+    } else if (input.value.trim().length === 0 && isTyping) {
         socket.emit('stop_typing');
+        isTyping = false;
     }
 });
 
@@ -160,13 +179,17 @@ reportBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Spostamento indicatore all'avvio
     const activeBtn = document.querySelector('.nav-btn.active');
     if (activeBtn) {
         moveActiveIndicator(activeBtn);
     }
 
-    // Gestione FAQ
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            showSection(btn.dataset.section, btn);
+        });
+    });
+
     document.querySelectorAll('.faq-header').forEach(header => {
         header.addEventListener('click', () => {
             const faqItem = header.closest('.faq-item');
@@ -174,20 +197,17 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Gestione tema
     themeToggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         const isLightMode = document.body.classList.contains('light-mode');
         themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     });
 
-    // Gestione hamburger menu
     hamburger.addEventListener('click', () => {
         navLinks.classList.toggle('open');
         hamburger.classList.toggle('open');
     });
 
-    // Gestione ridimensionamento finestra per navbar
     window.addEventListener('resize', () => {
         const activeBtn = document.querySelector('.nav-btn.active');
         if (activeBtn) {
@@ -195,7 +215,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Gestione form contatti
     const contactForm = document.getElementById('contact-form');
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
@@ -203,7 +222,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const formData = new FormData(contactForm);
         const data = Object.fromEntries(formData.entries());
 
-        // Simulazione invio dati (in un'applicazione reale qui invieresti a un backend)
         console.log("Dati del form inviati:", data);
         statusMessage.textContent = "Messaggio inviato con successo!";
         statusMessage.style.color = 'var(--success-color)';
@@ -233,6 +251,7 @@ socket.on('match', (data) => {
     reportBtn.disabled = false;
     connected = true;
     reportSent = false;
+    isTyping = false;
 
     if (data && data.partnerIp) {
         partnerIp = data.partnerIp;
