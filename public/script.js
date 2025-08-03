@@ -1,10 +1,6 @@
 const socket = io("https://chattingapp-backend.onrender.com");
 
 // Elementi principali
-const chatSection = document.getElementById('chat-section');
-const aboutSection = document.getElementById('about-section');
-const faqSection = document.getElementById('faq-section');
-const contactSection = document.getElementById('contact-section');
 const navLinks = document.getElementById('nav-links');
 const hamburger = document.getElementById('hamburger');
 const themeToggleBtn = document.getElementById('themeToggle');
@@ -85,16 +81,6 @@ function addMessage(text, isYou = false) {
 
     if (!isYou) {
         chatLog.push(text);
-    }
-}
-
-function sendMessage() {
-    const msg = input.value.trim();
-    if (msg && connected) {
-        addMessage(msg, true);
-        socket.emit('message', msg);
-        input.value = '';
-        socket.emit('stop_typing');
     }
 }
 
