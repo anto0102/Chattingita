@@ -179,17 +179,36 @@ reportBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
-    const activeBtn = document.querySelector('.nav-btn.active');
-    if (activeBtn) {
-        moveActiveIndicator(activeBtn);
-    }
-
+    // Gestione visualizzazione sezioni al click dei bottoni della navbar
     navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            showSection(btn.dataset.section, btn);
+        btn.addEventListener('click', (e) => {
+            e.preventDefault(); // Previene il comportamento predefinito del link
+            const sectionId = btn.dataset.section;
+            if (sectionId) {
+                showSection(sectionId, btn);
+            }
         });
     });
 
+    // Spostamento indicatore all'avvio
+    const activeBtn = document.querySelector('.nav-btn.active');
+    if (activeBtn) {
+        showSection(activeBtn.dataset.section, activeBtn);
+    } else {
+        // Fallback per la sezione iniziale se non ne viene trovata nessuna attiva
+        const initialSection = document.getElementById('chat-section');
+        if (initialSection) {
+            initialSection.classList.add('active');
+            const chatBtn = document.querySelector('[data-section="chat"]');
+            if (chatBtn) {
+                 moveActiveIndicator(chatBtn);
+                 chatBtn.classList.add('active');
+            }
+        }
+    }
+
+
+    // Gestione FAQ
     document.querySelectorAll('.faq-header').forEach(header => {
         header.addEventListener('click', () => {
             const faqItem = header.closest('.faq-item');
@@ -197,17 +216,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Gestione tema
     themeToggleBtn.addEventListener('click', () => {
         document.body.classList.toggle('light-mode');
         const isLightMode = document.body.classList.contains('light-mode');
         themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
     });
 
+    // Gestione hamburger menu
     hamburger.addEventListener('click', () => {
         navLinks.classList.toggle('open');
         hamburger.classList.toggle('open');
     });
 
+    // Gestione ridimensionamento finestra per navbar
     window.addEventListener('resize', () => {
         const activeBtn = document.querySelector('.nav-btn.active');
         if (activeBtn) {
@@ -215,6 +237,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Gestione form contatti
     const contactForm = document.getElementById('contact-form');
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
