@@ -1,848 +1,622 @@
-/* Stili Generali e Reset */
+/* --- RESET E VARIABILI CSS --- */
+:root {
+    --primary-color: #6a11cb;
+    --secondary-color: #2575fc;
+    --background-light: #f0f4f8;
+    --text-light: #2c3e50;
+    --glass-background-light: rgba(255, 255, 255, 0.6);
+    --glass-border-light: rgba(255, 255, 255, 0.3);
+    --hover-light: #e0e6f0;
+
+    --background-dark: #1a1a2e;
+    --text-dark: #f0f4f8;
+    --glass-background-dark: rgba(255, 255, 255, 0.08);
+    --glass-border-dark: rgba(255, 255, 255, 0.1);
+    --hover-dark: rgba(255, 255, 255, 0.05);
+
+    --danger-color: #e74c3c;
+    --warning-color: #f1c40f;
+    --success-color: #2ecc71;
+    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+    --border-radius: 20px;
+    --font-family: 'Poppins', sans-serif;
+}
+
 * {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
 body {
-  font-family: 'Inter', sans-serif;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); /* Gradiente più moderno */
-  color: #fff;
-  display: flex;
-  min-height: 100vh;
-  overflow-x: hidden;
-  transition: background 0.5s ease, color 0.5s ease; /* Transizione per light/dark mode */
+    font-family: var(--font-family);
+    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
+    color: var(--text-dark);
+    transition: background 0.5s ease, color 0.5s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    overflow-x: hidden;
+    position: relative;
 }
-
-/* === SIDEBAR === */
-.sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 250px; /* Larghezza leggermente maggiore per un look più solido */
-  height: 100%;
-  background-color: #1e1b4b; /* Sfondo scuro e profondo */
-  padding: 2rem 1rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.2rem;
-  transform: translateX(-100%);
-  transition: transform 0.3s ease;
-  z-index: 1000;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.4); /* Ombreggiatura leggera */
-}
-
-.sidebar.open {
-  transform: translateX(0);
-}
-
-.sidebar a {
-  color: white;
-  text-decoration: none;
-  font-size: 1.1rem;
-  padding: 0.8rem 1rem; /* Padding aumentato */
-  border-radius: 8px; /* Bordi leggermente più arrotondati */
-  transition: background 0.2s, transform 0.1s ease;
-  display: flex; /* Per allineamento icone */
-  align-items: center;
-  gap: 0.5rem; /* Spazio tra icona e testo */
-}
-
-.sidebar a:hover {
-  background-color: #4f46e5;
-  transform: translateX(5px); /* Effetto hover sottile */
-}
-
-.theme-toggle {
-  margin-top: auto; /* Sposta il pulsante in basso nella sidebar */
-  background-color: #333; /* Colore di default per il toggle */
-  color: #fff;
-  border: none;
-  padding: 0.8rem 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background 0.3s, color 0.3s;
-  font-weight: 600;
-  text-align: left; /* Allinea il testo a sinistra */
-}
-
-.theme-toggle:hover {
-  background-color: #555;
-}
-
-.menu-toggle {
-  position: fixed;
-  top: 20px;
-  left: 20px;
-  z-index: 1001;
-  background-color: #4f46e5;
-  color: #fff;
-  border: none;
-  border-radius: 50%;
-  width: 50px; /* Dimensione leggermente maggiore */
-  height: 50px;
-  font-size: 26px; /* Icona più grande */
-  display: flex; /* Per centrare il testo/icona */
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.4); /* Ombreggiatura più pronunciata */
-  transition: background 0.3s, transform 0.2s;
-}
-
-.menu-toggle:hover {
-  background-color: #4338ca;
-  transform: scale(1.05);
-}
-
-.main-content {
-  margin: 0 auto;
-  padding: 2rem 1.5rem; /* Padding leggermente aumentato */
-  max-width: 700px; /* Larghezza massima aumentata */
-  width: 100%;
-  transition: margin-left 0.3s ease;
-  z-index: 1; /* Assicurati che sia sopra il body ma sotto il menu-toggle */
-}
-
-body.menu-open .main-content {
-  margin-left: 250px; /* Deve corrispondere alla larghezza della sidebar */
-}
-
-h1 {
-  text-align: center;
-  margin-top: 3.5rem;
-  font-size: 2.8rem; /* Titolo più grande */
-  animation: fadeIn 0.8s ease-in-out;
-  text-shadow: 2px 2px 5px rgba(0,0,0,0.2); /* Ombra al testo */
-}
-
-#container {
-  background-color: rgba(255, 255, 255, 0.15); /* Leggermente più opaco */
-  backdrop-filter: blur(15px); /* Blur aumentato */
-  border-radius: 25px; /* Bordi più arrotondati */
-  padding: 2.5rem; /* Padding generoso */
-  margin-top: 2rem;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35); /* Ombra più pronunciata e moderna */
-  animation: fadeInUp 0.6s ease;
-  border: 1px solid rgba(255, 255, 255, 0.2); /* Bordo sottile per effetto vetro */
-}
-
-#status, #onlineCounter {
-  text-align: center;
-  font-size: 1.1rem; /* Testo leggermente più grande */
-  margin: 0.8rem 0;
-  color: #e0e0e0; /* Colore più morbido */
-}
-
-#onlineCounter {
-  margin-bottom: 1.5rem;
-  font-weight: 600;
-}
-
-/* *** MODIFICHE CRUCIALI PER I BOTTONI *** */
-#controls {
-  display: grid; /* Usa CSS Grid per un controllo più preciso */
-  grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* 2 o 3 bottoni per riga, adattivi */
-  gap: 0.8rem; /* Spazio uniforme tra i bottoni */
-  margin: 1.5rem 0;
-  justify-items: center; /* Centra i bottoni all'interno delle loro celle di griglia */
-}
-
-#controls button {
-  padding: 0.6rem 1rem; /* Padding appropriato per un bottone compatto */
-  font-size: 0.95rem; /* Testo più leggibile sui bottoni */
-  width: 100%; /* I bottoni riempiono la loro cella di griglia */
-  min-width: 120px; /* Larghezza minima per evitare il troncamento del testo */
-  max-width: 180px; /* Larghezza massima per evitare che diventino troppo larghi */
-  box-shadow: 0 3px 8px rgba(0,0,0,0.15); /* Ombreggiatura leggera */
-}
-
-/* Stili comuni per tutti i bottoni (sovrascritti sopra dove necessario) */
-button {
-  border: none;
-  border-radius: 10px;
-  font-weight: 700;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-#startBtn {
-  background-color: #4f46e5;
-  color: white;
-}
-
-#disconnectBtn {
-  background-color: #dc2626;
-  color: white;
-}
-
-#reportBtn {
-  background-color: #f59e0b;
-  color: white;
-}
-
-#sendBtn {
-  background-color: #10b981;
-  color: white;
-  padding: 0.7rem 1.5rem; /* Dimensioni leggermente più grandi per il bottone Invia */
-  font-size: 1rem;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-
-button:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-button:hover:not(:disabled) {
-  transform: translateY(-3px);
-  filter: brightness(1.15);
-  box-shadow: 0 5px 12px rgba(0,0,0,0.25);
-}
-
-#chat {
-  display: none; /* Gestito via JS */
-  background: #fff;
-  color: #111;
-  border-radius: 15px;
-  padding: 1.2rem;
-  height: 550px; /* **ALTEZZA MASSIMA PER LA CHAT** */
-  overflow-y: auto;
-  margin-bottom: 1.5rem;
-  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.15);
-  border: 1px solid #eee;
-}
-
-/* Scrollbar personalizzata per #chat */
-#chat::-webkit-scrollbar {
-  width: 8px;
-}
-
-#chat::-webkit-scrollbar-track {
-  background: #f1f1f1;
-  border-radius: 10px;
-}
-
-#chat::-webkit-scrollbar-thumb {
-  background: #888;
-  border-radius: 10px;
-}
-
-#chat::-webkit-scrollbar-thumb:hover {
-  background: #555;
-}
-
-.message {
-  margin: 0.7rem 0;
-  padding: 0.8rem 1.2rem;
-  border-radius: 22px;
-  max-width: 85%;
-  word-wrap: break-word;
-  animation: slideIn 0.3s ease forwards;
-  box-shadow: 0 2px 5px rgba(0,0,0,0.1);
-}
-
-.you {
-  background-color: #4f46e5;
-  color: white;
-  margin-left: auto;
-  text-align: right;
-}
-
-.other {
-  background-color: #e5e7eb;
-  color: #111;
-  margin-right: auto;
-  text-align: left;
-}
-
-#inputArea {
-  display: flex;
-  justify-content: center;
-  gap: 0.8rem;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-input[type="text"] {
-  padding: 0.8rem;
-  border: none;
-  border-radius: 10px;
-  width: 75%;
-  max-width: 450px;
-  font-size: 1rem;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
-  transition: all 0.3s ease;
-}
-
-input[type="text"]:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.4);
-}
-
 
 /* --- LIGHT MODE --- */
 body.light-mode {
-  background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
-  color: #333;
+    background: linear-gradient(135deg, var(--background-light) 0%, #bbdefb 100%);
+    color: var(--text-light);
 }
 
-body.light-mode .sidebar {
-  background-color: #f0f4f8;
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .sidebar a {
-  color: #333;
-}
-
-body.light-mode .sidebar a:hover {
-  background-color: #bbdefb;
-  color: #1a202c;
-}
-
-body.light-mode .theme-toggle {
-  background-color: #e0e0e0;
-  color: #333;
-}
-body.light-mode .theme-toggle:hover {
-  background-color: #d0d0d0;
-}
-
-body.light-mode .menu-toggle {
-  background-color: #4338ca;
-  color: #fff;
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
-}
-
-body.light-mode h1 {
-  color: #222;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.1);
-}
-
-body.light-mode #container {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode #status,
-body.light-mode #onlineCounter {
-  color: #555;
-}
-
-body.light-mode #chat {
-  background: #f9f9f9;
-  color: #222;
-  box-shadow: inset 0 3px 15px rgba(0, 0, 0, 0.08);
-  border: 1px solid #e0e0e0;
-}
-
-body.light-mode #chat::-webkit-scrollbar-track {
-  background: #e9e9e9;
-}
-
-body.light-mode #chat::-webkit-scrollbar-thumb {
-  background: #aaa;
-}
-
-body.light-mode #chat::-webkit-scrollbar-thumb:hover {
-  background: #777;
-}
-
-body.light-mode .you {
-  background-color: #5a55ca;
-  color: white;
-}
-
-body.light-mode .other {
-  background-color: #ddd;
-  color: #222;
-}
-
-body.light-mode button#startBtn {
-  background-color: #5a55ca;
-  color: white;
-}
-
-body.light-mode button#disconnectBtn {
-  background-color: #bf4444;
-  color: white;
-}
-
-body.light-mode button#reportBtn {
-  background-color: #d97706;
-  color: white;
-}
-
-body.light-mode button#sendBtn {
-  background-color: #059669;
-  color: white;
-}
-
-body.light-mode input[type="text"] {
-  background-color: #f0f0f0;
-  color: #333;
-  box-shadow: inset 0 2px 5px rgba(0,0,0,0.05);
-}
-
-body.light-mode input[type="text"]:focus {
-  box-shadow: 0 0 0 3px rgba(67, 56, 202, 0.3);
-}
-
-/* Media Queries per Responsività */
-@media (max-width: 768px) {
-  .main-content {
-    padding: 1.5rem 1rem;
-    margin-left: 0;
-  }
-
-  body.menu-open .main-content {
-    margin-left: 0;
-  }
-
-  .sidebar {
-    width: 100%;
-    padding-top: 5rem;
-  }
-
-  .menu-toggle {
-    left: 20px;
-  }
-
-  #controls {
-    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); /* Continua con 2/3 bottoni per riga */
-    /* Assicurati che il minmax sia sufficiente per il testo */
-  }
-
-  #controls button {
-    width: 100%; /* I bottoni riempiono la loro cella */
-    max-width: 180px; /* Mantieni un limite per la larghezza */
-  }
-}
-
-@media (max-width: 550px) { /* Nuova media query per schermi più piccoli */
-  #controls {
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); /* Assicurati che ce ne siano almeno 2 per riga */
-    gap: 0.6rem;
-  }
-}
-
-@media (max-width: 480px) {
-  h1 {
-    font-size: 2.2rem;
-    margin-top: 4.5rem;
-  }
-
-  #container {
-    padding: 1.5rem;
-    border-radius: 18px;
-  }
-
-  #controls {
-    grid-template-columns: 1fr; /* Su schermi molto piccoli, i bottoni vanno in singola colonna */
-    gap: 0.8rem;
-  }
-
-  #controls button {
-    width: 100%; /* Occupano tutta la larghezza disponibile */
-    max-width: none; /* Rimuovi la larghezza massima per riempire lo spazio */
-    padding: 0.7rem 1rem;
-    font-size: 0.95rem;
-  }
-
-  #inputArea {
-    flex-direction: column;
-    gap: 0.6rem;
-  }
-
-  input[type="text"] {
-    width: 100%;
-    max-width: none;
-  }
-}
-
-/* Animazioni */
-@keyframes slideIn {
-  from { opacity: 0; transform: translateY(15px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(25px); }
-  to { opacity: 1; transform: translateY(0); }
-}
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
-
-/* NUOVI STILI PER LE SEZIONI DI CONTENUTO */
-.content-section {
-    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
-    backdrop-filter: blur(15px);
-    border-radius: 25px;
-    padding: 2.5rem;
-    margin-top: 2rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease;
-}
-
-.content-section.hidden {
-  display: none; /* Nasconde l'elemento */
-}
-
-/* Stili specifici per FAQ e Contatti (se vuoi un look diverso) */
-.content-section h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
-  color: #fff; /* Colore bianco per il titolo H2 delle sezioni */
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-}
-
-.content-section .intro-text {
-    text-align: center;
-    margin-bottom: 2rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
-}
-
-.content-section p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  font-size: 1.1rem;
-  color: #e0e0e0;
-}
-
-/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
-.accordion {
-    margin-top: 1.5rem;
-}
-
-.faq-item {
-  background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente */
-  border-radius: 15px;
-  margin-bottom: 0.8rem;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0,0,0,0.15);
-  border: 1px solid rgba(255, 255, 255, 0.1); /* Bordo sottile per definizione */
-}
-
-.faq-header {
-  padding: 1rem 1.2rem;
-  cursor: pointer;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-weight: 600;
-  transition: background-color 0.3s ease, color 0.3s ease;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.faq-item.active .faq-header {
-    border-bottom: none;
-    background-color: rgba(255, 255, 255, 0.15); /* Sfondo leggermente più scuro quando attivo */
-}
-
-
-.faq-header:hover {
-  background-color: rgba(255, 255, 255, 0.15);
-}
-
-.faq-header h3 {
-  color: #c0c0c0; /* Grigio chiaro per il titolo della domanda (Dark Mode) */
-  margin: 0;
-  font-size: 1.2rem;
-  flex-grow: 1;
-}
-
-.accordion-icon {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #c0c0c0; /* Stesso colore del titolo (Dark Mode) */
-    transition: transform 0.3s ease, color 0.3s ease;
-    margin-left: 1rem;
-}
-
-.faq-item.active .accordion-icon {
-    transform: rotate(45deg);
-    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Dark Mode) */
-}
-
-.faq-body {
-  max-height: 0;
-  padding: 0 1.2rem;
-  transition: max-height 0.3s ease-out, padding 0.3s ease-out;
-  background-color: rgba(255, 255, 255, 0.05); /* Sfondo leggermente più scuro per il corpo */
-}
-
-.faq-item.active .faq-body {
-  max-height: 500px;
-  padding-top: 0.8rem;
-  padding-bottom: 1rem;
-}
-
-.faq-body p {
-  color: #e0e0e0; /* Colore testo leggermente più chiaro per le risposte */
-  font-size: 1rem;
-  margin: 0;
-}
-
-
-.content-section a {
-  color: #a78bfa; /* Un viola chiaro/blu per i link, coeso con il tema generale */
-  text-decoration: none;
-  font-weight: 600;
-  transition: color 0.2s ease;
-}
-
-.content-section a:hover {
-  color: #c4b5fd;
-  text-decoration: underline;
-}
-
-
-/* --- LIGHT MODE ADJUSTMENTS FOR NEW SECTIONS --- */
-body.light-mode .content-section {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
-}
-
-body.light-mode .content-section h2 {
-  color: #222;
-}
-
-body.light-mode .content-section .intro-text {
-    color: #555;
-}
-
-body.light-mode .content-section p {
-  color: #555;
-}
-
+body.light-mode .container,
+body.light-mode .content-section,
+body.light-mode .about-card,
 body.light-mode .faq-item {
-  background-color: rgba(0, 0, 0, 0.05); /* Sfondo chiaro per FAQ in light mode */
-  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
-  border: 1px solid rgba(0, 0, 0, 0.08);
+    background: var(--glass-background-light);
+    border: 1px solid var(--glass-border-light);
 }
 
-body.light-mode .faq-header {
-    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+body.light-mode .navbar a,
+body.light-mode .navbar .nav-btn {
+    color: var(--text-light);
 }
 
-body.light-mode .faq-item.active .faq-header {
-    border-bottom: none;
-    background-color: rgba(0, 0, 0, 0.08); /* Sfondo più scuro per header attivo in light mode */
+body.light-mode .navbar .nav-btn:hover {
+    background: var(--hover-light);
 }
-
-body.light-mode .faq-header:hover {
-  background-color: rgba(0, 0, 0, 0.08);
+body.light-mode .navbar a.active {
+    background-color: var(--primary-color);
+    color: white;
 }
-
+body.light-mode .navbar a.active:hover {
+    background-color: var(--secondary-color);
+}
+body.light-mode #themeToggle {
+    background-color: var(--hover-light);
+}
+body.light-mode #themeToggle:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+body.light-mode .online-dot {
+    background-color: var(--success-color);
+}
+body.light-mode .status-message {
+    color: var(--text-light);
+}
+body.light-mode .message.you {
+    background-color: var(--primary-color);
+    color: white;
+}
+body.light-mode .message.other {
+    background-color: var(--hover-light);
+    color: var(--text-light);
+}
+body.light-mode .about-card h3,
 body.light-mode .faq-header h3 {
-  color: #444; /* Grigio scuro per il titolo della domanda (Light Mode) */
+    color: var(--text-light);
 }
-
-body.light-mode .accordion-icon {
-    color: #444; /* Stesso colore del titolo (Light Mode) */
+body.light-mode .about-card p,
+body.light-mode .intro-text {
+    color: var(--text-light);
 }
-
-body.light-mode .faq-item.active .accordion-icon {
-    color: #4f46e5; /* Blu primario quando l'accordion è aperto (Light Mode) */
-}
-
-body.light-mode .faq-body {
-  background-color: rgba(0, 0, 0, 0.03);
-}
-
 body.light-mode .faq-body p {
-  color: #444;
+    color: var(--text-light);
+}
+body.light-mode .online-text {
+    color: var(--text-light);
+}
+body.light-mode .header h1 {
+    color: var(--text-light);
+}
+body.light-mode input[type="text"] {
+    background-color: rgba(0,0,0,0.05);
+    color: var(--text-light);
+    border: 1px solid rgba(0,0,0,0.1);
+}
+body.light-mode input[type="text"]:focus {
+    box-shadow: 0 0 0 2px var(--primary-color);
 }
 
-body.light-mode .content-section a {
-  color: #4f46e5; /* Blu primario per i link in light mode */
+/* --- SFONDO DINAMICO --- */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
 }
 
-body.light-mode .content-section a:hover {
-  color: #4338ca;
+.circle {
+    position: absolute;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    animation: moveCircles 20s infinite ease-in-out;
 }
 
+.circle-1 {
+    width: 250px;
+    height: 250px;
+    top: 10%;
+    left: 20%;
+    animation-delay: 0s;
+}
 
-/* ... (MANTIENI TUTTE LE MEDIA QUERIES E ANIMAZIONI ESISTENTI) ... */
-/* ... (MANTIENI TUTTO IL CSS PRECEDENTE FINO A QUI) ... */
+.circle-2 {
+    width: 350px;
+    height: 350px;
+    bottom: 5%;
+    right: 15%;
+    animation-delay: 5s;
+}
 
-/* NUOVI STILI PER LE SEZIONI DI CONTENUTO (generali) */
+.circle-3 {
+    width: 300px;
+    height: 300px;
+    top: 40%;
+    right: 30%;
+    animation-delay: 10s;
+}
+
+@keyframes moveCircles {
+    0%, 100% { transform: translate(0, 0); }
+    50% { transform: translate(50px, -50px); }
+}
+
+/* --- NAVBAR --- */
+.navbar {
+    width: 100%;
+    max-width: 1000px;
+    padding: 1.5rem 2rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    backdrop-filter: blur(10px);
+    background: var(--glass-background-dark);
+    border-bottom: 1px solid var(--glass-border-dark);
+    border-radius: 0 0 var(--border-radius) var(--border-radius);
+    z-index: 100;
+}
+
+.logo {
+    font-weight: 700;
+    font-size: 1.8rem;
+    color: var(--text-dark);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.logo:hover {
+    color: var(--primary-color);
+}
+
+.nav-links {
+    display: flex;
+    gap: 1.5rem;
+}
+
+.nav-btn {
+    padding: 0.7rem 1.2rem;
+    border-radius: 15px;
+    text-decoration: none;
+    color: var(--text-dark);
+    font-weight: 600;
+    transition: background-color 0.3s, transform 0.2s, color 0.3s;
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+}
+
+.nav-btn:hover {
+    background-color: var(--hover-dark);
+    transform: translateY(-3px);
+}
+
+.nav-btn.active {
+    background-color: var(--primary-color);
+    color: white;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.nav-btn.active:hover {
+    background-color: var(--secondary-color);
+}
+
+#themeToggle i {
+    font-size: 1.2rem;
+}
+
+/* --- MAIN CONTAINER --- */
+.container {
+    width: 100%;
+    max-width: 900px;
+    margin: 2rem auto;
+    padding: 2rem;
+    background: var(--glass-background-dark);
+    border: 1px solid var(--glass-border-dark);
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    transition: background 0.5s, border 0.5s;
+    animation: fadeIn 0.8s ease-in-out;
+}
+
 .content-section {
-    background-color: rgba(255, 255, 255, 0.15); /* Stesso stile del container principale */
-    backdrop-filter: blur(15px);
-    border-radius: 25px;
-    padding: 2.5rem;
-    margin-top: 2rem;
-    box-shadow: 0 12px 40px rgba(0, 0, 0, 0.35);
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    animation: fadeInUp 0.6s ease;
+    display: none;
+    animation: fadeIn 0.6s ease-in-out;
 }
 
-.content-section.hidden {
-  display: none; /* Nasconde l'elemento */
+.content-section.active {
+    display: block;
 }
 
-.content-section h2 {
-  text-align: center;
-  margin-bottom: 1.5rem;
-  font-size: 2.2rem;
-  color: #fff;
-  text-shadow: 1px 1px 3px rgba(0,0,0,0.2);
-}
-
-.content-section .intro-text {
+/* --- CHAT SECTION --- */
+.header {
     text-align: center;
     margin-bottom: 2rem;
-    color: #e0e0e0;
-    font-size: 1.1rem;
-    max-width: 600px; /* Limita la larghezza per migliore leggibilità */
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    color: var(--text-dark);
+}
+.header h1 i {
+    color: var(--success-color);
+}
+
+.online-counter {
+    margin-top: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    font-size: 1rem;
+    color: var(--text-dark);
+}
+.online-dot {
+    width: 10px;
+    height: 10px;
+    background-color: var(--success-color);
+    border-radius: 50%;
+    animation: pulse 2s infinite ease-in-out;
+}
+
+@keyframes pulse {
+    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
+    70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
+    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
+}
+
+.chat-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+#chat-area {
+    height: 500px;
+    display: flex;
+    flex-direction: column;
+    padding: 1.5rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-radius: var(--border-radius);
+    overflow-y: auto;
+    border: 1px solid var(--glass-border-dark);
+}
+
+#chat-area::-webkit-scrollbar {
+    width: 8px;
+}
+#chat-area::-webkit-scrollbar-track {
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+}
+#chat-area::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 10px;
+}
+
+#chat-messages {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.status-message {
+    text-align: center;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+    margin: auto;
+    padding: 1rem;
+}
+
+.message {
+    padding: 0.8rem 1.2rem;
+    border-radius: 20px;
+    max-width: 80%;
+    word-wrap: break-word;
+    margin-bottom: 0.5rem;
+    opacity: 0;
+    transform: translateY(10px);
+    animation: messageSlideIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+@keyframes messageSlideIn {
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.message.you {
+    background-color: var(--primary-color);
+    color: white;
     margin-left: auto;
+    text-align: right;
+    border-bottom-right-radius: 5px;
+}
+
+.message.other {
+    background-color: rgba(255, 255, 255, 0.15);
+    color: var(--text-dark);
     margin-right: auto;
+    border-bottom-left-radius: 5px;
 }
-
-.content-section p {
-  margin-bottom: 1rem;
-  line-height: 1.6;
-  font-size: 1.1rem;
-  color: #e0e0e0;
-}
-
-/* *** STILI PER LA SEZIONE "CHI SIAMO" *** */
-#about-us-content .about-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); /* 2 colonne su desktop, 1 su mobile */
-    gap: 1.5rem; /* Spazio tra le card */
-    margin-top: 2rem;
-}
-
-.about-card {
-    background-color: rgba(255, 255, 255, 0.08); /* Sfondo leggermente trasparente per le card */
-    border-radius: 18px;
-    padding: 1.8rem;
-    text-align: center;
-    box-shadow: 0 6px 20px rgba(0,0,0,0.2); /* Ombra più pronunciata */
-    transition: transform 0.3s ease, background-color 0.3s ease;
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.about-card:hover {
-    transform: translateY(-8px); /* Effetto sollevamento all'hover */
-    background-color: rgba(255, 255, 255, 0.12); /* Sfondo leggermente più scuro all'hover */
-}
-
-.about-card .icon {
-    font-size: 3.5rem; /* Icone grandi */
-    color: #4f46e5; /* Blu primario della tua app */
-    margin-bottom: 1rem;
-    text-shadow: 0 0 10px rgba(79, 70, 229, 0.4); /* Bagliore leggero */
-}
-
-.about-card h3 {
-    font-size: 1.4rem;
-    color: #f0f0f0; /* Grigio chiaro per i titoli delle card */
-    margin-bottom: 0.8rem;
-}
-
-.about-card p {
-    font-size: 0.95rem;
-    color: #c0c0c0; /* Grigio più scuro per il testo delle card */
-    line-height: 1.5;
-    margin-bottom: 0; /* Rimuove il margin-bottom extra */
-}
-
-.about-outro {
-    text-align: center;
-    margin-top: 3rem;
-    font-size: 1.2rem;
-    color: #a78bfa; /* Un viola/blu per il testo di chiusura */
+.message.other a {
+    color: #f1c40f;
     font-weight: 600;
 }
 
-.about-outro p {
+.typing-indicator {
+    padding: 0.5rem 1rem;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    max-width: 200px;
+    font-style: italic;
+    color: rgba(255, 255, 255, 0.6);
+    margin-right: auto;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s;
+}
+
+.input-area {
+    display: flex;
+    gap: 1rem;
+}
+
+.input-area.hidden {
+    display: none;
+}
+
+input[type="text"] {
+    flex-grow: 1;
+    padding: 0.8rem 1.5rem;
+    border-radius: 15px;
+    border: 1px solid var(--glass-border-dark);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: box-shadow 0.3s;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
+.send-btn {
+    background-color: var(--success-color);
+    color: white;
+    border: none;
+    border-radius: 15px;
+    width: 50px;
+    height: 50px;
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
+}
+.send-btn:hover:not(:disabled) {
+    background-color: #27ae60;
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+}
+
+.controls-area {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1.5rem;
+}
+
+.control-btn {
+    padding: 0.8rem 1.5rem;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 15px;
+    cursor: pointer;
+    color: white;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    transition: transform 0.2s, box-shadow 0.3s, filter 0.3s;
+}
+
+.control-btn:hover:not(:disabled) {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+    filter: brightness(1.1);
+}
+
+.control-btn.primary {
+    background-color: var(--primary-color);
+}
+.control-btn.danger {
+    background-color: var(--danger-color);
+}
+.control-btn.warning {
+    background-color: var(--warning-color);
+}
+
+.control-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    transform: none;
+    box-shadow: none;
+}
+
+/* --- ABOUT SECTION --- */
+h2 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1.5rem;
+    text-align: center;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.8rem;
+    color: var(--text-dark);
+}
+.intro-text {
+    text-align: center;
+    max-width: 600px;
+    margin: 0 auto 2rem;
+    font-size: 1.1rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.about-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+}
+.about-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: var(--border-radius);
+    padding: 2rem;
+    text-align: center;
+    transition: transform 0.3s ease, background 0.3s;
+}
+.about-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.1);
+}
+.about-card .icon {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+.about-card h3 {
+    font-size: 1.2rem;
     margin-bottom: 0.5rem;
-    font-size: 1.1rem; /* leggermente più grande */
+    color: var(--text-dark);
+}
+.about-card p {
+    font-size: 0.9rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
 }
 
-/* *** FINE STILI "CHI SIAMO" *** */
-
-/* *** STILI AGGIORNATI PER L'ACCORDION (COLORI PIÙ PROFESSIONALI) *** */
-/* (Copia qui gli stili delle FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .accordion, .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a
-   che hai già applicato. Non li ripeto qui per brevità, ma assicurati che siano presenti.) */
-
-
-/* --- LIGHT MODE ADJUSTMENTS --- */
-body.light-mode .content-section {
-  background-color: rgba(255, 255, 255, 0.85);
-  color: #333;
-  box-shadow: 0 12px 40px rgba(0, 0, 0, 0.15);
-  border: 1px solid rgba(0, 0, 0, 0.1);
+/* --- FAQ SECTION --- */
+.faq-container {
+    max-width: 700px;
+    margin: 0 auto;
+}
+.faq-item {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    margin-bottom: 1rem;
+    overflow: hidden;
+    transition: background 0.3s;
+}
+.faq-item.active {
+    background: rgba(255, 255, 255, 0.1);
+}
+.faq-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1.2rem;
+    cursor: pointer;
+    font-weight: 600;
+}
+.faq-header h3 {
+    font-size: 1.1rem;
+    color: var(--text-dark);
+}
+.faq-header i {
+    font-size: 1.2rem;
+    color: var(--primary-color);
+    transition: transform 0.3s ease;
+}
+.faq-item.active .faq-header i {
+    transform: rotate(180deg);
+}
+.faq-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
+    padding: 0 1.2rem;
+}
+.faq-item.active .faq-body {
+    max-height: 200px;
+    padding: 0 1.2rem 1.2rem;
+}
+.faq-body p {
+    font-size: 0.95rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.7);
 }
 
-body.light-mode .content-section h2 {
-  color: #222;
-}
-
-body.light-mode .content-section .intro-text {
-    color: #555;
-}
-
-body.light-mode .content-section p {
-  color: #555;
-}
-
-/* --- LIGHT MODE per "CHI SIAMO" --- */
-body.light-mode .about-card {
-    background-color: rgba(0, 0, 0, 0.05);
-    box-shadow: 0 6px 20px rgba(0,0,0,0.1);
-    border: 1px solid rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .about-card:hover {
-    background-color: rgba(0, 0, 0, 0.08);
-}
-
-body.light-mode .about-card .icon {
-    color: #4f46e5; /* Stesso blu primario */
-    text-shadow: none; /* Nessun bagliore in light mode */
-}
-
-body.light-mode .about-card h3 {
-    color: #333;
-}
-
-body.light-mode .about-card p {
-    color: #666;
-}
-
-body.light-mode .about-outro {
-    color: #4f46e5; /* Blu primario per il testo di chiusura */
-}
-
-/* --- LIGHT MODE per FAQ (le tue ultime modifiche) --- */
-/* (Copia qui gli stili LIGHT MODE per FAQ che ti ho dato nell'ultimo messaggio,
-   inclusi .faq-item, .faq-header, .faq-header h3,
-   .accordion-icon, .faq-body, .faq-body p, e .content-section a.
-   Non li ripeto qui per brevità.) */
-
-
-/* Media Queries per Responsività */
+/* --- RESPONSIVE DESIGN --- */
 @media (max-width: 768px) {
-  /* ... (Mantieni le tue media queries esistenti) ... */
-  #about-us-content .about-grid
+    .navbar {
+        flex-direction: column;
+        gap: 1rem;
+    }
+    .logo {
+        font-size: 1.5rem;
+    }
+    .nav-links {
+        width: 100%;
+        justify-content: center;
+    }
+    .container {
+        padding: 1.5rem;
+        margin-top: 1rem;
+    }
+    .header h1 {
+        font-size: 2rem;
+    }
+    .controls-area {
+        grid-template-columns: 1fr;
+    }
+    .chat-wrapper {
+        gap: 0.5rem;
+    }
+    #input-area {
+        flex-direction: column;
+    }
+    input[type="text"] {
+        width: 100%;
+    }
+    .send-btn {
+        width: 100%;
+        height: auto;
+        padding: 0.8rem;
+    }
+}
+
+/* --- ANIMATIONS --- */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
