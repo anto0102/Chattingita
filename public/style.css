@@ -619,14 +619,17 @@ h2 {
     .nav-links.open {
         display: flex;
         flex-direction: column;
-        position: absolute;
+        position: fixed;
         top: var(--navbar-height);
         left: 0;
         width: 100%;
+        height: calc(100vh - var(--navbar-height));
         background: rgba(26, 26, 46, 0.9);
         backdrop-filter: blur(10px);
         box-shadow: 0 8px 16px rgba(0,0,0,0.2);
         padding: 1rem 0;
+        z-index: 999;
+        overflow-y: auto;
     }
     .nav-links.open .nav-btn {
         width: 100%;
