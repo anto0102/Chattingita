@@ -64,8 +64,8 @@ body.light-mode .nav-links a:hover {
     background: var(--hover-light);
 }
 body.light-mode .nav-links a.active {
-    background-color: var(--primary-color);
-    color: white;
+    background-color: transparent;
+    color: var(--primary-color);
 }
 body.light-mode #themeToggle {
     color: var(--text-light);
@@ -76,15 +76,17 @@ body.light-mode #themeToggle:hover {
 body.light-mode .hamburger .bar {
     background-color: var(--text-light);
 }
-
+body.light-mode .active-indicator {
+    background-color: var(--primary-color);
+}
 body.light-mode .container,
 body.light-mode .content-section,
 body.light-mode .about-card,
-body.light-mode .faq-item {
+body.light-mode .faq-item,
+body.light-mode .contact-form {
     background: var(--glass-background-light);
     border: 1px solid var(--glass-border-light);
 }
-
 body.light-mode .online-dot { background-color: var(--success-color); }
 body.light-mode .status-message { color: var(--text-light); }
 body.light-mode .message.you { background-color: var(--primary-color); color: white; }
@@ -94,22 +96,31 @@ body.light-mode .about-card h3,
 body.light-mode .faq-header h3,
 body.light-mode .header h1,
 body.light-mode .header h1 i,
-body.light-mode .online-text { color: var(--text-light); }
+body.light-mode .online-text,
+body.light-mode .contact-form label,
+body.light-mode h2 { color: var(--text-light); }
 
 body.light-mode .about-card p,
 body.light-mode .intro-text { color: var(--text-light); }
-
 body.light-mode .faq-body p { color: var(--text-light); }
 
-body.light-mode input[type="text"] {
+body.light-mode input[type="text"],
+body.light-mode input[type="email"],
+body.light-mode textarea {
     background-color: rgba(0,0,0,0.05);
     color: var(--text-light);
     border: 1px solid rgba(0,0,0,0.1);
 }
-body.light-mode input[type="text"]:focus { box-shadow: 0 0 0 2px var(--primary-color); }
+body.light-mode input[type="text"]:focus,
+body.light-mode input[type="email"]:focus,
+body.light-mode textarea:focus { box-shadow: 0 0 0 2px var(--primary-color); }
+
 body.light-mode .typing-indicator {
     background: rgba(0, 0, 0, 0.1);
     color: var(--text-light);
+}
+body.light-mode .typing-dot {
+    background-color: var(--text-light);
 }
 
 /* --- SFONDO DINAMICO --- */
@@ -155,6 +166,7 @@ body.light-mode .typing-indicator {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    position: relative;
 }
 
 .logo {
@@ -171,38 +183,53 @@ body.light-mode .typing-indicator {
     display: flex;
     gap: 1rem;
     align-items: center;
+    position: relative;
 }
 
 .nav-btn {
     padding: 0.7rem 1.2rem;
-    border-radius: 15px;
     text-decoration: none;
     color: var(--text-dark);
     font-weight: 600;
-    transition: background-color 0.3s, transform 0.2s, color 0.3s;
+    transition: color 0.3s, background-color 0.3s;
     background: none;
     border: none;
     cursor: pointer;
     font-size: 1rem;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
+    position: relative;
 }
 
 .nav-btn:hover {
-    background-color: var(--hover-dark);
-    transform: translateY(-3px);
+    color: var(--primary-color);
 }
 
 .nav-btn.active {
-    background-color: var(--primary-color);
-    color: white;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    color: var(--primary-color);
 }
 
-.nav-btn.active:hover { background-color: var(--secondary-color); }
+.active-indicator {
+    position: absolute;
+    bottom: -5px;
+    left: 0;
+    height: 3px;
+    background-color: var(--primary-color);
+    transition: width 0.3s ease-in-out, transform 0.3s ease-in-out;
+}
 
-#themeToggle i { font-size: 1.2rem; }
+.theme-toggle {
+    padding: 0.5rem;
+    border-radius: 50%;
+    font-size: 1.2rem;
+    color: var(--text-dark);
+    transition: background-color 0.3s, transform 0.2s, color 0.3s;
+}
+
+.theme-toggle:hover {
+    background-color: var(--hover-dark);
+    transform: translateY(-3px);
+    color: var(--primary-color);
+}
+
 
 /* Hamburger Menu */
 .hamburger {
@@ -502,6 +529,47 @@ h2 {
 .faq-item.active .faq-body { max-height: 200px; padding: 0 1.2rem 1.2rem; }
 .faq-body p { font-size: 0.95rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
 
+/* --- CONTACT SECTION --- */
+.contact-form {
+    max-width: 600px;
+    margin: 0 auto;
+    padding: 2rem;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group label {
+    margin-bottom: 0.5rem;
+    font-weight: 600;
+    color: var(--text-dark);
+}
+
+.contact-form input,
+.contact-form textarea {
+    padding: 0.8rem 1rem;
+    border-radius: 10px;
+    border: 1px solid var(--glass-border-dark);
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--text-dark);
+    font-size: 1rem;
+    transition: box-shadow 0.3s;
+}
+.contact-form textarea {
+    resize: vertical;
+}
+.contact-form input:focus,
+.contact-form textarea:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px var(--primary-color);
+}
+
 /* --- RESPONSIVE DESIGN --- */
 @media (max-width: 768px) {
     .nav-links { display: none; }
@@ -522,9 +590,13 @@ h2 {
         text-align: center;
         border-radius: 0;
         padding: 1rem;
+        transition: none;
     }
     .nav-links.open .nav-btn:hover {
         transform: none;
+    }
+    .nav-links.open .active-indicator {
+        display: none;
     }
     .hamburger { display: flex; }
     .container { margin: 1rem auto; padding: 1.5rem; }
