@@ -4,9 +4,11 @@ const socket = io("https://chattingapp-backend.onrender.com");
 const chatSection = document.getElementById('chat-section');
 const aboutSection = document.getElementById('about-section');
 const faqSection = document.getElementById('faq-section');
+const contactSection = document.getElementById('contact-section');
 const navLinks = document.getElementById('nav-links');
 const hamburger = document.getElementById('hamburger');
 const themeToggleBtn = document.getElementById('themeToggle');
+const activeIndicator = document.querySelector('.active-indicator');
 
 // Elementi della chat
 const status = document.getElementById('status');
@@ -27,7 +29,18 @@ let partnerIp = null;
 let reportSent = false;
 
 // --- FUNZIONI UTILITY ---
-function showSection(sectionId) {
+function moveActiveIndicator(element) {
+    const navBar = document.querySelector('.nav-links');
+    if (element && window.innerWidth > 768) {
+        activeIndicator.style.width = `${element.offsetWidth}px`;
+        activeIndicator.style.transform = `translateX(${element.offsetLeft - navBar.offsetLeft}px)`;
+        activeIndicator.style.opacity = 1;
+    } else {
+        activeIndicator.style.opacity = 0;
+    }
+}
+
+function showSection(sectionId, element) {
     const sections = document.querySelectorAll('.content-section');
     sections.forEach(section => {
         section.classList.remove('active');
@@ -38,10 +51,11 @@ function showSection(sectionId) {
         activeSection.classList.add('active');
     }
     
-    // Aggiorna lo stato dei link nella navbar
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => btn.classList.remove('active'));
-    document.querySelector(`[onclick="showSection('${sectionId}')"]`).classList.add('active');
+    element.classList.add('active');
+
+    moveActiveIndicator(element);
     
     // Chiudi il menu su mobile
     if (window.innerWidth <= 768) {
@@ -160,6 +174,12 @@ reportBtn.addEventListener('click', () => {
 });
 
 document.addEventListener('DOMContentLoaded', () => {
+    // Spostamento indicatore all'avvio
+    const activeBtn = document.querySelector('.nav-btn.active');
+    if (activeBtn) {
+        moveActiveIndicator(activeBtn);
+    }
+
     // Gestione FAQ
     document.querySelectorAll('.faq-header').forEach(header => {
         header.addEventListener('click', () => {
@@ -179,6 +199,33 @@ document.addEventListener('DOMContentLoaded', () => {
     hamburger.addEventListener('click', () => {
         navLinks.classList.toggle('open');
         hamburger.classList.toggle('open');
+    });
+
+    // Gestione ridimensionamento finestra per navbar
+    window.addEventListener('resize', () => {
+        const activeBtn = document.querySelector('.nav-btn.active');
+        if (activeBtn) {
+            moveActiveIndicator(activeBtn);
+        }
+    });
+
+    // Gestione form contatti
+    const contactForm = document.getElementById('contact-form');
+    contactForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const statusMessage = document.getElementById('contact-status');
+        const formData = new FormData(contactForm);
+        const data = Object.fromEntries(formData.entries());
+
+        // Simulazione invio dati (in un'applicazione reale qui invieresti a un backend)
+        console.log("Dati del form inviati:", data);
+        statusMessage.textContent = "Messaggio inviato con successo!";
+        statusMessage.style.color = 'var(--success-color)';
+        contactForm.reset();
+        
+        setTimeout(() => {
+            statusMessage.textContent = '';
+        }, 5000);
     });
 });
 
