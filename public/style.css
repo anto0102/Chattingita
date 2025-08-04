@@ -201,6 +201,12 @@ a:hover {
     font-size: 1.2rem;
 }
 
+/* Explicitly set icon color to text-color, so it respects the theme change */
+.theme-toggle .fas {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+
 .hamburger {
     display: none;
     background: none;
@@ -258,6 +264,7 @@ a:hover {
 
 #chat-section .header h1 {
     font-size: 1.5rem;
+    /* Use variable to ensure theme change applies */
     color: var(--primary-color);
     display: flex;
     align-items: center;
@@ -265,6 +272,7 @@ a:hover {
 
 #chat-section .header h1 .fas {
     margin-right: 0.5rem;
+    color: var(--primary-color); /* Ensure icon color respects the theme */
 }
 
 .online-counter {
@@ -528,6 +536,8 @@ a:hover {
 
 .faq-header .fas {
     transition: transform 0.3s ease;
+    /* Ensure icon color respects the theme */
+    color: var(--text-color);
 }
 
 .faq-item.active .faq-header .fas {
