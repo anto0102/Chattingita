@@ -311,3 +311,108 @@ socket.on('connect_error', (err) => {
     disconnectBtn.disabled = true;
     reportBtn.disabled = true;
 });
+// Aggiungi un nuovo array per salvare le reazioni in memoria (facoltativo, ma utile per la UI)
+// let reactions = {}; // Oltre a chatLog, non lo usi per ora, ma tienilo a mente
+
+// Modifica la funzione addMessage per aggiungere un ID univoco e un listener
+function addMessage(text, isYou = false) {
+    const msg = document.createElement('div');
+    const messageId = `msg-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`; // ID unico
+    msg.id = messageId;
+    msg.className = 'message ' + (isYou ? 'you' : 'other');
+    msg.textContent = text;
+    
+    // Aggiungi un contenitore per le reazioni
+    const reactionsContainer = document.createElement('div');
+    reactionsContainer.className = 'reactions-container';
+    msg.appendChild(reactionsContainer);
+
+    chatMessages.appendChild(msg);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+
+    if (!isYou) {
+        chatLog.push(text);
+    }
+
+    // Aggiungi il listener per mostrare le reazioni al passaggio del mouse
+    msg.addEventListener('mouseenter', () => {
+        showReactionPicker(msg, messageId);
+    });
+    msg.addEventListener('mouseleave', () => {
+        hideReactionPicker(msg);
+    });
+
+    // Per mobile: mostra le reazioni con un tap lungo
+    msg.addEventListener('touchstart', (e) => {
+        e.preventDefault(); // Impedisce il comportamento predefinito
+        showReactionPicker(msg, messageId);
+    });
+}
+
+function showReactionPicker(messageElement, messageId) {
+    // Rimuovi eventuali picker già aperti per evitare sovrapposizioni
+    document.querySelectorAll('.reaction-picker').forEach(picker => picker.remove());
+
+    const picker = document.createElement('div');
+    picker.className = 'reaction-picker';
+    const emojis = ['👍', '❤️', '😂', '😮', '😢', '🔥']; // Scegli le tue emoji
+
+    emojis.forEach(emoji => {
+        const span = document.createElement('span');
+        span.textContent = emoji;
+        span.className = 'reaction-emoji';
+        span.addEventListener('click', (e) => {
+            e.stopPropagation(); // Evita che il click sul picker nasconda il picker stesso
+            if (connected) {
+                // Invia la reazione al server, includendo l'ID del messaggio
+                socket.emit('react', { messageId: messageId, emoji: emoji });
+            }
+            picker.remove(); // Nascondi il picker dopo il click
+        });
+        picker.appendChild(span);
+    });
+
+    // Posiziona il picker
+    picker.style.top = `${messageElement.offsetTop}px`;
+    picker.style.left = `${messageElement.offsetLeft + messageElement.offsetWidth / 2 - picker.offsetWidth / 2}px`;
+
+    chatMessages.appendChild(picker);
+}
+
+function hideReactionPicker(messageElement) {
+    const picker = messageElement.querySelector('.reaction-picker');
+    if (picker) {
+        // Puoi aggiungere una logica per nascondere il picker dopo un po'
+        // o al mouseleave
+    }
+}
+
+function updateReactions(messageId, emoji) {
+    const messageElement = document.getElementById(messageId);
+    if (!messageElement) return;
+
+    let reactionsContainer = messageElement.querySelector('.reactions-container');
+    if (!reactionsContainer) {
+        reactionsContainer = document.createElement('div');
+        reactionsContainer.className = 'reactions-container';
+        messageElement.appendChild(reactionsContainer);
+    }
+    
+    // Controlla se l'emoji esiste già
+    let emojiSpan = reactionsContainer.querySelector(`[data-emoji="${emoji}"]`);
+    if (!emojiSpan) {
+        emojiSpan = document.createElement('span');
+        emojiSpan.className = 'reaction-emoji-count';
+        emojiSpan.dataset.emoji = emoji;
+        emojiSpan.textContent = `${emoji} 1`;
+        reactionsContainer.appendChild(emojiSpan);
+    } else {
+        let count = parseInt(emojiSpan.textContent.split(' ')[1]) + 1;
+        emojiSpan.textContent = `${emoji} ${count}`;
+    }
+}
+
+// Aggiungi un nuovo evento socket.on per ricevere le reazioni
+socket.on('reaction', ({ messageId, emoji }) => {
+    updateReactions(messageId, emoji);
+});
