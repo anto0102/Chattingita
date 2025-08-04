@@ -1,4 +1,3 @@
-console.log("Lo script è stato caricato correttamente!");
 document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================
@@ -12,9 +11,23 @@ document.addEventListener('DOMContentLoaded', () => {
     const themeToggle = document.getElementById('theme-toggle');
 
     // =========================================
-    // 2. FUNZIONI UTILITY
+    // 2. LOGICA DI CONNESSIONE E CHAT (Socket.IO)
+    // =========================================
+    const socket = io();
+
+    socket.on('disconnect', () => {
+        addStatusMessage("Sei stato disconnesso.");
+    });
+    
+    socket.on('chat message', (msg) => {
+        addMessage(msg, false);
+    });
+
+    // =========================================
+    // 3. FUNZIONI UTILITY
     // =========================================
     function addMessage(text, isYou = false) {
+        // Rimuovi il messaggio di stato quando arriva il primo messaggio
         const statusMsg = document.getElementById('status-message');
         if (statusMsg) {
             statusMsg.remove();
@@ -28,20 +41,28 @@ document.addEventListener('DOMContentLoaded', () => {
         msg.textContent = text;
         msgContainer.appendChild(msg);
         
-        chatMessages.appendChild(msgContainer);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
+        chatMessages.prepend(msgContainer); // Messaggi in alto, per via del flex-direction: column-reverse;
+    }
+
+    function addStatusMessage(text) {
+        const statusMsg = document.createElement('div');
+        statusMsg.id = 'status-message';
+        statusMsg.className = 'status-message';
+        statusMsg.textContent = text;
+        chatMessages.appendChild(statusMsg);
     }
 
     function sendMessage() {
         const message = chatInput.value.trim();
         if (message !== '') {
+            socket.emit('chat message', message);
             addMessage(message, true);
             chatInput.value = '';
         }
     }
 
     // =========================================
-    // 3. GESTIONE INTERAZIONE UI
+    // 4. GESTIONE INTERAZIONE UI
     // =========================================
     
     // Gestione invio messaggio
