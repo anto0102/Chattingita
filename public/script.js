@@ -17,21 +17,22 @@ const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
 const reportBtn = document.getElementById('reportBtn');
+const typingIndicator = document.getElementById('typing-indicator');
 
 // Stato della chat
 let connected = false;
-let typingIndicator = null;
 let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
+let typingTimeout = null;
+const typingDelay = 1000; // Tempo di attesa per l'invio del segnale di stop_typing
 
 // --- FUNZIONI UTILITY ---
 function moveActiveIndicator(element) {
     if (element && window.innerWidth > 768) {
-        const navBar = document.querySelector('.nav-links');
         activeIndicator.style.width = `${element.offsetWidth}px`;
-        activeIndicator.style.transform = `translateX(${element.offsetLeft - navBar.offsetLeft}px)`;
+        activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
         activeIndicator.style.opacity = 1;
     } else {
         activeIndicator.style.opacity = 0;
@@ -67,7 +68,7 @@ function resetChat() {
     input.disabled = true;
     sendBtn.disabled = true;
     inputArea.classList.add('hidden');
-    removeTypingIndicator();
+    hideTypingIndicator();
     chatLog = [];
     partnerIp = null;
     reportSent = false;
@@ -75,10 +76,22 @@ function resetChat() {
 }
 
 function addMessage(text, isYou = false) {
-    const msg = document.createElement('div');
-    msg.className = 'message ' + (isYou ? 'you' : 'other');
-    msg.textContent = text;
-    chatMessages.appendChild(msg);
+    const msgContainer = document.createElement('div');
+    msgContainer.className = `message-container ${isYou ? 'you' : 'other'}`;
+    msgContainer.innerHTML = `<div class="message">${text}</div>`;
+    chatMessages.appendChild(msgContainer);
+    
+    // Aggiungi reazioni al messaggio
+    const reactionPopover = document.createElement('div');
+    reactionPopover.className = 'reaction-popover';
+    const emojis = ['👍', '❤️', '😂', '😮', '😢', '😡'];
+    reactionPopover.innerHTML = emojis.map(emoji => `<span class="reaction-emoji" data-emoji="${emoji}">${emoji}</span>`).join('');
+    msgContainer.appendChild(reactionPopover);
+
+    const reactionDisplay = document.createElement('div');
+    reactionDisplay.className = 'reactions-display';
+    msgContainer.appendChild(reactionDisplay);
+
     chatMessages.scrollTop = chatMessages.scrollHeight;
 
     if (!isYou) {
@@ -94,31 +107,17 @@ function sendMessage() {
         input.value = '';
         socket.emit('stop_typing');
         isTyping = false;
+        clearTimeout(typingTimeout);
     }
 }
 
 function showTypingIndicator() {
-    if (!typingIndicator) {
-        typingIndicator = document.createElement('div');
-        typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = `
-            <span>Il partner sta scrivendo</span>
-            <div class="typing-dots">
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-            </div>
-        `;
-        chatMessages.appendChild(typingIndicator);
-        chatMessages.scrollTop = chatMessages.scrollHeight;
-    }
+    typingIndicator.classList.remove('hidden');
+    chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-function removeTypingIndicator() {
-    if (typingIndicator) {
-        typingIndicator.remove();
-        typingIndicator = null;
-    }
+function hideTypingIndicator() {
+    typingIndicator.classList.add('hidden');
 }
 
 // --- EVENT LISTENERS ---
@@ -128,6 +127,7 @@ startBtn.addEventListener('click', () => {
         status.textContent = 'In attesa di un altro utente...';
         startBtn.disabled = true;
         disconnectBtn.disabled = false;
+        reportBtn.disabled = true;
     }
 });
 
@@ -136,7 +136,7 @@ disconnectBtn.addEventListener('click', () => {
         socket.emit('disconnect_chat');
         status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
     } else {
-        socket.emit('cancel_waiting'); // Aggiunto per annullare l'attesa
+        socket.emit('cancel_waiting');
         status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
         resetChat();
         connected = false;
@@ -154,13 +154,17 @@ input.addEventListener('keypress', (e) => {
 
 input.addEventListener('input', () => {
     if (!connected) return;
-    if (input.value.trim().length > 0 && !isTyping) {
+
+    if (!isTyping) {
         socket.emit('typing');
         isTyping = true;
-    } else if (input.value.trim().length === 0 && isTyping) {
+    }
+    
+    clearTimeout(typingTimeout);
+    typingTimeout = setTimeout(() => {
         socket.emit('stop_typing');
         isTyping = false;
-    }
+    }, typingDelay);
 });
 
 reportBtn.addEventListener('click', () => {
@@ -182,7 +186,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gestione visualizzazione sezioni al click dei bottoni della navbar
     navButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
-            e.preventDefault(); // Previene il comportamento predefinito del link
+            e.preventDefault();
             const sectionId = btn.dataset.section;
             if (sectionId) {
                 showSection(sectionId, btn);
@@ -190,23 +194,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Spostamento indicatore all'avvio
     const activeBtn = document.querySelector('.nav-btn.active');
     if (activeBtn) {
         showSection(activeBtn.dataset.section, activeBtn);
     } else {
-        // Fallback per la sezione iniziale se non ne viene trovata nessuna attiva
         const initialSection = document.getElementById('chat-section');
         if (initialSection) {
             initialSection.classList.add('active');
             const chatBtn = document.querySelector('[data-section="chat"]');
             if (chatBtn) {
-                 moveActiveIndicator(chatBtn);
-                 chatBtn.classList.add('active');
+                moveActiveIndicator(chatBtn);
+                chatBtn.classList.add('active');
             }
         }
     }
-
 
     // Gestione FAQ
     document.querySelectorAll('.faq-header').forEach(header => {
@@ -254,6 +255,58 @@ document.addEventListener('DOMContentLoaded', () => {
             statusMessage.textContent = '';
         }, 5000);
     });
+
+    // --- LOGICA REAZIONI MESSAGGI ---
+    let longPressTimer;
+    const longPressDuration = 500; // Millisecondi
+
+    chatMessages.addEventListener('mouseenter', (e) => {
+        const messageContainer = e.target.closest('.message-container');
+        if (messageContainer) {
+            const reactionPopover = messageContainer.querySelector('.reaction-popover');
+            if (reactionPopover) {
+                reactionPopover.classList.add('visible');
+            }
+        }
+    }, true);
+
+    chatMessages.addEventListener('mouseleave', (e) => {
+        const messageContainer = e.target.closest('.message-container');
+        if (messageContainer) {
+            const reactionPopover = messageContainer.querySelector('.reaction-popover');
+            if (reactionPopover) {
+                reactionPopover.classList.remove('visible');
+            }
+        }
+    }, true);
+
+    chatMessages.addEventListener('mousedown', (e) => {
+        const message = e.target.closest('.message');
+        if (!message) return;
+        longPressTimer = setTimeout(() => {
+            const reactionPopover = message.closest('.message-container').querySelector('.reaction-popover');
+            reactionPopover.classList.add('visible');
+        }, longPressDuration);
+    });
+
+    chatMessages.addEventListener('mouseup', (e) => {
+        clearTimeout(longPressTimer);
+    });
+
+    chatMessages.addEventListener('click', (e) => {
+        const emojiBtn = e.target.closest('.reaction-emoji');
+        if (emojiBtn) {
+            const emoji = emojiBtn.dataset.emoji;
+            const messageIndex = Array.from(emojiBtn.closest('#chat-messages').children).indexOf(emojiBtn.closest('.message-container'));
+            
+            // Invia la reazione tramite socket
+            socket.emit('react_message', { messageIndex, emoji });
+
+            // Nascondi il popover
+            emojiBtn.closest('.reaction-popover').classList.remove('visible');
+            e.stopPropagation();
+        }
+    });
 });
 
 // --- EVENTI SOCKET.IO ---
@@ -282,7 +335,7 @@ socket.on('match', (data) => {
 });
 
 socket.on('message', (msg) => {
-    removeTypingIndicator();
+    hideTypingIndicator();
     addMessage(msg, false);
 });
 
@@ -291,7 +344,7 @@ socket.on('typing', () => {
 });
 
 socket.on('stop_typing', () => {
-    removeTypingIndicator();
+    hideTypingIndicator();
 });
 
 socket.on('partner_disconnected', () => {
@@ -310,4 +363,13 @@ socket.on('connect_error', (err) => {
     startBtn.disabled = false;
     disconnectBtn.disabled = true;
     reportBtn.disabled = true;
+});
+
+socket.on('reaction_received', ({ messageIndex, emoji }) => {
+    const messageContainers = chatMessages.querySelectorAll('.message-container');
+    if (messageContainers[messageIndex]) {
+        const reactionsDisplay = messageContainers[messageIndex].querySelector('.reactions-display');
+        reactionsDisplay.innerHTML = `<span class="reaction-emoji">${emoji}</span><span class="reaction-emoji-count">1</span>`;
+        reactionsDisplay.classList.add('active');
+    }
 });
