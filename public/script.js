@@ -2,14 +2,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // =========================================
     // 1. SELETTORI DEGLI ELEMENTI DEL DOM
+    //    (Corretti per corrispondere al tuo HTML)
     // =========================================
     const chatArea = document.getElementById('chat-area');
     const chatMessages = document.getElementById('chat-messages');
-    const input = document.getElementById('chat-input');
-    const sendBtn = document.getElementById('send-btn');
-    const onlineCounter = document.getElementById('online-counter');
-    const typingIndicator = document.getElementById('typing-indicator');
-    const themeToggle = document.getElementById('theme-toggle');
+    const input = document.getElementById('input'); // Corretto
+    const sendBtn = document.getElementById('sendBtn'); // Corretto
+    const onlineCounter = document.getElementById('onlineCount'); // Corretto
+    const typingIndicator = document.querySelector('.typing-indicator'); // Seleziona per classe
+    const themeToggle = document.getElementById('themeToggle'); // Corretto
     const hamburger = document.getElementById('hamburger');
     const navLinks = document.getElementById('nav-links');
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -37,8 +38,8 @@ document.addEventListener('DOMContentLoaded', () => {
      * @param {boolean} isYou Indica se il messaggio è stato inviato dall'utente corrente.
      */
     function addMessage(text, isYou = false) {
-        // Rimuove lo stato "in attesa di un messaggio" se presente
-        const statusMsg = document.getElementById('status-message');
+        // Rimuove lo stato "in attesa di un messaggio" se presente (ID corretto)
+        const statusMsg = document.getElementById('status'); 
         if (statusMsg) {
             statusMsg.remove();
         }
@@ -107,7 +108,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('online_users', (count) => {
         if (onlineCounter) {
-            onlineCounter.textContent = `${count} utente${count !== 1 ? 'i' : ''} online`;
+            onlineCounter.textContent = `${count}`;
         }
     });
 
@@ -191,8 +192,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Gestione della navigazione tra le sezioni
     if (navButtons.length > 0 && contentSections.length > 0) {
         navButtons.forEach(button => {
-            button.addEventListener('click', () => {
-                const targetSectionId = button.getAttribute('data-target');
+            button.addEventListener('click', (e) => {
+                e.preventDefault(); // Impedisce il default del link
+                const targetSectionId = button.getAttribute('data-section'); // Corretto
                 
                 navButtons.forEach(btn => btn.classList.remove('active'));
                 button.classList.add('active');
@@ -291,7 +293,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const observer = new MutationObserver((mutations) => {
             mutations.forEach((mutation) => {
                 if (mutation.addedNodes.length > 0 && chatMessages.children.length > 0) {
-                    const statusMsg = document.getElementById('status-message');
+                    const statusMsg = document.getElementById('status'); // Corretto
                     if (statusMsg) statusMsg.remove();
                 }
             });
