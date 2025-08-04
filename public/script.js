@@ -9,11 +9,18 @@ document.addEventListener('DOMContentLoaded', () => {
     const navButtons = document.querySelectorAll('.nav-btn');
     const contentSections = document.querySelectorAll('.content-section');
     const themeToggle = document.getElementById('theme-toggle');
+    const newChatBtn = document.getElementById('new-chat-btn');
+    const disconnectBtn = document.getElementById('disconnect-btn');
+    const reactionButtons = document.querySelectorAll('.reaction-btn');
 
     // =========================================
     // 2. LOGICA DI CONNESSIONE E CHAT (Socket.IO)
     // =========================================
     const socket = io();
+
+    socket.on('connect', () => {
+        addStatusMessage("Connesso. In attesa di un altro utente...");
+    });
 
     socket.on('disconnect', () => {
         addStatusMessage("Sei stato disconnesso.");
@@ -21,6 +28,10 @@ document.addEventListener('DOMContentLoaded', () => {
     
     socket.on('chat message', (msg) => {
         addMessage(msg, false);
+    });
+
+    socket.on('reaction', (reaction) => {
+        addMessage(`L'altro utente ha reagito con: ${reaction}`, false);
     });
 
     // =========================================
@@ -45,6 +56,11 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function addStatusMessage(text) {
+        // Rimuove i messaggi di stato precedenti prima di aggiungerne uno nuovo
+        const oldStatusMsg = document.getElementById('status-message');
+        if (oldStatusMsg) {
+            oldStatusMsg.remove();
+        }
         const statusMsg = document.createElement('div');
         statusMsg.id = 'status-message';
         statusMsg.className = 'status-message';
@@ -74,6 +90,31 @@ document.addEventListener('DOMContentLoaded', () => {
             if (e.key === 'Enter') {
                 sendMessage();
             }
+        });
+    }
+
+    // Gestione dei pulsanti "Nuova Chat" e "Disconnetti"
+    if (newChatBtn) {
+        newChatBtn.addEventListener('click', () => {
+            socket.emit('new_chat');
+            addStatusMessage("Richiesta una nuova chat...");
+        });
+    }
+    if (disconnectBtn) {
+        disconnectBtn.addEventListener('click', () => {
+            socket.disconnect();
+            addStatusMessage("Ti sei disconnesso manualmente.");
+        });
+    }
+
+    // Gestione delle reazioni
+    if (reactionButtons.length > 0) {
+        reactionButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                const reaction = button.getAttribute('data-reaction');
+                socket.emit('reaction', reaction);
+                addMessage(`Hai reagito con: ${reaction}`, true);
+            });
         });
     }
 
