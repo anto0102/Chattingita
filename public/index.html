@@ -1,374 +1,187 @@
 <!DOCTYPE html>
-
 <html lang="it">
-
 <head>
-
-    <meta charset="UTF-8">
-
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <title>ChatAnonima</title>
-
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
-    <link rel="stylesheet" href="style.css">
-
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatAnonima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-
 <body>
 
-
-
-  <div class="background-container">
-
-      <div class="circle circle-1"></div>
-
-      <div class="circle circle-2"></div>
-
-      <div class="circle circle-3"></div>
-
-  </div>
-
-
-
-  <header class="header-main">
-
-    <nav class="navbar">
-
-        <a href="#" class="logo">ChatAnonima</a>
-
-        <div class="nav-links" id="nav-links">
-
-            <a href="#chat-section" class="nav-btn active" data-section="chat">Chat</a>
-
-            <a href="#about-section" class="nav-btn" data-section="about">Chi Siamo</a>
-
-            <a href="#faq-section" class="nav-btn" data-section="faq">FAQ</a>
-
-            <a href="#contact-section" class="nav-btn" data-section="contact">Contatti</a>
-
-            <button id="themeToggle" class="nav-btn theme-toggle">
-
-                <i class="fas fa-moon"></i>
-
-            </button>
-
-            <div class="active-indicator"></div>
-
-        </div>
-
-        <button class="hamburger" id="hamburger">
-
-          <span class="bar"></span>
-
-          <span class="bar"></span>
-
-          <span class="bar"></span>
-
-        </button>
-
-    </nav>
-
-  </header>
-
-
-
-  <main class="container">
-
-      <div id="chat-section" class="content-section active">
-
-          <div class="header">
-
-              <h1><i class="fas fa-comment-dots"></i> Chat Anonima</h1>
-
-              <div class="online-counter">
-
-                  <span class="online-dot"></span>
-
-                  <span class="online-text">Utenti online: <span id="onlineCount">0</span></span>
-
-              </div>
-
-          </div>
-
-          
-
-          <div class="chat-wrapper">
-
-              <div id="chat-area">
-
-                  <div id="status" class="status-message">Premi "Inizia Chat" per connetterti</div>
-
-                  <div id="chat-messages"></div>
-
-              </div>
-
-              <div id="input-area" class="input-area hidden">
-
-                  <input id="input" type="text" placeholder="Scrivi un messaggio...">
-
-                  <button id="sendBtn" class="send-btn" disabled>
-
-                      <i class="fas fa-paper-plane"></i>
-
-                  </button>
-
-              </div>
-
-          </div>
-
-
-
-          <div id="controls" class="controls-area">
-
-              <button id="startBtn" class="control-btn primary">
-
-                  <i class="fas fa-play"></i> Inizia Chat
-
-              </button>
-
-              <button id="disconnectBtn" class="control-btn danger" disabled>
-
-                  <i class="fas fa-times"></i> Disconnetti
-
-              </button>
-
-              <button id="reportBtn" class="control-btn warning" disabled>
-
-                  <i class="fas fa-flag"></i> Segnala
-
-              </button>
-
-          </div>
-
-      </div>
-
-
-
-      <div id="about-section" class="content-section">
-
-          <h2><i class="fas fa-users"></i> Chi Siamo</h2>
-
-          <p class="intro-text">Siamo un piccolo team di appassionati sviluppatori, animati dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa connettersi senza barriere.</p>
-
-          
-
-          <div class="about-grid">
-
-              <div class="about-card">
-
-                  <i class="fas fa-user-secret icon"></i>
-
-                  <h3>Anonimato e Libertà</h3>
-
-                  <p>Crediamo fermamente nel diritto di ciascuno di esprimersi in un ambiente privo di giudizio. ChatAnonima nasce per offrirti questa libertà, senza tracciamenti.</p>
-
-              </div>
-
-              <div class="about-card">
-
-                  <i class="fas fa-shield-alt icon"></i>
-
-                  <h3>Sicurezza e Fiducia</h3>
-
-                  <p>Ogni chat è effimera, nessun dato viene memorizzato. La tua privacy non è solo una caratteristica, è il fondamento del nostro servizio.</p>
-
-              </div>
-
-              <div class="about-card">
-
-                  <i class="fas fa-hands-helping icon"></i>
-
-                  <h3>Comunità e Rispetto</h3>
-
-                  <p>Promuoviamo una comunità basata sul rispetto reciproco. Ci impegniamo a mantenere la piattaforma pulita e sicura, con strumenti semplici per segnalare comportamenti inappropriati.</p>
-
-              </div>
-
-              <div class="about-card">
-
-                  <i class="fas fa-code icon"></i>
-
-                  <h3>Innovazione Continua</h3>
-
-                  <p>Siamo costantemente al lavoro per migliorare il servizio. Il feedback dei nostri utenti è essenziale per rendere la piattaforma sempre più intuitiva e all'avanguardia.</p>
-
-              </div>
-
-          </div>
-
-      </div>
-
-
-
-      <div id="faq-section" class="content-section">
-
-          <h2><i class="fas fa-question-circle"></i> Domande Frequenti</h2>
-
-          <div class="faq-container">
-
-              <div class="faq-item">
-
-                  <div class="faq-header">
-
-                      <h3>1. Cos'è ChatAnonima e come funziona?</h3>
-
-                      <i class="fas fa-chevron-down"></i>
-
-                  </div>
-
-                  <div class="faq-body">
-
-                      <p>ChatAnonima è una piattaforma online che ti permette di connetterti e chattare con persone casuali da tutto il mondo, in modo completamente anonimo. Non è richiesta alcuna registrazione. Basta cliccare su "Inizia Chat" e sarai abbinato a un utente disponibile.</p>
-
-                  </div>
-
-              </div>
-
-              <div class="faq-item">
-
-                  <div class="faq-header">
-
-                      <h3>2. La mia privacy è garantita?</h3>
-
-                      <i class="fas fa-chevron-down"></i>
-
-                  </div>
-
-                  <div class="faq-body">
-
-                      <p>Assolutamente sì. La tua privacy è la nostra priorità. Non raccogliamo, né memorizziamo alcun dato personale o le conversazioni. Una volta che la chat termina, tutti i messaggi vengono eliminati e non sono recuperabili.</p>
-
-                  </div>
-
-              </div>
-
-              <div class="faq-item">
-
-                  <div class="faq-header">
-
-                      <h3>3. Posso scegliere con chi chattare?</h3>
-
-                      <i class="fas fa-chevron-down"></i>
-
-                  </div>
-
-                  <div class="faq-body">
-
-                      <p>No, le connessioni sono completamente casuali per mantenere l'anonimato e l'imprevedibilità. Non ci sono filtri per età, genere o interessi. Ogni nuova chat è un'opportunità per incontrare qualcuno di diverso.</p>
-
-                  </div>
-
-              </div>
-
-              <div class="faq-item">
-
-                  <div class="faq-header">
-
-                      <h3>4. Le mie conversazioni vengono monitorate?</h3>
-
-                      <i class="fas fa-chevron-down"></i>
-
-                  </div>
-
-                  <div class="faq-body">
-
-                      <p>No, le conversazioni non vengono monitorate attivamente né registrate. La natura anonima e temporanea della chat significa che i messaggi esistono solo per la durata della sessione tra i due utenti connessi. Nessun log viene mantenuto sui nostri server.</p>
-
-                  </div>
-
-              </div>
-
-          </div>
-
-      </div>
-
-      
-
-      <div id="contact-section" class="content-section">
-
-          <h2><i class="fas fa-envelope"></i> Contattaci</h2>
-
-          <p class="intro-text">Hai domande, suggerimenti o vuoi segnalare un problema? Compila il modulo sottostante per metterti in contatto con il nostro team. Risponderemo il prima possibile!</p>
-
-          <div class="contact-details-grid">
-
-              <div class="contact-card">
-
-                  <i class="fas fa-paper-plane icon"></i>
-
-                  <h3>Contatto Telegram</h3>
-
-                  <a href="https://t.me/tuocanale" target="_blank">@Antoo553</a>
-
-              </div>
-
-              <div class="contact-card">
-
-                  <i class="fas fa-envelope icon"></i>
-
-                  <h3>Email</h3>
-
-                  <a href="mailto:info@chatita.me">info@chatita.me</a>
-
-              </div>
-
-          </div>
-
-          <form id="contact-form" class="contact-form">
-
-              <div class="form-group">
-
-                  <label for="contact-name">Nome</label>
-
-                  <input type="text" id="contact-name" name="name" required>
-
-              </div>
-
-              <div class="form-group">
-
-                  <label for="contact-email">Email</label>
-
-                  <input type="email" id="contact-email" name="email" required>
-
-              </div>
-
-              <div class="form-group">
-
-                  <label for="contact-message">Messaggio</label>
-
-                  <textarea id="contact-message" name="message" rows="5" required></textarea>
-
-              </div>
-
-              <button type="submit" class="control-btn primary">
-
-                  <i class="fas fa-paper-plane"></i> Invia Messaggio
-
-              </button>
-
-          </form>
-
-          <div id="contact-status" class="status-message"></div>
-
-      </div>
-
-  </main>
-
-
-
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
-
-  <script src="script.js"></script>
-
+  <div class="background-container">
+      <div class="circle circle-1"></div>
+      <div class="circle circle-2"></div>
+      <div class="circle circle-3"></div>
+  </div>
+
+  <header class="header-main">
+    <nav class="navbar">
+        <a href="#" class="logo">ChatAnonima</a>
+        <div class="nav-links" id="nav-links">
+            <a href="#chat-section" class="nav-btn active" data-section="chat">Chat</a>
+            <a href="#about-section" class="nav-btn" data-section="about">Chi Siamo</a>
+            <a href="#faq-section" class="nav-btn" data-section="faq">FAQ</a>
+            <a href="#contact-section" class="nav-btn" data-section="contact">Contatti</a>
+            <button id="themeToggle" class="nav-btn theme-toggle">
+                <i class="fas fa-moon"></i>
+            </button>
+            <div class="active-indicator"></div>
+        </div>
+        <button class="hamburger" id="hamburger">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+    </nav>
+  </header>
+
+  <main class="container">
+      <div id="chat-section" class="content-section active">
+          <div class="header">
+              <h1><i class="fas fa-comment-dots"></i> Chat Anonima</h1>
+              <div class="online-counter">
+                  <span class="online-dot"></span>
+                  <span class="online-text">Utenti online: <span id="onlineCount">0</span></span>
+              </div>
+          </div>
+          
+          <div class="chat-wrapper">
+              <div id="chat-area">
+                  <div id="status" class="status-message">Premi "Inizia Chat" per connetterti</div>
+                  <div id="chat-messages"></div>
+              </div>
+              <div id="input-area" class="input-area hidden">
+                  <input id="input" type="text" placeholder="Scrivi un messaggio...">
+                  <button id="sendBtn" class="send-btn" disabled>
+                      <i class="fas fa-paper-plane"></i>
+                  </button>
+              </div>
+          </div>
+
+          <div id="controls" class="controls-area">
+              <button id="startBtn" class="control-btn primary">
+                  <i class="fas fa-play"></i> Inizia Chat
+              </button>
+              <button id="disconnectBtn" class="control-btn danger" disabled>
+                  <i class="fas fa-times"></i> Disconnetti
+              </button>
+              <button id="reportBtn" class="control-btn warning" disabled>
+                  <i class="fas fa-flag"></i> Segnala
+              </button>
+          </div>
+      </div>
+
+      <div id="about-section" class="content-section">
+          <h2><i class="fas fa-users"></i> Chi Siamo</h2>
+          <p class="intro-text">Siamo un piccolo team di appassionati sviluppatori, animati dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa connettersi senza barriere.</p>
+          
+          <div class="about-grid">
+              <div class="about-card">
+                  <i class="fas fa-user-secret icon"></i>
+                  <h3>Anonimato e Libertà</h3>
+                  <p>Crediamo fermamente nel diritto di ciascuno di esprimersi in un ambiente privo di giudizio. ChatAnonima nasce per offrirti questa libertà, senza tracciamenti.</p>
+              </div>
+              <div class="about-card">
+                  <i class="fas fa-shield-alt icon"></i>
+                  <h3>Sicurezza e Fiducia</h3>
+                  <p>Ogni chat è effimera, nessun dato viene memorizzato. La tua privacy non è solo una caratteristica, è il fondamento del nostro servizio.</p>
+              </div>
+              <div class="about-card">
+                  <i class="fas fa-hands-helping icon"></i>
+                  <h3>Comunità e Rispetto</h3>
+                  <p>Promuoviamo una comunità basata sul rispetto reciproco. Ci impegniamo a mantenere la piattaforma pulita e sicura, con strumenti semplici per segnalare comportamenti inappropriati.</p>
+              </div>
+              <div class="about-card">
+                  <i class="fas fa-code icon"></i>
+                  <h3>Innovazione Continua</h3>
+                  <p>Siamo costantemente al lavoro per migliorare il servizio. Il feedback dei nostri utenti è essenziale per rendere la piattaforma sempre più intuitiva e all'avanguardia.</p>
+              </div>
+          </div>
+      </div>
+
+      <div id="faq-section" class="content-section">
+          <h2><i class="fas fa-question-circle"></i> Domande Frequenti</h2>
+          <div class="faq-container">
+              <div class="faq-item">
+                  <div class="faq-header">
+                      <h3>1. Cos'è ChatAnonima e come funziona?</h3>
+                      <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div class="faq-body">
+                      <p>ChatAnonima è una piattaforma online che ti permette di connetterti e chattare con persone casuali da tutto il mondo, in modo completamente anonimo. Non è richiesta alcuna registrazione. Basta cliccare su "Inizia Chat" e sarai abbinato a un utente disponibile.</p>
+                  </div>
+              </div>
+              <div class="faq-item">
+                  <div class="faq-header">
+                      <h3>2. La mia privacy è garantita?</h3>
+                      <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div class="faq-body">
+                      <p>Assolutamente sì. La tua privacy è la nostra priorità. Non raccogliamo, né memorizziamo alcun dato personale o le conversazioni. Una volta che la chat termina, tutti i messaggi vengono eliminati e non sono recuperabili.</p>
+                  </div>
+              </div>
+              <div class="faq-item">
+                  <div class="faq-header">
+                      <h3>3. Posso scegliere con chi chattare?</h3>
+                      <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div class="faq-body">
+                      <p>No, le connessioni sono completamente casuali per mantenere l'anonimato e l'imprevedibilità. Non ci sono filtri per età, genere o interessi. Ogni nuova chat è un'opportunità per incontrare qualcuno di diverso.</p>
+                  </div>
+              </div>
+              <div class="faq-item">
+                  <div class="faq-header">
+                      <h3>4. Le mie conversazioni vengono monitorate?</h3>
+                      <i class="fas fa-chevron-down"></i>
+                  </div>
+                  <div class="faq-body">
+                      <p>No, le conversazioni non vengono monitorate attivamente né registrate. La natura anonima e temporanea della chat significa che i messaggi esistono solo per la durata della sessione tra i due utenti connessi. Nessun log viene mantenuto sui nostri server.</p>
+                  </div>
+              </div>
+          </div>
+      </div>
+      
+      <div id="contact-section" class="content-section">
+          <h2><i class="fas fa-envelope"></i> Contattaci</h2>
+          <p class="intro-text">Hai domande, suggerimenti o vuoi segnalare un problema? Compila il modulo sottostante per metterti in contatto con il nostro team. Risponderemo il prima possibile!</p>
+          <div class="contact-details-grid">
+              <div class="contact-card">
+                  <i class="fas fa-paper-plane icon"></i>
+                  <h3>Canale Telegram</h3>
+                  <a href="https://t.me/tuocanale" target="_blank">@Tuocanale</a>
+              </div>
+              <div class="contact-card">
+                  <i class="fas fa-envelope icon"></i>
+                  <h3>Email</h3>
+                  <a href="mailto:tuaemail@example.com">tuaemail@example.com</a>
+              </div>
+          </div>
+          <form id="contact-form" class="contact-form">
+              <div class="form-group">
+                  <label for="contact-name">Nome</label>
+                  <input type="text" id="contact-name" name="name" required>
+              </div>
+              <div class="form-group">
+                  <label for="contact-email">Email</label>
+                  <input type="email" id="contact-email" name="email" required>
+              </div>
+              <div class="form-group">
+                  <label for="contact-message">Messaggio</label>
+                  <textarea id="contact-message" name="message" rows="5" required></textarea>
+              </div>
+              <button type="submit" class="control-btn primary">
+                  <i class="fas fa-paper-plane"></i> Invia Messaggio
+              </button>
+          </form>
+          <div id="contact-status" class="status-message"></div>
+      </div>
+  </main>
+
+  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+  <script src="script.js"></script>
 </body>
-
 </html>
-
