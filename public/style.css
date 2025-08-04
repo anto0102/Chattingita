@@ -1,654 +1,195 @@
-/* --- RESET E VARIABILI CSS --- */
-:root {
-    --primary-color: #6a11cb;
-    --secondary-color: #2575fc;
-    --background-light: #f0f4f8;
-    --text-light: #2c3e50;
-    --glass-background-light: rgba(255, 255, 255, 0.6);
-    --glass-border-light: rgba(255, 255, 255, 0.3);
-    --hover-light: #e0e6f0;
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ChatAnonima</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
 
-    --background-dark: #1a1a2e;
-    --text-dark: #f0f4f8;
-    --glass-background-dark: rgba(255, 255, 255, 0.08);
-    --glass-border-dark: rgba(255, 255, 255, 0.1);
-    --hover-dark: rgba(255, 255, 255, 0.05);
+    <div class="background-container">
+        <div class="circle circle-1"></div>
+        <div class="circle circle-2"></div>
+        <div class="circle circle-3"></div>
+    </div>
 
-    --danger-color: #e74c3c;
-    --warning-color: #f1c40f;
-    --success-color: #2ecc71;
-    --shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
-    --border-radius: 20px;
-    --font-family: 'Poppins', sans-serif;
-    
-    --navbar-height: 80px;
-}
+    <header class="header-main">
+        <nav class="navbar">
+            <a href="#" class="logo">ChatAnonima</a>
+            <div class="nav-links" id="nav-links">
+                <a href="#chat-section" class="nav-btn active" data-section="chat">Chat</a>
+                <a href="#about-section" class="nav-btn" data-section="about">Chi Siamo</a>
+                <a href="#faq-section" class="nav-btn" data-section="faq">FAQ</a>
+                <a href="#contact-section" class="nav-btn" data-section="contact">Contatti</a>
+                <button id="themeToggle" class="nav-btn theme-toggle">
+                    <i class="fas fa-moon"></i>
+                </button>
+                <div class="active-indicator"></div>
+            </div>
+            <button class="hamburger" id="hamburger">
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
+            </button>
+        </nav>
+    </header>
 
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
+    <main class="container">
+        <div id="chat-section" class="content-section active">
+            <div class="header">
+                <h1><i class="fas fa-comment-dots"></i> Chat Anonima</h1>
+                <div class="online-counter">
+                    <span class="online-dot"></span>
+                    <span class="online-text">Utenti online: <span id="onlineCount">0</span></span>
+                </div>
+            </div>
+            
+            <div class="chat-wrapper">
+                <div id="chat-area">
+                    <div id="status" class="status-message">Premi "Inizia Chat" per connetterti</div>
+                    <div id="chat-messages"></div>
+                    <div id="typing-indicator" class="typing-indicator hidden">
+                        <span>Il partner sta scrivendo</span>
+                        <div class="typing-dots">
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                            <span class="typing-dot"></span>
+                        </div>
+                    </div>
+                </div>
+                <div id="input-area" class="input-area hidden">
+                    <input id="input" type="text" placeholder="Scrivi un messaggio...">
+                    <button id="sendBtn" class="send-btn" disabled>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
 
-body {
-    font-family: var(--font-family);
-    background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-    color: var(--text-dark);
-    transition: background 0.5s ease, color 0.5s ease;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    overflow-x: hidden;
-    position: relative;
-    padding-top: var(--navbar-height);
-}
+            <div id="controls" class="controls-area">
+                <button id="startBtn" class="control-btn primary">
+                    <i class="fas fa-play"></i> Inizia Chat
+                </button>
+                <button id="disconnectBtn" class="control-btn danger" disabled>
+                    <i class="fas fa-times"></i> Disconnetti
+                </button>
+                <button id="reportBtn" class="control-btn warning" disabled>
+                    <i class="fas fa-flag"></i> Segnala
+                </button>
+            </div>
+        </div>
 
-/* --- LIGHT MODE --- */
-body.light-mode {
-    background: linear-gradient(135deg, var(--background-light) 0%, #bbdefb 100%);
-    color: var(--text-light);
-}
+        <div id="about-section" class="content-section">
+            <h2><i class="fas fa-users"></i> Chi Siamo</h2>
+            <p class="intro-text">Siamo un piccolo team di appassionati sviluppatori, animati dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa connettersi senza barriere.</p>
+            
+            <div class="about-grid">
+                <div class="about-card">
+                    <i class="fas fa-user-secret icon"></i>
+                    <h3>Anonimato e Libertà</h3>
+                    <p>Crediamo fermamente nel diritto di ciascuno di esprimersi in un ambiente privo di giudizio. ChatAnonima nasce per offrirti questa libertà, senza tracciamenti.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-shield-alt icon"></i>
+                    <h3>Sicurezza e Fiducia</h3>
+                    <p>Ogni chat è effimera, nessun dato viene memorizzato. La tua privacy non è solo una caratteristica, è il fondamento del nostro servizio.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-hands-helping icon"></i>
+                    <h3>Comunità e Rispetto</h3>
+                    <p>Promuoviamo una comunità basata sul rispetto reciproco. Ci impegniamo a mantenere la piattaforma pulita e sicura, con strumenti semplici per segnalare comportamenti inappropriati.</p>
+                </div>
+                <div class="about-card">
+                    <i class="fas fa-code icon"></i>
+                    <h3>Innovazione Continua</h3>
+                    <p>Siamo costantemente al lavoro per migliorare il servizio. Il feedback dei nostri utenti è essenziale per rendere la piattaforma sempre più intuitiva e all'avanguardia.</p>
+                </div>
+            </div>
+        </div>
 
-body.light-mode .header-main {
-    background: rgba(255, 255, 255, 0.8);
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-}
-body.light-mode .logo {
-    color: var(--text-light);
-}
-body.light-mode .nav-links a {
-    color: var(--text-light);
-}
-body.light-mode .nav-links a:hover {
-    background: var(--hover-light);
-}
-body.light-mode .nav-links a.active {
-    background-color: transparent;
-    color: var(--primary-color);
-}
-body.light-mode #themeToggle {
-    color: var(--text-light);
-    background-color: var(--hover-light);
-}
-body.light-mode #themeToggle:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-body.light-mode .hamburger .bar {
-    background-color: var(--text-light);
-}
-body.light-mode .active-indicator {
-    background-color: var(--primary-color);
-}
-body.light-mode .container,
-body.light-mode .content-section,
-body.light-mode .about-card,
-body.light-mode .faq-item,
-body.light-mode .contact-form,
-body.light-mode .contact-card {
-    background: var(--glass-background-light);
-    border: 1px solid var(--glass-border-light);
-}
-body.light-mode .online-dot { background-color: var(--success-color); }
-body.light-mode .status-message { color: var(--text-light); }
-body.light-mode .message.you { background-color: var(--primary-color); color: white; }
-body.light-mode .message.other { background-color: var(--hover-light); color: var(--text-light); }
+        <div id="faq-section" class="content-section">
+            <h2><i class="fas fa-question-circle"></i> Domande Frequenti</h2>
+            <div class="faq-container">
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3>1. Cos'è ChatAnonima e come funziona?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p>ChatAnonima è una piattaforma online che ti permette di connetterti e chattare con persone casuali da tutto il mondo, in modo completamente anonimo. Non è richiesta alcuna registrazione. Basta cliccare su "Inizia Chat" e sarai abbinato a un utente disponibile.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3>2. La mia privacy è garantita?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p>Assolutamente sì. La tua privacy è la nostra priorità. Non raccogliamo, né memorizziamo alcun dato personale o le conversazioni. Una volta che la chat termina, tutti i messaggi vengono eliminati e non sono recuperabili.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3>3. Posso scegliere con chi chattare?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p>No, le connessioni sono completamente casuali per mantenere l'anonimato e l'imprevedibilità. Non ci sono filtri per età, genere o interessi. Ogni nuova chat è un'opportunità per incontrare qualcuno di diverso.</p>
+                    </div>
+                </div>
+                <div class="faq-item">
+                    <div class="faq-header">
+                        <h3>4. Le mie conversazioni vengono monitorate?</h3>
+                        <i class="fas fa-chevron-down"></i>
+                    </div>
+                    <div class="faq-body">
+                        <p>No, le conversazioni non vengono monitorate attivamente né registrate. La natura anonima e temporanea della chat significa che i messaggi esistono solo per la durata della sessione tra i due utenti connessi. Nessun log viene mantenuto sui nostri server.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div id="contact-section" class="content-section">
+            <h2><i class="fas fa-envelope"></i> Contattaci</h2>
+            <p class="intro-text">Hai domande, suggerimenti o vuoi segnalare un problema? Compila il modulo sottostante per metterti in contatto con il nostro team. Risponderemo il prima possibile!</p>
+            <div class="contact-details-grid">
+                <div class="contact-card">
+                    <i class="fas fa-paper-plane icon"></i>
+                    <h3>Contatto Telegram</h3>
+                    <a href="https://t.me/tuocanale" target="_blank">@Antoo553</a>
+                </div>
+                <div class="contact-card">
+                    <i class="fas fa-envelope icon"></i>
+                    <h3>Email</h3>
+                    <a href="mailto:info@chatita.me">info@chatita.me</a>
+                </div>
+            </div>
+            <form id="contact-form" class="contact-form">
+                <div class="form-group">
+                    <label for="contact-name">Nome</label>
+                    <input type="text" id="contact-name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-email">Email</label>
+                    <input type="email" id="contact-email" name="email" required>
+                </div>
+                <div class="form-group">
+                    <label for="contact-message">Messaggio</label>
+                    <textarea id="contact-message" name="message" rows="5" required></textarea>
+                </div>
+                <button type="submit" class="control-btn primary">
+                    <i class="fas fa-paper-plane"></i> Invia Messaggio
+                </button>
+            </form>
+            <div id="contact-status" class="status-message"></div>
+        </div>
+    </main>
 
-body.light-mode .about-card h3,
-body.light-mode .faq-header h3,
-body.light-mode .header h1,
-body.light-mode .header h1 i,
-body.light-mode .online-text,
-body.light-mode .contact-form label,
-body.light-mode h2,
-body.light-mode .contact-card h3 { color: var(--text-light); }
-
-body.light-mode .about-card p,
-body.light-mode .intro-text { color: var(--text-light); }
-body.light-mode .faq-body p { color: var(--text-light); }
-body.light-mode .contact-card a { color: var(--primary-color); }
-
-body.light-mode input[type="text"],
-body.light-mode input[type="email"],
-body.light-mode textarea {
-    background-color: rgba(0,0,0,0.05);
-    color: var(--text-light);
-    border: 1px solid rgba(0,0,0,0.1);
-}
-body.light-mode input[type="text"]:focus,
-body.light-mode input[type="email"]:focus,
-body.light-mode textarea:focus { box-shadow: 0 0 0 2px var(--primary-color); }
-
-body.light-mode .typing-indicator {
-    background: rgba(0, 0, 0, 0.1);
-    color: var(--text-light);
-}
-body.light-mode .typing-dot {
-    background-color: var(--text-light);
-}
-
-/* --- SFONDO DINAMICO --- */
-.background-container {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    z-index: -1;
-}
-.circle {
-    position: absolute;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.1);
-    animation: moveCircles 20s infinite ease-in-out;
-}
-.circle-1 { width: 250px; height: 250px; top: 10%; left: 20%; animation-delay: 0s; }
-.circle-2 { width: 350px; height: 350px; bottom: 5%; right: 15%; animation-delay: 5s; }
-.circle-3 { width: 300px; height: 300px; top: 40%; right: 30%; animation-delay: 10s; }
-
-@keyframes moveCircles {
-    0%, 100% { transform: translate(0, 0); }
-    50% { transform: translate(50px, -50px); }
-}
-
-/* --- HEADER E NAVBAR --- */
-.header-main {
-    position: fixed;
-    top: 0;
-    width: 100%;
-    background: rgba(26, 26, 46, 0.8);
-    backdrop-filter: blur(10px);
-    z-index: 1000;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.2);
-}
-.navbar {
-    max-width: 1200px;
-    margin: 0 auto;
-    padding: 0 2rem;
-    height: var(--navbar-height);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    position: relative;
-}
-
-.logo {
-    font-weight: 700;
-    font-size: 1.8rem;
-    color: var(--text-dark);
-    text-decoration: none;
-    transition: color 0.3s;
-}
-
-.logo:hover { color: var(--primary-color); }
-
-.nav-links {
-    display: flex;
-    gap: 1rem;
-    align-items: center;
-    position: relative;
-}
-
-.nav-btn {
-    padding: 0.7rem 1.2rem;
-    text-decoration: none;
-    color: var(--text-dark);
-    font-weight: 600;
-    transition: color 0.3s, background-color 0.3s;
-    background: none;
-    border: none;
-    cursor: pointer;
-    font-size: 1rem;
-    position: relative;
-}
-
-.nav-btn:hover {
-    color: var(--primary-color);
-}
-
-.nav-btn.active {
-    color: var(--primary-color);
-}
-
-.active-indicator {
-    position: absolute;
-    bottom: 12px;
-    left: 0;
-    height: 3px;
-    background-color: var(--primary-color);
-    transition: width 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55), transform 0.3s cubic-bezier(0.68, -0.55, 0.27, 1.55);
-}
-
-.theme-toggle {
-    padding: 0.5rem;
-    border-radius: 50%;
-    font-size: 1.2rem;
-    color: var(--text-dark);
-    transition: background-color 0.3s, transform 0.2s, color 0.3s;
-    background-color: transparent;
-}
-.theme-toggle:hover {
-    background-color: var(--hover-dark);
-    transform: translateY(-3px);
-}
-.light-mode .theme-toggle {
-    background-color: var(--hover-light);
-    color: var(--text-light);
-}
-.light-mode .theme-toggle:hover {
-    background-color: var(--primary-color);
-    color: white;
-}
-
-
-/* Hamburger Menu */
-.hamburger {
-    display: none;
-    flex-direction: column;
-    gap: 5px;
-    cursor: pointer;
-    background: none;
-    border: none;
-    width: 30px;
-    height: 30px;
-    position: relative;
-    z-index: 1001;
-}
-
-.hamburger .bar {
-    width: 100%;
-    height: 3px;
-    background-color: var(--text-dark);
-    border-radius: 3px;
-    transition: all 0.3s ease-in-out;
-}
-
-.hamburger.open .bar:nth-child(1) { transform: rotate(-45deg) translate(-5px, 6px); }
-.hamburger.open .bar:nth-child(2) { opacity: 0; }
-.hamburger.open .bar:nth-child(3) { transform: rotate(45deg) translate(-5px, -6px); }
-
-/* --- MAIN CONTAINER --- */
-.container {
-    width: 100%;
-    max-width: 900px;
-    margin: 2rem auto;
-    padding: 2rem;
-    background: var(--glass-background-dark);
-    border: 1px solid var(--glass-border-dark);
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    transition: background 0.5s, border 0.5s;
-    animation: fadeIn 0.8s ease-in-out;
-}
-
-.content-section {
-    display: none;
-    animation: fadeIn 0.6s ease-in-out;
-}
-
-.content-section.active { display: block; }
-
-/* --- CHAT SECTION --- */
-.header { text-align: center; margin-bottom: 2rem; }
-.header h1 {
-    font-size: 2.5rem;
-    font-weight: 700;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    color: var(--text-dark);
-}
-.header h1 i { color: var(--success-color); }
-.online-counter {
-    margin-top: 0.5rem;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-size: 1rem;
-    color: var(--text-dark);
-}
-.online-dot {
-    width: 10px;
-    height: 10px;
-    background-color: var(--success-color);
-    border-radius: 50%;
-    animation: pulse 2s infinite ease-in-out;
-}
-@keyframes pulse {
-    0% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0.7); }
-    70% { box-shadow: 0 0 0 10px rgba(46, 204, 113, 0); }
-    100% { box-shadow: 0 0 0 0 rgba(46, 204, 113, 0); }
-}
-
-.chat-wrapper { display: flex; flex-direction: column; gap: 1rem; margin-bottom: 1.5rem; }
-#chat-area {
-    height: 500px;
-    display: flex;
-    flex-direction: column;
-    padding: 1.5rem;
-    background: rgba(0, 0, 0, 0.2);
-    border-radius: var(--border-radius);
-    overflow-y: auto;
-    border: 1px solid var(--glass-border-dark);
-}
-
-#chat-area::-webkit-scrollbar { width: 8px; }
-#chat-area::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.1); border-radius: 10px; }
-#chat-area::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.3); border-radius: 10px; }
-
-#chat-messages {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-}
-
-.status-message {
-    text-align: center;
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.6);
-    margin: auto;
-    padding: 1rem;
-}
-
-.message {
-    padding: 0.8rem 1.2rem;
-    border-radius: 20px;
-    max-width: 80%;
-    word-wrap: break-word;
-    margin-bottom: 0.5rem;
-    opacity: 0;
-    transform: translateY(10px);
-    animation: messageSlideIn 0.3s forwards cubic-bezier(0.175, 0.885, 0.32, 1.275);
-}
-@keyframes messageSlideIn { to { opacity: 1; transform: translateY(0); } }
-
-.message.you {
-    background-color: var(--primary-color);
-    color: white;
-    margin-left: auto;
-    text-align: right;
-    border-bottom-right-radius: 5px;
-}
-
-.message.other {
-    background-color: rgba(255, 255, 255, 0.15);
-    color: var(--text-dark);
-    margin-right: auto;
-    border-bottom-left-radius: 5px;
-}
-.message.other a { color: #f1c40f; font-weight: 600; }
-
-.typing-indicator {
-    padding: 0.5rem 1rem;
-    background: rgba(255, 255, 255, 0.1);
-    border-radius: 20px;
-    max-width: 200px;
-    font-style: italic;
-    color: rgba(255, 255, 255, 0.6);
-    margin-right: auto;
-    font-size: 0.9rem;
-    animation: fadeIn 0.3s;
-    display: flex;
-    gap: 0.5rem;
-    align-items: center;
-}
-.typing-dots { display: flex; gap: 4px; }
-.typing-dot {
-    width: 8px;
-    height: 8px;
-    background-color: rgba(255, 255, 255, 0.6);
-    border-radius: 50%;
-    animation: bounce 1.2s infinite ease-in-out;
-}
-.typing-dot:nth-child(2) { animation-delay: 0.2s; }
-.typing-dot:nth-child(3) { animation-delay: 0.4s; }
-
-@keyframes bounce {
-    0%, 80%, 100% { transform: translateY(0); }
-    40% { transform: translateY(-8px); }
-}
-
-.input-area { display: flex; gap: 1rem; }
-.input-area.hidden { display: none; }
-
-input[type="text"] {
-    flex-grow: 1;
-    padding: 0.8rem 1.5rem;
-    border-radius: 15px;
-    border: 1px solid var(--glass-border-dark);
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--text-dark);
-    font-size: 1rem;
-    transition: box-shadow 0.3s;
-}
-input[type="text"]:focus { outline: none; box-shadow: 0 0 0 2px var(--primary-color); }
-.send-btn {
-    background-color: var(--success-color);
-    color: white;
-    border: none;
-    border-radius: 15px;
-    width: 50px;
-    height: 50px;
-    font-size: 1.2rem;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.2s, box-shadow 0.3s;
-}
-.send-btn:hover:not(:disabled) {
-    background-color: #27ae60;
-    transform: scale(1.05);
-    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-}
-.controls-area { display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 1rem; margin-top: 1.5rem; }
-.control-btn {
-    padding: 0.8rem 1.5rem;
-    font-size: 1rem;
-    font-weight: 600;
-    border: none;
-    border-radius: 15px;
-    cursor: pointer;
-    color: white;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    transition: transform 0.2s, box-shadow 0.3s, filter 0.3s;
-}
-.control-btn:hover:not(:disabled) {
-    transform: translateY(-3px);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.2);
-    filter: brightness(1.1);
-}
-.control-btn.primary { background-color: var(--primary-color); }
-.control-btn.danger { background-color: var(--danger-color); }
-.control-btn.warning { background-color: var(--warning-color); }
-.control-btn:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
-    transform: none;
-    box-shadow: none;
-}
-
-/* --- ABOUT SECTION --- */
-h2 {
-    font-size: 2rem;
-    font-weight: 700;
-    margin-bottom: 1.5rem;
-    text-align: center;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.8rem;
-    color: var(--text-dark);
-}
-.intro-text {
-    text-align: center;
-    max-width: 600px;
-    margin: 0 auto 2rem;
-    font-size: 1.1rem;
-    color: rgba(255, 255, 255, 0.7);
-}
-.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; }
-.about-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease, background 0.3s;
-}
-.about-card:hover { transform: translateY(-5px); background: rgba(255, 255, 255, 0.1); }
-.about-card .icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
-.about-card h3 { font-size: 1.2rem; margin-bottom: 0.5rem; color: var(--text-dark); }
-.about-card p { font-size: 0.9rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
-
-/* --- FAQ SECTION --- */
-.faq-container { max-width: 700px; margin: 0 auto; }
-.faq-item {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 15px;
-    margin-bottom: 1rem;
-    overflow: hidden;
-    transition: background 0.3s;
-}
-.faq-item.active { background: rgba(255, 255, 255, 0.1); }
-.faq-header {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-    padding: 1.2rem;
-    cursor: pointer;
-    font-weight: 600;
-}
-.faq-header h3 { font-size: 1.1rem; color: var(--text-dark); }
-.faq-header i {
-    font-size: 1.2rem;
-    color: var(--primary-color);
-    transition: transform 0.3s ease;
-}
-.faq-item.active .faq-header i { transform: rotate(180deg); }
-.faq-body {
-    max-height: 0;
-    overflow: hidden;
-    transition: max-height 0.4s ease-in-out, padding 0.4s ease-in-out;
-    padding: 0 1.2rem;
-}
-.faq-item.active .faq-body { max-height: 200px; padding: 0 1.2rem 1.2rem; }
-.faq-body p { font-size: 0.95rem; line-height: 1.6; color: rgba(255, 255, 255, 0.7); }
-
-/* --- CONTACT SECTION --- */
-.contact-details-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin-bottom: 2rem;
-}
-.contact-card {
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: var(--border-radius);
-    padding: 2rem;
-    text-align: center;
-    transition: transform 0.3s ease, background 0.3s;
-}
-.contact-card:hover {
-    transform: translateY(-5px);
-    background: rgba(255, 255, 255, 0.1);
-}
-.contact-card .icon {
-    font-size: 3rem;
-    color: var(--primary-color);
-    margin-bottom: 1rem;
-}
-.contact-card h3 {
-    font-size: 1.2rem;
-    margin-bottom: 0.5rem;
-    color: var(--text-dark);
-}
-.contact-card a {
-    color: var(--primary-color);
-    font-weight: 600;
-    text-decoration: none;
-    transition: color 0.3s;
-}
-.contact-card a:hover {
-    color: var(--secondary-color);
-    text-decoration: underline;
-}
-
-.contact-form {
-    max-width: 600px;
-    margin: 0 auto;
-    padding: 2rem;
-    border-radius: var(--border-radius);
-    display: flex;
-    flex-direction: column;
-    gap: 1.5rem;
-}
-.form-group {
-    display: flex;
-    flex-direction: column;
-}
-.form-group label {
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-    color: var(--text-dark);
-}
-.contact-form input,
-.contact-form textarea {
-    padding: 0.8rem 1rem;
-    border-radius: 10px;
-    border: 1px solid var(--glass-border-dark);
-    background: rgba(0, 0, 0, 0.2);
-    color: var(--text-dark);
-    font-size: 1rem;
-    transition: box-shadow 0.3s;
-}
-.contact-form textarea { resize: vertical; }
-.contact-form input:focus,
-.contact-form textarea:focus { outline: none; box-shadow: 0 0 0 2px var(--primary-color); }
-
-/* --- RESPONSIVE DESIGN --- */
-@media (max-width: 768px) {
-    .nav-links { display: none; }
-    .nav-links.open {
-        display: flex;
-        flex-direction: column;
-        position: fixed;
-        top: var(--navbar-height);
-        left: 0;
-        width: 100%;
-        height: calc(100vh - var(--navbar-height));
-        background: rgba(26, 26, 46, 0.9);
-        backdrop-filter: blur(10px);
-        box-shadow: 0 8px 16px rgba(0,0,0,0.2);
-        padding: 1rem 0;
-        z-index: 999;
-        overflow-y: auto;
-    }
-    .nav-links.open .nav-btn {
-        width: 100%;
-        text-align: center;
-        border-radius: 0;
-        padding: 1rem;
-        transition: none;
-    }
-    .nav-links.open .nav-btn:hover { transform: none; }
-    .nav-links.open .active-indicator { display: none; }
-    .hamburger { display: flex; }
-    .container { margin: 1rem auto; padding: 1.5rem; }
-    .header h1 { font-size: 2rem; }
-    .controls-area { grid-template-columns: 1fr; }
-    .chat-wrapper { gap: 0.5rem; }
-    .input-area { flex-direction: column; }
-    input[type="text"] { width: 100%; }
-    .send-btn { width: 100%; height: auto; padding: 0.8rem; }
-}
-
-@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-    
+    <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
+    <script src="script.js"></script>
+</body>
+</html>
