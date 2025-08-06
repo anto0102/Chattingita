@@ -264,7 +264,6 @@ a:hover {
 
 #chat-section .header h1 {
     font-size: 1.5rem;
-    /* Use variable to ensure theme change applies */
     color: var(--primary-color);
     display: flex;
     align-items: center;
@@ -272,7 +271,7 @@ a:hover {
 
 #chat-section .header h1 .fas {
     margin-right: 0.5rem;
-    color: var(--primary-color); /* Ensure icon color respects the theme */
+    color: var(--primary-color);
 }
 
 .online-counter {
@@ -290,7 +289,6 @@ a:hover {
     margin-right: 8px;
 }
 
-/* FIX: Nuovo contenitore e stili per l'allineamento e il posizionamento */
 .chat-wrapper {
     display: flex;
     flex-direction: column;
@@ -298,7 +296,7 @@ a:hover {
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--secondary-color);
-    position: relative; /* Importante per posizionare l'input-area in modo assoluto */
+    position: relative;
 }
 
 .chat-content {
@@ -321,7 +319,8 @@ a:hover {
     color: var(--text-color);
     opacity: 0.7;
     font-style: italic;
-    margin: auto; /* Centra il messaggio iniziale in basso */
+    margin: auto;
+    font-size: 1.2em; /* Rendi il messaggio più leggibile */
 }
 
 .message {
@@ -330,18 +329,25 @@ a:hover {
     max-width: 70%;
     line-height: 1.4;
     word-wrap: break-word;
+    /* Aggiungo un'animazione per l'arrivo dei messaggi */
+    animation: fadeIn 0.3s ease-out;
 }
 
 .message.you {
     background-color: var(--primary-color);
     color: #ffffff;
-    align-self: flex-end; /* Allinea a destra i tuoi messaggi */
+    align-self: flex-end;
 }
 
 .message.other {
     background-color: var(--card-background-color);
     color: var(--text-color);
-    align-self: flex-start; /* Allinea a sinistra i messaggi degli altri */
+    align-self: flex-start;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
 }
 
 .typing-indicator {
@@ -390,16 +396,39 @@ a:hover {
     background-color: var(--card-background-color);
     border-top: 1px solid var(--border-color);
     transition: background-color 0.3s ease;
-    /* FIX: Queste righe risolvono il problema del posizionamento */
     position: sticky;
     bottom: 0;
     left: 0;
     right: 0;
-    z-index: 2; /* Assicura che sia sopra i messaggi */
+    z-index: 2;
+    /* FIX: Miglioramenti estetici */
+    border-top-left-radius: 0;
+    border-top-right-radius: 0;
+    box-shadow: 0 -4px 10px var(--shadow-color);
 }
 
 .input-area.hidden {
     display: none;
+}
+
+#input {
+    flex-grow: 1;
+    padding: 0.75rem 1rem;
+    border-radius: 25px; /* Angoli più arrotondati */
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-color); /* Sfondo più scuro per contrasto */
+    color: var(--text-color);
+    outline: none;
+    transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+#input::placeholder {
+    color: var(--placeholder-color);
+}
+
+#input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.5); /* Effetto focus più accattivante */
 }
 
 .send-btn {
@@ -412,17 +441,28 @@ a:hover {
     margin-left: 10px;
     cursor: pointer;
     font-size: 1.2rem;
-    transition: background-color 0.3s ease, transform 0.2s ease;
+    transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease;
+    /* Animazione aggiunta per il pulsante */
+    animation: sendBtnPulse 2s infinite ease-in-out;
 }
 
 .send-btn:disabled {
     background-color: var(--border-color);
     cursor: not-allowed;
+    opacity: 0.6;
+    animation: none; /* Disattiva l'animazione quando il pulsante è disabilitato */
 }
 
 .send-btn:not(:disabled):hover {
     transform: scale(1.05);
 }
+
+@keyframes sendBtnPulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.03); }
+    100% { transform: scale(1); }
+}
+
 
 .controls-area {
     display: flex;
@@ -528,7 +568,6 @@ a:hover {
 
 .faq-header .fas {
     transition: transform 0.3s ease;
-    /* Ensure icon color respects the theme */
     color: var(--text-color);
 }
 
