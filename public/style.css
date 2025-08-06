@@ -229,7 +229,7 @@ a:hover {
 /* --- MAIN CONTAINER --- */
 .container {
     flex-grow: 1;
-    max-width: 900px;
+    max-width: 1000px; /* MODIFICA: Aumentata la larghezza massima del container principale */
     margin: 2rem auto;
     padding: 0 1rem;
     display: flex;
@@ -257,7 +257,6 @@ a:hover {
 /* --- CHAT SECTION --- */
 #chat-section .header {
     display: flex;
-    /* FIX: Assicurati che gli elementi si adattino e siano allineati */
     align-items: center;
     justify-content: space-between;
     margin-bottom: 1rem;
@@ -268,8 +267,8 @@ a:hover {
     color: var(--primary-color);
     display: flex;
     align-items: center;
-    white-space: nowrap; /* Evita il wrap del testo del titolo */
-    margin-right: 1rem; /* Spazio a destra del titolo */
+    white-space: nowrap;
+    margin-right: 1rem;
 }
 
 #chat-section .header .chat-title .fas {
@@ -282,8 +281,8 @@ a:hover {
     align-items: center;
     font-size: 0.9rem;
     color: var(--text-color);
-    white-space: nowrap; /* Evita il wrap del contatore online */
-    margin-left: auto; /* Allinea a destra su schermi più grandi */
+    white-space: nowrap;
+    margin-left: auto;
 }
 
 .online-dot {
@@ -292,7 +291,6 @@ a:hover {
     background-color: var(--online-dot-color);
     border-radius: 50%;
     margin-right: 8px;
-    /* FIX: Animazione pulsante più moderna */
     animation: pulse-online 1.5s infinite cubic-bezier(0.66, 0, 0.34, 1);
     box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4);
 }
@@ -315,20 +313,18 @@ a:hover {
 .chat-wrapper {
     display: flex;
     flex-direction: column;
-    /* Rimuovi l'altezza fissa e imposta un'altezza minima per lo stato iniziale */
-    min-height: 250px; /* Altezza iniziale quando è in attesa */
-    max-height: 500px; /* Altezza massima per la chat */
+    min-height: 400px; /* MODIFICA: Altezza iniziale maggiore */
+    max-height: 700px; /* MODIFICA: Altezza massima aumentata per la chat */
     height: auto;
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--secondary-color);
     position: relative;
-    transition: max-height 0.5s ease; /* Aggiunto per un'animazione fluida */
+    transition: max-height 0.5s ease;
 }
 
-/* Nuova classe per la chat attiva, rende la chatbox più grande */
 .chat-wrapper.connected {
-    max-height: 600px; /* Altezza maggiore quando la chat è attiva */
+    max-height: 800px; /* MODIFICA: Altezza maggiore quando la chat è attiva */
     transition: max-height 0.5s ease;
 }
 
@@ -754,7 +750,8 @@ a:hover {
     }
     
     .chat-wrapper {
-        height: 400px;
+        min-height: 350px;
+        max-height: 500px;
     }
     
     .message {
