@@ -229,7 +229,7 @@ a:hover {
 /* --- MAIN CONTAINER --- */
 .container {
     flex-grow: 1;
-    max-width: 1000px; /* MODIFICA: Aumentata la larghezza massima del container principale */
+    max-width: 1000px; 
     margin: 2rem auto;
     padding: 0 1rem;
     display: flex;
@@ -313,20 +313,19 @@ a:hover {
 .chat-wrapper {
     display: flex;
     flex-direction: column;
-    min-height: 400px; /* MODIFICA: Altezza iniziale maggiore */
-    max-height: 700px; /* MODIFICA: Altezza massima aumentata per la chat */
-    height: auto;
+    height: 600px; /* MODIFICA: Altezza fissa e definitiva della chat box */
+    max-width: 900px; /* MODIFICA: Larghezza fissa della chat box */
+    width: 100%;
+    margin: 0 auto;
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--secondary-color);
     position: relative;
-    transition: max-height 0.5s ease;
+    /* Rimosso: transizione perché la dimensione è ora fissa */
 }
 
-.chat-wrapper.connected {
-    max-height: 800px; /* MODIFICA: Altezza maggiore quando la chat è attiva */
-    transition: max-height 0.5s ease;
-}
+/* Rimosso: non serve più la classe .connected per cambiare altezza */
+/* .chat-wrapper.connected { ... } */
 
 .chat-content {
     flex-grow: 1;
@@ -750,8 +749,7 @@ a:hover {
     }
     
     .chat-wrapper {
-        min-height: 350px;
-        max-height: 500px;
+        height: 500px; /* MODIFICA: Altezza fissa anche per mobile */
     }
     
     .message {
