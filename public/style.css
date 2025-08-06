@@ -315,11 +315,21 @@ a:hover {
 .chat-wrapper {
     display: flex;
     flex-direction: column;
-    height: 500px;
+    /* Rimuovi l'altezza fissa e imposta un'altezza minima per lo stato iniziale */
+    min-height: 250px; /* Altezza iniziale quando è in attesa */
+    max-height: 500px; /* Altezza massima per la chat */
+    height: auto;
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--secondary-color);
     position: relative;
+    transition: max-height 0.5s ease; /* Aggiunto per un'animazione fluida */
+}
+
+/* Nuova classe per la chat attiva, rende la chatbox più grande */
+.chat-wrapper.connected {
+    max-height: 600px; /* Altezza maggiore quando la chat è attiva */
+    transition: max-height 0.5s ease;
 }
 
 .chat-content {
