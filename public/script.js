@@ -76,6 +76,8 @@ function resetChat() {
     startBtn.disabled = false;
     disconnectBtn.disabled = true;
     reportBtn.disabled = true;
+    // Rimuovi la classe 'connected' quando la chat si disconnette
+    document.querySelector('.chat-wrapper').classList.remove('connected');
 }
 
 function addMessage(text, isYou = false) {
@@ -286,6 +288,8 @@ socket.on('match', (data) => {
     connected = true;
     reportSent = false;
     isTyping = false;
+    // Aggiungi la classe 'connected' quando la chat si connette
+    document.querySelector('.chat-wrapper').classList.add('connected');
 
     if (data && data.partnerIp) {
         partnerIp = data.partnerIp;
