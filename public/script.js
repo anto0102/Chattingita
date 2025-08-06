@@ -72,6 +72,10 @@ function resetChat() {
     partnerIp = null;
     reportSent = false;
     isTyping = false;
+    // Resetta lo stato dei pulsanti di controllo
+    startBtn.disabled = false;
+    disconnectBtn.disabled = true;
+    reportBtn.disabled = true;
 }
 
 function addMessage(text, isYou = false) {
@@ -135,14 +139,13 @@ disconnectBtn.addEventListener('click', () => {
     if (connected) {
         socket.emit('disconnect_chat');
         status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
+        resetChat();
+        connected = false;
     } else {
         socket.emit('cancel_waiting'); // Aggiunto per annullare l'attesa
         status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
         resetChat();
         connected = false;
-        startBtn.disabled = false;
-        disconnectBtn.disabled = true;
-        reportBtn.disabled = true;
     }
 });
 
@@ -309,16 +312,10 @@ socket.on('partner_disconnected', () => {
     status.textContent = 'Il tuo partner si è disconnesso.';
     resetChat();
     connected = false;
-    startBtn.disabled = false;
-    disconnectBtn.disabled = true;
-    reportBtn.disabled = true;
 });
 
 socket.on('connect_error', (err) => {
     status.textContent = 'Errore di connessione: ' + err.message;
     resetChat();
     connected = false;
-    startBtn.disabled = false;
-    disconnectBtn.disabled = true;
-    reportBtn.disabled = true;
 });
