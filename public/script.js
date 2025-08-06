@@ -22,7 +22,7 @@ const reportBtn = document.getElementById('reportBtn');
 let connected = false;
 let typingIndicator = null;
 let chatLog = [];
-let partnerId = null; // Cambiato da partnerIp a partnerId per una gestione più sicura
+let partnerIp = null; // Modificato per memorizzare l'IP del partner
 let reportSent = false;
 let isTyping = false;
 
@@ -70,7 +70,7 @@ function resetChat() {
     inputArea.classList.add('hidden');
     removeTypingIndicator();
     chatLog = [];
-    partnerId = null;
+    partnerIp = null;
     reportSent = false;
     isTyping = false;
     startBtn.disabled = false;
@@ -98,7 +98,7 @@ function sendMessage() {
         input.value = '';
         socket.emit('stop_typing');
         isTyping = false;
-        sendBtn.disabled = true; // Disabilita il pulsante dopo l'invio
+        sendBtn.disabled = true;
         sendBtn.classList.remove('active-animation');
     }
 }
@@ -170,9 +170,9 @@ input.addEventListener('input', () => {
     }
 });
 
-// FUNZIONE SEGNALA MODIFICATA
+// FUNZIONE SEGNALA MODIFICATA per usare l'IP
 reportBtn.addEventListener('click', () => {
-    if (!connected || !partnerId) {
+    if (!connected || !partnerIp) {
         alert("Nessun partner da segnalare.");
         return;
     }
@@ -181,10 +181,10 @@ reportBtn.addEventListener('click', () => {
         return;
     }
 
-    socket.emit("report_user", { partnerId, chatLog });
+    socket.emit("report_user", { partnerIp, chatLog });
     alert("Segnalazione inviata. Il tuo partner è stato disconnesso.");
     reportSent = true;
-    socket.emit('disconnect_chat'); // Disconnette anche l'utente che segnala
+    socket.emit('disconnect_chat');
     status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti';
     resetChat();
     connected = false;
@@ -276,6 +276,7 @@ socket.on('waiting', () => {
     status.textContent = 'In attesa di un altro utente...';
 });
 
+// EVENTO 'match' MODIFICATO per ricevere l'IP
 socket.on('match', (data) => {
     status.textContent = 'Connesso! Puoi iniziare a chattare.';
     inputArea.classList.remove('hidden');
@@ -286,8 +287,8 @@ socket.on('match', (data) => {
     reportSent = false;
     isTyping = false;
 
-    if (data && data.partnerId) {
-        partnerId = data.partnerId;
+    if (data && data.partnerIp) {
+        partnerIp = data.partnerIp;
     }
 });
 
