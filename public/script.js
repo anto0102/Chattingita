@@ -48,13 +48,13 @@ function showSection(sectionId, element) {
     if (activeSection) {
         activeSection.classList.add('active');
     }
-    
+
     navButtons.forEach(btn => btn.classList.remove('active'));
     if (element) {
         element.classList.add('active');
         moveActiveIndicator(element);
     }
-    
+
     if (window.innerWidth <= 768) {
         navLinks.classList.remove('open');
         hamburger.classList.remove('open');
@@ -170,6 +170,7 @@ input.addEventListener('input', () => {
     }
 });
 
+// FUNZIONE SEGNALA MODIFICATA
 reportBtn.addEventListener('click', () => {
     if (!connected || !partnerId) {
         alert("Nessun partner da segnalare.");
@@ -200,7 +201,7 @@ document.addEventListener('DOMContentLoaded', () => {
         document.body.classList.remove('light-mode');
         themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
     }
-    
+
     navButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
