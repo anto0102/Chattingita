@@ -80,12 +80,12 @@ function resetChat() {
     document.querySelector('.chat-wrapper').classList.remove('connected');
 }
 
-// ⬇️ MODIFICA: Funzione per lo scroll automatico
+// Funzione per lo scroll automatico
 function scrollToBottom() {
     chatMessages.scrollTop = chatMessages.scrollHeight;
 }
 
-// ⬇️ MODIFICA: Funzione addMessage aggiornata per includere lo scroll
+// Funzione addMessage aggiornata per includere lo scroll
 function addMessage(text, isYou = false) {
     const msg = document.createElement('div');
     msg.className = 'message ' + (isYou ? 'you' : 'other');
@@ -97,7 +97,6 @@ function addMessage(text, isYou = false) {
         chatLog.push(text);
     }
 }
-// ⬆️ FINE MODIFICA
 
 function sendMessage() {
     const message = input.value.trim();
@@ -112,7 +111,7 @@ function sendMessage() {
     }
 }
 
-// ⬇️ MODIFICA: showTypingIndicator aggiornata per includere lo scroll
+// showTypingIndicator aggiornata per includere lo scroll
 function showTypingIndicator() {
     if (!typingIndicator) {
         typingIndicator = document.createElement('div');
@@ -129,7 +128,6 @@ function showTypingIndicator() {
         scrollToBottom();
     }
 }
-// ⬆️ FINE MODIFICA
 
 function removeTypingIndicator() {
     if (typingIndicator) {
