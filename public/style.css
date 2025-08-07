@@ -109,17 +109,17 @@ a:hover {
 .hamburger .bar { height: 3px; width: 100%; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s ease; }
 
 /* NUOVO: Stile per l'icona delle impostazioni nella nav-bar */
-#settingsNavBtn {
+.settings-btn-nav {
     font-size: 1.2rem;
     padding: 0.5rem;
     line-height: 1;
     transition: transform 0.3s ease;
 }
-#settingsNavBtn .fas {
+.settings-btn-nav .fas {
     color: var(--text-color);
     transition: color 0.3s ease;
 }
-#settingsNavBtn.active {
+.settings-btn-nav.active {
     transform: rotate(45deg);
 }
 
@@ -509,7 +509,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     padding: 0.75rem 1rem;
     border-radius: 8px;
     border: 1px solid var(--border-color);
-    background-color: var(--secondary-color);
+    background-color: var(--card-background-color);
     color: var(--text-color);
     font-family: inherit;
     font-size: 1rem;
