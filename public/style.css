@@ -427,7 +427,6 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 @media (min-width: 769px) {
     main.container:has(#chat-section.active) { max-width: 100%; padding: 0; margin: 0; height: calc(100vh - 61px); display: flex; flex-direction: column; }
     main.container:has(#chat-section.active) #chat-section.active { flex-grow: 1; padding: 0; margin: 0; border-radius: 0; display: flex; flex-direction: column; box-shadow: none; min-height: 0; }
-    main.container:has(#chat-section.active) #chat-section .header { padding: 1rem 2rem; }
     main.container:has(#chat-section.active) .chat-wrapper { max-width: none; height: auto; flex-grow: 1; min-height: 0; border-radius: 0; background-color: var(--background-color); }
     main.container:has(#chat-section.active) .chat-content { max-width: 900px; width: 100%; margin: 0 auto; }
     main.container:has(#chat-section.active) .input-area { max-width: 900px; width: 100%; margin: 0 auto 1rem auto; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); }
@@ -520,24 +519,27 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     border-color: var(--primary-color);
 }
 
-/* Stile per il toggle switch */
+/* MODIFICATO: Stile per il toggle switch */
 .toggle-group {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    gap: 10px;
+    gap: 1rem;
+    margin-top: 1rem;
 }
 .toggle-checkbox {
     appearance: none;
     -webkit-appearance: none;
     position: relative;
-    width: 50px;
-    height: 25px;
-    background: var(--border-color);
-    border-radius: 25px;
+    width: 60px;
+    height: 30px;
+    background: var(--secondary-color);
+    border-radius: 30px;
     cursor: pointer;
-    transition: background-color 0.3s ease;
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
     flex-shrink: 0;
+    border: 1px solid var(--border-color);
+    box-shadow: inset 0 0 5px rgba(0,0,0,0.2);
 }
 .toggle-checkbox:checked {
     background: var(--success-color);
@@ -545,22 +547,25 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 .toggle-checkbox::after {
     content: '';
     position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 21px;
-    height: 21px;
-    background-color: var(--text-color);
+    top: 3px;
+    left: 3px;
+    width: 22px;
+    height: 22px;
+    background-color: #fff;
     border-radius: 50%;
     transition: transform 0.3s ease;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
 .toggle-checkbox:checked::after {
-    transform: translateX(25px);
+    transform: translateX(30px);
 }
 .toggle-label {
     cursor: pointer;
     user-select: none;
     line-height: 1.2;
     flex-grow: 1;
+    font-weight: 500;
+    color: var(--text-color);
 }
 
 /* Stili per la ricerca canzoni */
@@ -571,6 +576,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 }
 #userSongSearchInput {
     padding-right: 3rem;
+    margin-bottom: 0; /* Rimosso lo spazio vuoto */
 }
 .search-btn {
     position: absolute;
@@ -804,4 +810,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     color: var(--text-color);
     opacity: 0.8;
 }
+
+.song-fallback.hidden {
+    display: none;
 }
