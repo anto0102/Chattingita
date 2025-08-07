@@ -87,6 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; }
     }
 
+    // MODIFICA: Invertito l'ordine di .message e .add-reaction-btn
     function addMessage(messageObject) {
         const { id, text, senderId } = messageObject;
         const isYou = senderId === socket.id;
@@ -95,13 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
 
         wrapperDiv.innerHTML = `
-            <button class="add-reaction-btn" data-message-id="${id}">+</button>
             <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
                 <div class="message-content">
                     <p class="message-text">${text}</p>
                 </div>
                 <div class="reactions-display"></div>
             </div>
+            <button class="add-reaction-btn" data-message-id="${id}">+</button>
         `;
         
         chatMessages.append(wrapperDiv);
