@@ -17,11 +17,12 @@ const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
 const reportBtn = document.getElementById('reportBtn');
-const chatContent = document.querySelector('.chat-content'); // <-- 1. MODIFICA AGGIUNTA
+const chatContent = document.querySelector('.chat-content');
+const typingIndicatorContainer = document.getElementById('typing-indicator-container'); // <-- MODIFICA: Aggiunto selettore
 
 // Stato della chat
 let connected = false;
-let typingIndicator = null;
+// let typingIndicator = null; // <-- MODIFICA: Variabile rimossa
 let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
@@ -69,7 +70,7 @@ function resetChat() {
     sendBtn.disabled = true;
     sendBtn.classList.remove('active-animation');
     inputArea.classList.add('hidden');
-    removeTypingIndicator();
+    removeTypingIndicator(); // Questa funzione ora pulisce il nuovo contenitore
     chatLog = [];
     partnerIp = null;
     reportSent = false;
@@ -79,21 +80,18 @@ function resetChat() {
     reportBtn.disabled = true;
 }
 
-// Funzione per lo scroll automatico (versione corretta)
 function scrollToBottom() {
-    // Ora usiamo chatContent, l'elemento che ha davvero la barra di scorrimento
     if (chatContent) {
         chatContent.scrollTop = chatContent.scrollHeight;
     }
 }
 
-// Funzione addMessage aggiornata per includere lo scroll
 function addMessage(text, isYou = false) {
     const msg = document.createElement('div');
     msg.className = 'message ' + (isYou ? 'you' : 'other');
     msg.textContent = text;
     chatMessages.appendChild(msg);
-    scrollToBottom(); // La chiamata qui è corretta e ora funzionerà
+    scrollToBottom();
 
     if (!isYou) {
         chatLog.push(text);
@@ -113,30 +111,30 @@ function sendMessage() {
     }
 }
 
-// showTypingIndicator aggiornata per includere lo scroll
+// --- MODIFICA: Funzioni per l'indicatore di scrittura aggiornate ---
 function showTypingIndicator() {
-    if (!typingIndicator) {
-        typingIndicator = document.createElement('div');
-        typingIndicator.className = 'typing-indicator';
-        typingIndicator.innerHTML = `
-            <span>Il partner sta scrivendo</span>
-            <div class="typing-dots">
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
-                <span class="typing-dot"></span>
+    // Controlla se l'indicatore non è già visibile
+    if (typingIndicatorContainer.innerHTML === '') {
+        typingIndicatorContainer.innerHTML = `
+            <div class="typing-indicator">
+                <span>Il partner sta scrivendo</span>
+                <div class="typing-dots">
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                </div>
             </div>
         `;
-        chatMessages.appendChild(typingIndicator);
-        scrollToBottom(); // La chiamata qui è corretta e ora funzionerà
+        scrollToBottom(); // Scorri per assicurarti che sia visibile
     }
 }
 
 function removeTypingIndicator() {
-    if (typingIndicator) {
-        typingIndicator.remove();
-        typingIndicator = null;
-    }
+    // Svuota semplicemente il contenitore
+    typingIndicatorContainer.innerHTML = '';
 }
+// --- FINE MODIFICA ---
+
 
 // --- EVENT LISTENERS ---
 startBtn.addEventListener('click', () => {
@@ -181,7 +179,6 @@ input.addEventListener('input', () => {
     }
 });
 
-// FUNZIONE SEGNALA MODIFICATA per usare l'IP
 reportBtn.addEventListener('click', () => {
     if (!connected || !partnerIp) {
         alert("Nessun partner da segnalare.");
@@ -287,7 +284,6 @@ socket.on('waiting', () => {
     status.textContent = 'In attesa di un altro utente...';
 });
 
-// EVENTO 'match' MODIFICATO per ricevere l'IP
 socket.on('match', (data) => {
     status.textContent = 'Connesso! Puoi iniziare a chattare.';
     inputArea.classList.remove('hidden');
