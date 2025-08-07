@@ -47,7 +47,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
     
-    // NUOVI SELETTORI PER AVATAR
+    // SELETTORI PER AVATAR
     const settingsBtn = document.getElementById('settingsBtn');
     const avatarModal = document.getElementById('avatar-modal');
     const avatarGrid = document.getElementById('avatar-grid');
@@ -88,7 +88,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
-    // MODIFICATA: Aggiunge l'avatar al messaggio
     function addMessage(messageObject) {
         const { id, text, senderId, avatarUrl } = messageObject;
         const isYou = senderId === socket.id;
@@ -97,12 +96,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
         
-        // La logica delle reazioni rimane complessa, semplifichiamo per ora la struttura del messaggio
         wrapperDiv.innerHTML = `
             <img src="${currentAvatar}" alt="Avatar" class="chat-avatar">
-            <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
-                <div class="message-content"><p class="message-text">${text}</p></div>
-                <div class="reactions-display"></div>
+            <div class="message-content-wrapper">
+              <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
+                  <p class="message-text">${text}</p>
+              </div>
+              <div class="reactions-display"></div>
             </div>
             <button class="add-reaction-btn" data-message-id="${id}">+</button>
         `;
@@ -120,25 +120,14 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { sysMsgDiv.classList.add('visible'); }, 10);
     }
     
-    // MODIFICATA: Invia anche l'avatar
     function sendMessage() {
         const messageText = input.value.trim();
         if (messageText !== '' && connected) {
             emitStopTyping.cancel();
             
-            // Invia un oggetto che include il testo
-            // Nota: il backend deve essere adattato per gestire un oggetto {text: "..."} invece di una stringa
-            socket.emit('message', messageText); 
+            // Il client invia il messaggio. Il server lo ritrasmetterà a tutti.
+            socket.emit('message', messageText);
             
-            // Aggiungiamo il nostro messaggio localmente subito, con il nostro avatar
-            const ownMessageObject = {
-                id: `local-${Date.now()}`,
-                text: messageText,
-                senderId: socket.id,
-                avatarUrl: currentUserAvatar
-            };
-            addMessage(ownMessageObject);
-
             input.value = '';
             if (isTyping) {
                 socket.emit('stop_typing');
@@ -179,12 +168,20 @@ document.addEventListener('DOMContentLoaded', () => {
     let activePalette = null;
     function createReactionPalette(messageId) { const palette = document.createElement('div'); palette.className = 'reaction-palette'; palette.dataset.messageId = messageId; REACTION_EMOJIS.forEach(emoji => { const emojiSpan = document.createElement('span'); emojiSpan.className = 'palette-emoji'; emojiSpan.textContent = emoji; palette.appendChild(emojiSpan); }); return palette; }
     chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const messageWrapper = target.closest('.message-wrapper'); activePalette = createReactionPalette(messageId); messageWrapper.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
-    startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat'); startBtn.disabled = true; disconnectBtn.disabled = false; } });
+    
+    // Logica dei pulsanti principali
+    startBtn.addEventListener('click', () => { if (!connected) { 
+        // Quando ci connettiamo, inviamo al server il nostro avatar scelto
+        socket.emit('start_chat', { avatarUrl: currentUserAvatar }); 
+        startBtn.disabled = true; disconnectBtn.disabled = false; 
+    }});
     disconnectBtn.addEventListener('click', () => { socket.emit('disconnect_chat'); status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
     sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendMessage(); });
     input.addEventListener('input', () => { if (!connected) return; if (input.value.trim().length > 0) { sendBtn.disabled = false; sendBtn.classList.add('active-animation'); } else { sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); } if (!isTyping) { socket.emit('typing'); isTyping = true; } emitStopTyping(); });
     reportBtn.addEventListener('click', () => { if (!connected || !partnerIp) { alert("Nessun partner da segnalare."); return; } if (reportSent) { alert("Hai già segnalato questo utente. La segnalazione è in revisione."); return; } socket.emit("report_user", { partnerIp, chatLog }); alert("Segnalazione inviata. Il tuo partner è stato disconnesso."); reportSent = true; socket.emit('disconnect_chat'); status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
+    
+    // Logica di navigazione e tema
     const savedTheme = localStorage.getItem('theme'); const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches; if (savedTheme === 'light' || (!savedTheme && prefersLight)) { document.body.classList.add('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; } else { document.body.classList.remove('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; }
     navButtons.forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const sectionId = btn.dataset.section; if (sectionId) { showSection(sectionId, btn); } }); });
     const activeBtn = document.querySelector('.nav-btn.active'); if (activeBtn) { showSection(activeBtn.dataset.section, activeBtn); } else { const initialSection = document.getElementById('chat-section'); if (initialSection) { initialSection.classList.add('active'); const chatBtn = document.querySelector('[data-section="chat"]'); if (chatBtn) { moveActiveIndicator(chatBtn); chatBtn.classList.add('active'); } } }
@@ -198,7 +195,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- NUOVA LOGICA PER AVATAR ---
+    // --- LOGICA PER AVATAR ---
     function populateAvatarChoices() {
         avatarGrid.innerHTML = '';
         AVATARS.forEach(avatarSrc => {
@@ -217,65 +214,43 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUserAvatar = avatarSrc;
         localStorage.setItem('userAvatar', avatarSrc);
         const currentSelected = avatarGrid.querySelector('.selected');
-        if (currentSelected) {
-            currentSelected.classList.remove('selected');
-        }
+        if (currentSelected) { currentSelected.classList.remove('selected'); }
         const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
-        if (newSelected) {
-            newSelected.classList.add('selected');
-        }
+        if (newSelected) { newSelected.classList.add('selected'); }
     }
 
     // Carica l'avatar salvato o imposta un default
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATARS[0];
     selectAvatar(currentUserAvatar); // Imposta lo stato iniziale
 
-    settingsBtn.addEventListener('click', () => {
-        populateAvatarChoices();
-        avatarModal.classList.remove('hidden');
-    });
-
-    closeAvatarModalBtn.addEventListener('click', () => {
-        avatarModal.classList.add('hidden');
-    });
-    
-    avatarModal.addEventListener('click', (e) => {
-        if (e.target === avatarModal) { // Chiudi solo se si clicca sullo sfondo
-             avatarModal.classList.add('hidden');
-        }
-    });
-
-    avatarGrid.addEventListener('click', (e) => {
-        if (e.target.classList.contains('avatar-choice')) {
-            selectAvatar(e.target.dataset.src);
-        }
-    });
+    settingsBtn.addEventListener('click', () => { populateAvatarChoices(); avatarModal.classList.remove('hidden'); });
+    closeAvatarModalBtn.addEventListener('click', () => { avatarModal.classList.add('hidden'); });
+    avatarModal.addEventListener('click', (e) => { if (e.target === avatarModal) { avatarModal.classList.add('hidden'); } });
+    avatarGrid.addEventListener('click', (e) => { if (e.target.classList.contains('avatar-choice')) { selectAvatar(e.target.dataset.src); } });
 
 
-    // --- EVENTI SOCKET.IO (CON MODIFICHE) ---
+    // --- EVENTI SOCKET.IO (CORRETTI) ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { showLoadingAnimation(); });
     
     socket.on('match', (data) => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; 
         
-        // Simula la ricezione dell'avatar del partner, scegliendone uno a caso diverso dal nostro
-        const availablePartnerAvatars = AVATARS.filter(av => av !== currentUserAvatar);
-        partnerAvatar = availablePartnerAvatars[Math.floor(Math.random() * availablePartnerAvatars.length)];
+        // Il server ci comunica l'avatar del nostro partner.
+        // Se non lo comunica, ne scegliamo uno di default per evitare errori.
+        partnerAvatar = data.partnerAvatar || AVATARS[1]; 
         
-        if (data && data.partnerIp) { partnerIp = data.partnerIp; } 
-        if (data && data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
+        partnerIp = data.partnerIp;
+        if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
     
+    // Questo evento gestisce TUTTI i messaggi in arrivo, sia i nostri che quelli del partner
     socket.on('new_message', (messageObject) => {
         removeTypingIndicator();
-        
-        // Il backend invia solo il testo, quindi deduciamo che è il partner
-        messageObject.senderId = 'partner'; // ID fittizio per il partner
         addMessage(messageObject);
     });
 
-    socket.on('update_reactions', ({ messageId, reactions }) => { const messageWrapper = document.querySelector(`.message-wrapper .message[data-id="${messageId}"]`); if (!messageWrapper) return; const reactionsDisplay = messageWrapper.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
+    socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
     socket.on('typing', () => { showTypingIndicator(); });
     socket.on('stop_typing', () => { removeTypingIndicator(); });
     socket.on('partner_disconnected', () => { status.textContent = 'Il tuo partner si è disconnesso.'; resetChat(); connected = false; });
