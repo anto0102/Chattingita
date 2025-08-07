@@ -10,60 +10,60 @@ let partnerAvatar;
 // Variabile per la selezione temporanea dell'avatar
 let pendingAvatar;
 
-// --- NUOVO: LISTA AVATAR DEFINITIVA, CON PIÙ SEZIONI E OPZIONI ---
+// --- NUOVO: SELEZIONE AVATAR COMPLETAMENTE RINNOVATA (SENZA DICEBEAR) ---
 const AVATAR_CATEGORIES = {
-    'Avventurieri': [
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Rowan',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Iris',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Felix'
+    'Robot Amichevoli': [
+        'https://robohash.org/Amico?set=set1',
+        'https://robohash.org/Compagno?set=set1',
+        'https://robohash.org/Guida?set=set1',
+        'https://robohash.org/Aiutante?set=set1',
+        'https://robohash.org/Saggio?set=set1',
+        'https://robohash.org/Esploratore?set=set1',
+        'https://robohash.org/Inventore?set=set1',
+        'https://robohash.org/Guardiano?set=set1'
     ],
-    'Robot': [
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Widget',
-        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Unit-734',
-        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Data',
-        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Alpha'
+    'Mostri Buffi': [
+        'https://robohash.org/Mostro?set=set2',
+        'https://robohash.org/Simpatico?set=set2',
+        'https://robohash.org/Pasticcione?set=set2',
+        'https://robohash.org/Birbante?set=set2',
+        'https://robohash.org/Tenero?set=set2',
+        'https://robohash.org/Confuso?set=set2',
+        'https://robohash.org/Divertente?set=set2',
+        'https://robohash.org/Curioso?set=set2'
     ],
-    'Ritratti': [
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Alex',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Chloe',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=David',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Emily',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Frank'
+    'Alieni': [
+        'https://robohash.org/Alieno?set=set3',
+        'https://robohash.org/Galassia?set=set3',
+        'https://robohash.org/Stella?set=set3',
+        'https://robohash.org/Cosmo?set=set3',
+        'https://robohash.org/Visitatore?set=set3',
+        'https://robohash.org/Spazio?set=set3',
+        'https://robohash.org/Mistero?set=set3',
+        'https://robohash.org/Infinito?set=set3'
     ],
-    'Umani Stilizzati': [
-        'https://api.dicebear.com/8.x/micah/svg?seed=Rocky',
-        'https://api.dicebear.com/8.x/micah/svg?seed=Coco',
-        'https://api.dicebear.com/8.x/micah/svg?seed=Peanut',
-        'https://api.dicebear.com/8.x/micah/svg?seed=Mimi',
-        'https://api.dicebear.com/8.x/big-smile/svg?seed=Joy',
-        'https://api.dicebear.com/8.x/big-smile/svg?seed=Sunny',
-        'https://api.dicebear.com/8.x/big-smile/svg?seed=Buddy',
-        'https://api.dicebear.com/8.x/big-smile/svg?seed=Lucky'
+    'Arte Astratta': [
+        'https://source.boringavatars.com/marble/120/Artista?colors=264653,2a9d8f,e9c46a,f4a261,e76f51',
+        'https://source.boringavatars.com/marble/120/Creativo?colors=8ecae6,219ebc,023047,ffb703,fb8500',
+        'https://source.boringavatars.com/marble/120/Sognatore?colors=5f0f40,9a031e,fb8b24,e36414,0f4c5c',
+        'https://source.boringavatars.com/marble/120/Visionario?colors=000000,14213d,fca311,e5e5e5,ffffff',
+        'https://source.boringavatars.com/marble/120/Poeta?colors=ffadad,ffd6a5,fdffb6,caffbf,9bf6ff',
+        'https://source.boringavatars.com/marble/120/Musico?colors=a0c4ff,bdb2ff,ffc6ff,fffffc,b2f7ef',
+        'https://source.boringavatars.com/marble/120/Scultore?colors=d4e09b,f6f4d2,cbdfbd,f19c79,a44a3f',
+        'https://source.boringavatars.com/marble/120/Pittore?colors=2d3047,e33e38,b2c5c3,4a4a4f,edb54c'
     ],
-    'Creativi': [
-        'https://api.dicebear.com/8.x/identicon/svg?seed=Abstract',
-        'https://api.dicebear.com/8.x/identicon/svg?seed=Creative',
-        'https://api.dicebear.com/8.x/identicon/svg?seed=Unique',
-        'https://api.dicebear.com/8.x/identicon/svg?seed=Notion',
-        'https://api.dicebear.com/8.x/rings/svg?seed=Orbit',
-        'https://api.dicebear.com/8.x/rings/svg?seed=Galaxy',
-        'https://api.dicebear.com/8.x/rings/svg?seed=Saturn',
-        'https://api.dicebear.com/8.x/rings/svg?seed=Cosmos'
+    'Geometrici': [
+        'https://source.boringavatars.com/beam/120/Forma?colors=264653,2a9d8f,e9c46a,f4a261,e76f51',
+        'https://source.boringavatars.com/beam/120/Angolo?colors=8ecae6,219ebc,023047,ffb703,fb8500',
+        'https://source.boringavatars.com/beam/120/Linea?colors=5f0f40,9a031e,fb8b24,e36414,0f4c5c',
+        'https://source.boringavatars.com/beam/120/Cubo?colors=000000,14213d,fca311,e5e5e5,ffffff',
+        'https://source.boringavatars.com/pixel/120/Pixel?colors=ffadad,ffd6a5,fdffb6,caffbf,9bf6ff',
+        'https://source.boringavatars.com/pixel/120/Matrice?colors=a0c4ff,bdb2ff,ffc6ff,fffffc,b2f7ef',
+        'https://source.boringavatars.com/ring/120/Anello?colors=d4e09b,f6f4d2,cbdfbd,f19c79,a44a3f',
+        'https://source.boringavatars.com/ring/120/Cerchio?colors=2d3047,e33e38,b2c5c3,4a4a4f,edb54c'
     ]
 };
-const DEFAULT_AVATAR_CATEGORY = 'Avventurieri';
+const DEFAULT_AVATAR_CATEGORY = 'Robot Amichevoli';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
