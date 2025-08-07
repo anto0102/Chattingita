@@ -481,7 +481,12 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     font-weight: 600;
 }
 
-/* --- NUOVO: Stili per le nuove impostazioni utente nel modale --- */
+/* --- Stili per le nuove impostazioni utente nel modale --- */
+.settings-content-scrollable {
+    max-height: 400px;
+    overflow-y: auto;
+    padding-right: 15px; /* Spazio per la scrollbar */
+}
 .settings-group {
     margin-bottom: 1.5rem;
     text-align: left;
@@ -519,6 +524,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     align-items: center;
     gap: 10px;
     cursor: pointer;
+    user-select: none;
 }
 .toggle-checkbox {
     appearance: none;
@@ -552,6 +558,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 .toggle-label {
     cursor: pointer;
     user-select: none;
+    line-height: 1.2;
 }
 
 /* Stili per la ricerca canzoni */
