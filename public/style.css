@@ -834,7 +834,7 @@ emoji-picker {
 
     /* Fa in modo che la sezione della chat si espanda per riempire il contenitore */
     main.container:has(#chat-section.active) #chat-section.active {
-        flex-grow: 1; /* Occupa tutto lo spazio verticale disponibile */
+        flex-grow: 1;
         padding: 0;
         margin: 0;
         border-radius: 0;
@@ -843,7 +843,13 @@ emoji-picker {
         box-shadow: none; /* Rimuovi l'ombra quando è a schermo intero */
     }
 
-    /* Rimuove i limiti di larghezza e altezza dal wrapper della chat */
+    /* * CORREZIONE: Aggiunge padding all'header della chat per non farlo attaccare ai bordi.
+    */
+    main.container:has(#chat-section.active) #chat-section .header {
+        padding: 1rem 2rem; /* Aggiunge spazio sopra/sotto e ai lati */
+    }
+
+    /* Rimuove i limiti dal wrapper della chat per farlo espandere */
     main.container:has(#chat-section.active) .chat-wrapper {
         max-width: none;
         height: 100%;
@@ -866,9 +872,10 @@ emoji-picker {
         box-shadow: 0 4px 15px var(--shadow-color);
     }
 
-    /* Aggiusta i pulsanti di controllo */
+    /* * CORREZIONE: Aggiunge padding all'area controlli per non farla attaccare ai bordi.
+    */
     main.container:has(#chat-section.active) .controls-area {
         background-color: var(--card-background-color);
-        padding: 1.5rem 0;
+        padding: 1.5rem 2rem; /* Aggiunge spazio sopra/sotto e ai lati */
     }
 }
