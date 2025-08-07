@@ -817,3 +817,58 @@ emoji-picker {
     border-radius: 10px;
     box-shadow: 0 5px 15px var(--shadow-color);
 }
+/* --- STILI PER CHAT A SCHERMO INTERO (SOLO DESKTOP) --- */
+@media (min-width: 769px) {
+    /*
+     * Usa la pseudo-classe :has() per applicare stili speciali al contenitore
+     * SOLO quando il suo figlio #chat-section ha la classe .active.
+    */
+    main.container:has(#chat-section.active) {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 61px); /* Altezza totale schermo meno altezza header */
+        display: flex;
+        flex-direction: column;
+    }
+
+    /* Fa in modo che la sezione della chat si espanda per riempire il contenitore */
+    main.container:has(#chat-section.active) #chat-section.active {
+        flex-grow: 1; /* Occupa tutto lo spazio verticale disponibile */
+        padding: 0;
+        margin: 0;
+        border-radius: 0;
+        display: flex;
+        flex-direction: column;
+        box-shadow: none; /* Rimuovi l'ombra quando è a schermo intero */
+    }
+
+    /* Rimuove i limiti di larghezza e altezza dal wrapper della chat */
+    main.container:has(#chat-section.active) .chat-wrapper {
+        max-width: none;
+        height: 100%;
+        border-radius: 0;
+        background-color: var(--background-color); /* Sfondo più omogeneo */
+    }
+    
+    /* Centra i messaggi e l'input in una colonna più leggibile */
+    main.container:has(#chat-section.active) .chat-content,
+    main.container:has(#chat-section.active) .input-area {
+        max-width: 900px; /* Mantiene una larghezza di lettura comoda */
+        width: 100%;
+        margin: 0 auto; /* Centra nell'area a schermo intero */
+    }
+
+    /* Aggiusta l'area di input per il nuovo layout */
+    main.container:has(#chat-section.active) .input-area {
+        border-radius: 10px;
+        margin-bottom: 1rem;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+
+    /* Aggiusta i pulsanti di controllo */
+    main.container:has(#chat-section.active) .controls-area {
+        background-color: var(--card-background-color);
+        padding: 1.5rem 0;
+    }
+}
