@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
     
-    // --- CONNESSIONE DINAMICA AL SERVER (ORA IN UN POSTO SICURO) ---
+    // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
     const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
     let serverURL;
@@ -70,8 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Ambiente non di produzione: mi collego al server beta per i test.");
         serverURL = betaServerURL;
     }
-
-    // Ora inizializziamo la variabile socket
+    
     socket = io(serverURL);
     
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
@@ -132,24 +131,45 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addMessage(text, isYou = false) {
-        const msg = document.createElement('div');
-        msg.className = 'message ' + (isYou ? 'you' : 'other');
-        msg.textContent = text;
-        chatMessages.appendChild(msg);
+    // MODIFICA: La funzione addMessage ora riceve l'intero oggetto-messaggio
+    function addMessage(messageObject) {
+        const { id, text, senderId } = messageObject;
+        
+        // Determina se il messaggio è nostro confrontando il senderId con il nostro id socket
+        const isYou = senderId === socket.id;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message ' + (isYou ? 'you' : 'other');
+        
+        // Aggiungiamo l'ID del messaggio come data-attribute. FONDAMENTALE per le reazioni!
+        msgDiv.dataset.id = id;
+
+        // Creiamo la struttura interna per testo e future reazioni
+        // Usiamo <p> per il testo per una migliore semantica
+        msgDiv.innerHTML = `
+            <div class="message-content">
+                <p class="message-text">${text}</p>
+            </div>
+            <div class="reactions-display"></div>
+        `;
+        
+        chatMessages.appendChild(msgDiv);
         scrollToBottom();
 
+        // Aggiorna il log solo per i messaggi del partner
         if (!isYou) {
             chatLog.push(text);
         }
     }
 
+    // MODIFICA: La funzione sendMessage ora invia solo il testo al server
     function sendMessage() {
-        const message = input.value.trim();
-        if (message !== '' && connected) {
+        const messageText = input.value.trim();
+        if (messageText !== '' && connected) {
             emitStopTyping.cancel(); 
-            socket.emit('message', message);
-            addMessage(message, true);
+            
+            socket.emit('message', messageText);
+            
             input.value = '';
             if (isTyping) {
                 socket.emit('stop_typing');
@@ -338,7 +358,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
     emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- EVENTI SOCKET.IO (ORA IN UN POSTO SICURO) ---
+    // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => {
         onlineCount.textContent = count;
     });
@@ -361,9 +381,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    socket.on('message', (msg) => {
+    // MODIFICA: Ascoltiamo il nuovo evento 'new_message'
+    socket.on('new_message', (messageObject) => {
         removeTypingIndicator();
-        addMessage(msg, false);
+        addMessage(messageObject);
     });
 
     socket.on('typing', () => {
