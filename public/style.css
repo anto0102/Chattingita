@@ -483,7 +483,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 
 /* --- Stili per le nuove impostazioni utente nel modale --- */
 .settings-content-scrollable {
-    max-height: 400px;
+    flex-grow: 1; /* Permette al contenuto di occupare lo spazio disponibile */
     overflow-y: auto;
     padding-right: 15px; /* Spazio per la scrollbar */
     padding-top: 1rem;
