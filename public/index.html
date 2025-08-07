@@ -55,6 +55,9 @@
                     <span class="online-dot"></span>
                     <span class="online-text">Online: <span id="onlineCount">0</span></span>
                 </div>
+                <button id="viewPartnerProfileBtn" class="profile-btn hidden" aria-label="Visualizza profilo partner">
+                    <i class="fas fa-user-circle"></i>
+                </button>
                 <button id="settingsBtn" class="settings-btn" aria-label="Impostazioni">
                   <i class="fas fa-cog"></i>
                 </button>
@@ -141,12 +144,45 @@
             <label for="userBioInput">Scrivi una bio:</label>
             <textarea id="userBioInput" placeholder="Racconta qualcosa di te..." rows="3"></textarea>
           </div>
+
+          <div class="settings-group">
+            <label for="userSongInput">Canzone preferita:</label>
+            <input type="text" id="userSongInput" placeholder="Es: Another Brick in the Wall">
+          </div>
           
           <h3>Scegli il tuo Avatar</h3>
           <div id="avatar-category-selector" class="avatar-category-selector"></div>
           <div id="avatar-grid" class="avatar-grid">
               </div>
+
+          <div class="settings-group">
+              <div class="checkbox-container">
+                  <input type="checkbox" id="showProfileCheckbox">
+                  <label for="showProfileCheckbox">Rendi il mio profilo visibile agli altri</label>
+              </div>
+          </div>
+
           <button id="closeAvatarModal" class="control-btn primary">Salva e Chiudi</button>
+      </div>
+  </div>
+
+  <div id="partner-profile-modal" class="avatar-modal-overlay hidden">
+      <div class="avatar-modal-content">
+          <div class="profile-header">
+              <img id="partnerProfileAvatar" class="profile-avatar" src="" alt="Avatar del partner">
+              <h3 id="partnerProfileName">Anonimo</h3>
+          </div>
+          <div class="profile-details">
+              <div class="profile-detail-item">
+                  <h4>Canzone preferita</h4>
+                  <p id="partnerProfileSong">Non disponibile</p>
+              </div>
+              <div class="profile-detail-item">
+                  <h4>Bio</h4>
+                  <p id="partnerProfileBio">Non disponibile</p>
+              </div>
+          </div>
+          <button id="closePartnerProfileBtn" class="control-btn primary">Chiudi</button>
       </div>
   </div>
 
