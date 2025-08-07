@@ -8,38 +8,60 @@ let socket;
 let currentUserAvatar;
 let partnerAvatar;
 
-// --- NUOVA LOGICA AVATAR: LISTA AVATAR AMPLIATA E PIÙ BELLA ---
-const AVATARS = [
-    // Stile "Adventurer" (Fantasy)
-    'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
-    'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
-    'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
-    'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
-    'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
-    
-    // Stile "Pixel Art" (Retrò)
-    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Max',
-    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ruby',
-    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zane',
-    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Cleo',
-    
-    // Stile "Bottts" (Robot Colorati)
-    'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
-    'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
-    'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
-    'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
-
-    // Stile "Lorelei" (Ritratti)
-    'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
-    'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
-    'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
-    
-    // Stile "Avataaars" (Personaggi personalizzabili)
-    'https://api.dicebear.com/8.x/avataaars/svg?seed=Rocky',
-    'https://api.dicebear.com/8.x/avataaars/svg?seed=Coco',
-    'https://api.dicebear.com/8.x/avataaars/svg?seed=Peanut',
-    'https://api.dicebear.com/8.x/avataaars/svg?seed=Mimi'
-];
+// --- NUOVO: AVATAR ORGANIZZATI PER CATEGORIE ---
+const AVATAR_CATEGORIES = {
+    'Avventurieri': [
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Rowan',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Iris',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Felix'
+    ],
+    'Pixel Art': [
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Max',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ruby',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zane',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Cleo',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Jax',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zoe',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Rex',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ivy'
+    ],
+    'Robot': [
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Widget',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Unit-734',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Data',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Alpha'
+    ],
+    'Ritratti': [
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Alex',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Chloe',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=David',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Emily',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Frank'
+    ],
+     'Animali': [
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Felix',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Milo',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Oscar',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Toby',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Zoe',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Casper',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Gizmo',
+        'https://api.dicebear.com/8.x/notionists/svg?seed=Midnight'
+    ]
+};
+const DEFAULT_AVATAR_CATEGORY = 'Avventurieri';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
@@ -72,6 +94,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarModal = document.getElementById('avatar-modal');
     const avatarGrid = document.getElementById('avatar-grid');
     const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
+    // NUOVO: Selettore per le categorie
+    const avatarCategorySelector = document.getElementById('avatar-category-selector');
+
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
@@ -107,19 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
-    /**
-     * CORREZIONE: Funzione addMessage con la nuova struttura HTML
-     */
     function addMessage(messageObject) {
         const { id, text, senderId, avatarUrl } = messageObject;
         const isYou = senderId === socket.id;
-        // Usa l'avatar specifico del messaggio, che il server ci ha inviato
         const currentAvatar = avatarUrl; 
 
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
 
-        // Nuova struttura HTML, più robusta e facile da stilare
         wrapperDiv.innerHTML = `
             <img src="${currentAvatar}" alt="Avatar" class="chat-avatar">
             <div class="message-and-button-container">
@@ -167,9 +187,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showTypingIndicator() {
       if (document.getElementById('typing-indicator-wrapper')) return;
-
       const wrapperDiv = document.createElement('div');
-      // Usa la stessa classe del message-wrapper per coerenza
       wrapperDiv.className = 'message-wrapper other';
       wrapperDiv.id = 'typing-indicator-wrapper';
       wrapperDiv.innerHTML = `
@@ -216,10 +234,13 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- LOGICA PER AVATAR ---
-    function populateAvatarChoices() {
+    // --- NUOVO: LOGICA PER AVATAR CON CATEGORIE ---
+
+    // Popola la griglia degli avatar in base alla categoria scelta
+    function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
-        AVATARS.forEach(avatarSrc => {
+        const avatars = AVATAR_CATEGORIES[category] || [];
+        avatars.forEach(avatarSrc => {
             const img = document.createElement('img');
             img.src = avatarSrc;
             img.className = 'avatar-choice';
@@ -230,36 +251,71 @@ document.addEventListener('DOMContentLoaded', () => {
             avatarGrid.appendChild(img);
         });
     }
-    
-    /**
-     * CORREZIONE: Funzione selectAvatar che notifica il server del cambiamento
-     */
+
+    // Popola i pulsanti delle categorie
+    function populateCategorySelector() {
+        avatarCategorySelector.innerHTML = '';
+        Object.keys(AVATAR_CATEGORIES).forEach(category => {
+            const btn = document.createElement('button');
+            btn.className = 'category-btn';
+            btn.textContent = category;
+            btn.dataset.category = category;
+            if (category === DEFAULT_AVATAR_CATEGORY) {
+                btn.classList.add('active');
+            }
+            avatarCategorySelector.appendChild(btn);
+        });
+    }
+
     function selectAvatar(avatarSrc) {
         currentUserAvatar = avatarSrc;
         localStorage.setItem('userAvatar', avatarSrc);
 
-        // Aggiorna la UI per mostrare la selezione
         const currentSelected = avatarGrid.querySelector('.selected');
         if (currentSelected) { currentSelected.classList.remove('selected'); }
         const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
         if (newSelected) { newSelected.classList.add('selected'); }
 
-        // Se siamo connessi a una chat, invia l'aggiornamento al server
         if (socket && connected) {
             socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
         }
     }
 
+    // --- Inizializzazione e Gestori Eventi Avatar ---
+    currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
 
-    currentUserAvatar = localStorage.getItem('userAvatar') || AVATARS[0];
-    populateAvatarChoices(); // Popola la griglia al caricamento
-    selectAvatar(currentUserAvatar); // Imposta lo stato iniziale senza emettere eventi
+    settingsBtn.addEventListener('click', () => {
+        populateCategorySelector();
+        // Cerca la categoria dell'avatar corrente, o usa il default
+        let currentCategory = DEFAULT_AVATAR_CATEGORY;
+        for (const category in AVATAR_CATEGORIES) {
+            if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
+                currentCategory = category;
+                break;
+            }
+        }
+        // Evidenzia il pulsante della categoria attiva
+        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+        const activeBtn = document.querySelector(`.category-btn[data-category="${currentCategory}"]`);
+        if(activeBtn) activeBtn.classList.add('active');
 
-    settingsBtn.addEventListener('click', () => { populateAvatarChoices(); avatarModal.classList.remove('hidden'); });
+        populateAvatarGrid(currentCategory);
+        avatarModal.classList.remove('hidden');
+    });
+
     closeAvatarModalBtn.addEventListener('click', () => { avatarModal.classList.add('hidden'); });
     avatarModal.addEventListener('click', (e) => { if (e.target === avatarModal) { avatarModal.classList.add('hidden'); } });
     avatarGrid.addEventListener('click', (e) => { if (e.target.classList.contains('avatar-choice')) { selectAvatar(e.target.dataset.src); } });
 
+    // Gestore per i click sui pulsanti di categoria
+    avatarCategorySelector.addEventListener('click', (e) => {
+        if (e.target.classList.contains('category-btn')) {
+            const category = e.target.dataset.category;
+            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
+            e.target.classList.add('active');
+            populateAvatarGrid(category);
+        }
+    });
 
     // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
@@ -267,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('match', (data) => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
-        partnerAvatar = data.partnerAvatar || AVATARS[1];
+        partnerAvatar = data.partnerAvatar || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
         partnerIp = data.partnerIp;
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
@@ -277,10 +333,8 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(messageObject);
     });
     
-    // CORREZIONE: Aggiorna l'avatar del partner se lo cambia in tempo reale
     socket.on('partner_avatar_updated', (data) => {
         partnerAvatar = data.avatarUrl;
-        // Potresti anche aggiornare gli avatar dei messaggi già presenti, se vuoi
     });
 
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
