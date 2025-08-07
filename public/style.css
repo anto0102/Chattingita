@@ -841,41 +841,45 @@ emoji-picker {
         display: flex;
         flex-direction: column;
         box-shadow: none; /* Rimuovi l'ombra quando è a schermo intero */
+        min-height: 0; /* Correzione per flexbox */
     }
 
-    /* * CORREZIONE: Aggiunge padding all'header della chat per non farlo attaccare ai bordi.
-    */
+    /* Aggiunge padding all'header della chat per non farlo attaccare ai bordi */
     main.container:has(#chat-section.active) #chat-section .header {
-        padding: 1rem 2rem; /* Aggiunge spazio sopra/sotto e ai lati */
+        padding: 1rem 2rem;
     }
 
-    /* Rimuove i limiti dal wrapper della chat per farlo espandere */
+    /* * CORREZIONE PRINCIPALE: Il wrapper ora cresce in modo flessibile e 
+     * contiene il suo figlio (.chat-content) che sarà l'elemento scrollabile.
+    */
     main.container:has(#chat-section.active) .chat-wrapper {
         max-width: none;
-        height: 100%;
+        height: auto; /* Altezza automatica, sarà controllata dal flex-grow */
+        flex-grow: 1; /* Questa è la chiave: si espande per riempire lo spazio */
+        min-height: 0; /* Previene problemi di overflow con i figli flessibili */
         border-radius: 0;
-        background-color: var(--background-color); /* Sfondo più omogeneo */
+        background-color: var(--background-color);
     }
     
-    /* Centra i messaggi e l'input in una colonna più leggibile */
-    main.container:has(#chat-section.active) .chat-content,
-    main.container:has(#chat-section.active) .input-area {
-        max-width: 900px; /* Mantiene una larghezza di lettura comoda */
+    /* Centra i messaggi in una colonna leggibile */
+    main.container:has(#chat-section.active) .chat-content {
+        max-width: 900px;
         width: 100%;
-        margin: 0 auto; /* Centra nell'area a schermo intero */
+        margin: 0 auto;
     }
 
-    /* Aggiusta l'area di input per il nuovo layout */
+    /* Centra l'area di input */
     main.container:has(#chat-section.active) .input-area {
+        max-width: 900px;
+        width: 100%;
+        margin: 0 auto 1rem auto; /* Aggiunge margine sotto e centra */
         border-radius: 10px;
-        margin-bottom: 1rem;
         box-shadow: 0 4px 15px var(--shadow-color);
     }
 
-    /* * CORREZIONE: Aggiunge padding all'area controlli per non farla attaccare ai bordi.
-    */
+    /* Aggiunge padding all'area controlli */
     main.container:has(#chat-section.active) .controls-area {
         background-color: var(--card-background-color);
-        padding: 1.5rem 2rem; /* Aggiunge spazio sopra/sotto e ai lati */
+        padding: 1.5rem 2rem;
     }
 }
