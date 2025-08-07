@@ -9,6 +9,10 @@ let currentUserAvatar;
 let partnerAvatar;
 // Variabile per la selezione temporanea dell'avatar
 let pendingAvatar;
+// NUOVO: Variabili per le impostazioni utente
+let userName;
+let userBio;
+let userFavoriteSong;
 
 // --- NUOVO: SELEZIONE AVATAR FINALE CON I PIÙ POPOLARI DI DICEBEAR ---
 const AVATAR_CATEGORIES = {
@@ -87,9 +91,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarGrid = document.getElementById('avatar-grid');
     const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
     const avatarCategorySelector = document.getElementById('avatar-category-selector');
-    
-    // NUOVO: Selettore per l'avatar nella navbar
     const currentUserAvatarDisplay = document.getElementById('currentUserAvatarDisplay');
+
+    // NUOVO: Selettori per le nuove impostazioni
+    const userNameInput = document.getElementById('userNameInput');
+    const userBioInput = document.getElementById('userBioInput');
 
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
@@ -126,7 +132,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
     
-    // Funzione per aggiornare l'avatar visualizzato
     function updateAvatarDisplay() {
         currentUserAvatarDisplay.src = currentUserAvatar;
     }
@@ -302,7 +307,6 @@ document.addEventListener('DOMContentLoaded', () => {
             currentUserAvatar = pendingAvatar;
             localStorage.setItem('userAvatar', currentUserAvatar);
             
-            // NUOVO: Aggiorna l'avatar nella navbar
             updateAvatarDisplay();
 
             if(connected) {
@@ -318,7 +322,6 @@ document.addEventListener('DOMContentLoaded', () => {
     
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
 
-    // NUOVO: Aggiorna l'avatar all'avvio della pagina
     updateAvatarDisplay();
 
     settingsBtn.addEventListener('click', () => {
@@ -359,7 +362,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // NUOVO: Aggiungi un event listener per aprire il modale cliccando sull'avatar
     if (currentUserAvatarDisplay) {
         currentUserAvatarDisplay.addEventListener('click', () => {
             settingsBtn.click();
