@@ -117,6 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const partnerProfileSongCover = document.getElementById('partnerProfileSongCover');
     const partnerProfileSongTitle = document.getElementById('partnerProfileSongTitle');
     const partnerProfileSongArtist = document.getElementById('partnerProfileSongArtist');
+    const partnerProfileSongFallback = document.getElementById('partnerProfileSongFallback');
 
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
@@ -531,10 +532,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 partnerProfileSongArtist.textContent = song.artist;
                 partnerProfileSongCover.src = song.cover;
                 partnerProfileSongDisplay.classList.remove('hidden');
+                partnerProfileSongFallback.classList.add('hidden');
             } else {
                 partnerProfileSongDisplay.classList.add('hidden');
-                // fallback per mostrare "Non disponibile" se non c'è una canzone
-                partnerProfileSongDisplay.parentElement.querySelector('p').textContent = 'Non disponibile';
+                partnerProfileSongFallback.classList.remove('hidden');
             }
         } else {
             partnerProfileName.textContent = 'Profilo Anonimo';
@@ -542,7 +543,7 @@ document.addEventListener('DOMContentLoaded', () => {
             partnerProfileBio.textContent = 'L\'utente ha scelto di non condividere il suo profilo.';
             
             partnerProfileSongDisplay.classList.add('hidden');
-            partnerProfileSongDisplay.parentElement.querySelector('p').textContent = 'Non disponibile';
+            partnerProfileSongFallback.classList.remove('hidden');
         }
         partnerProfileModal.classList.remove('hidden');
     }
