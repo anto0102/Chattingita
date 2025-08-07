@@ -348,7 +348,7 @@ a:hover {
 .typing-dot { width: 8px; height: 8px; background-color: var(--placeholder-color); border-radius: 50%; animation: morph-and-move 1.6s infinite ease-in-out; }
 .typing-dot:nth-child(2) { animation-delay: 0.25s; }
 .typing-dot:nth-child(3) { animation-delay: 0.5s; }
-@keyframes morph-and-move { 0% { transform: translateY(0) scale(1); } 25% { transform: translateY(-8px) scale(0.9); } 50% { transform: translateY(0) scale(1.1); } 100% { transform: translateY(0) scale(1); } }
+@keyframes morph-and-move { 0% { transform: translateY(0) scale(1); } 25% { transform: translateY(-8px) scale(0.9); } 50% { transform: translateY(0) scale(1.1); } 75% { transform: translateY(0) scale(1); } 100% { transform: translateY(0) scale(1); } }
 
 .input-area { display: flex; align-items: center; padding: 1rem; background-color: var(--card-background-color); border-top: 1px solid var(--border-color); }
 .input-area.hidden { display: none; }
@@ -512,7 +512,15 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     outline: none;
     border-color: var(--primary-color);
 }
-
+.checkbox-container {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.checkbox-container input {
+    width: auto;
+    cursor: pointer;
+}
 
 /* --- STILI PER FUNZIONALITÀ AVATAR --- */
 .settings-btn { background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; line-height: 1; transition: color 0.3s ease, transform 0.3s ease; }
@@ -548,4 +556,59 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     .user-avatar-display {
         display: none; /* Nasconde l'avatar su mobile */
     }
+}
+
+/* NUOVO: Stili per il pulsante del profilo del partner */
+.profile-btn { 
+    background: none; 
+    border: none; 
+    color: var(--primary-color); 
+    font-size: 1.5rem; 
+    cursor: pointer; 
+    transition: color 0.3s ease; 
+    line-height: 1;
+    margin-left: -0.5rem;
+}
+.profile-btn:hover {
+    color: var(--text-color);
+}
+.profile-btn.hidden {
+    display: none;
+}
+
+/* NUOVO: Stili per il modale del profilo del partner */
+#partner-profile-modal .avatar-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+.profile-details {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+.profile-detail-item {
+    background-color: var(--secondary-color);
+    padding: 1rem;
+    border-radius: 10px;
+    margin-bottom: 1rem;
+}
+.profile-detail-item h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+.profile-detail-item p {
+    margin: 0;
 }
