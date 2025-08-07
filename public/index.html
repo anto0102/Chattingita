@@ -129,53 +129,53 @@
           </form>
           <div id="contact-status" class="status-message"></div>
       </div>
-  </main>
-  
-  <div id="avatar-modal" class="avatar-modal-overlay hidden">
-      <div class="avatar-modal-content">
-          <h3>Impostazioni Utente</h3>
-          
-          <div class="settings-content-scrollable">
-            <div class="settings-group">
-              <label for="userNameInput">Scegli il tuo nome:</label>
-              <input type="text" id="userNameInput" placeholder="Anonimo">
-            </div>
-
-            <div class="settings-group">
-              <label for="userBioInput">Scrivi una bio:</label>
-              <textarea id="userBioInput" placeholder="Racconta qualcosa di te..." rows="3"></textarea>
-            </div>
-
-            <div class="settings-group">
-              <label for="userSongSearchInput">Cerca la tua canzone preferita:</label>
-              <div class="search-container">
-                  <input type="text" id="userSongSearchInput" placeholder="Es: Another Brick in the Wall">
-                  <button id="songSearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
-              </div>
-              <div id="songResults" class="song-results-grid"></div>
-              <div id="selectedSongDisplay" class="selected-song-display hidden">
-                <img id="selectedSongCover" src="" alt="Copertina">
-                <div class="song-details">
-                    <h4 id="selectedSongTitle"></h4>
-                    <p id="selectedSongArtist"></p>
+      
+      <div id="settings-section" class="content-section">
+          <div class="avatar-modal-content">
+              <h3>Impostazioni Utente</h3>
+              
+              <div class="settings-content-scrollable">
+                <div class="settings-group">
+                  <label for="userNameInput">Scegli il tuo nome:</label>
+                  <input type="text" id="userNameInput" placeholder="Anonimo">
+                </div>
+    
+                <div class="settings-group">
+                  <label for="userBioInput">Scrivi una bio:</label>
+                  <textarea id="userBioInput" placeholder="Racconta qualcosa di te..." rows="3"></textarea>
+                </div>
+    
+                <div class="settings-group">
+                  <label for="userSongSearchInput">Cerca la tua canzone preferita:</label>
+                  <div class="search-container">
+                      <input type="text" id="userSongSearchInput" placeholder="Es: Another Brick in the Wall">
+                      <button id="songSearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
+                  </div>
+                  <div id="songResults" class="song-results-grid"></div>
+                  <div id="selectedSongDisplay" class="selected-song-display hidden">
+                    <img id="selectedSongCover" src="" alt="Copertina">
+                    <div class="song-details">
+                        <h4 id="selectedSongTitle"></h4>
+                        <p id="selectedSongArtist"></p>
+                    </div>
+                  </div>
+                </div>
+                
+                <h3>Scegli il tuo Avatar</h3>
+                <div id="avatar-category-selector" class="avatar-category-selector"></div>
+                <div id="avatar-grid" class="avatar-grid"></div>
+    
+                <div class="settings-group toggle-group">
+                    <label for="showProfileCheckbox" class="toggle-label">Rendi il mio profilo visibile agli altri</label>
+                    <input type="checkbox" id="showProfileCheckbox" class="toggle-checkbox">
                 </div>
               </div>
-            </div>
-            
-            <h3>Scegli il tuo Avatar</h3>
-            <div id="avatar-category-selector" class="avatar-category-selector"></div>
-            <div id="avatar-grid" class="avatar-grid"></div>
-
-            <div class="settings-group toggle-group">
-                <label for="showProfileCheckbox" class="toggle-label">Rendi il mio profilo visibile agli altri</label>
-                <input type="checkbox" id="showProfileCheckbox" class="toggle-checkbox">
-            </div>
+    
+              <button id="saveSettingsBtn" class="control-btn primary">Salva e Chiudi</button>
           </div>
-
-          <button id="closeAvatarModal" class="control-btn primary">Salva e Chiudi</button>
       </div>
-  </div>
-
+  </main>
+  
   <div id="partner-profile-modal" class="avatar-modal-overlay hidden">
       <div class="avatar-modal-content">
           <div class="profile-header">
