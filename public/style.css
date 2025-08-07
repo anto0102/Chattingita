@@ -883,3 +883,232 @@ emoji-picker {
         padding: 1.5rem 2rem;
     }
 }
+/* --- STILI PER REAZIONI AI MESSAGGI (v4 - Ordine Corretto) --- */
+
+/* Contenitore principale che allinea messaggio e pulsante */
+.message-wrapper {
+    position: relative;
+    display: flex;
+    align-items: center;
+    margin-bottom: 10px; 
+}
+
+/* Allineamento a destra per i messaggi dell'utente */
+.message-wrapper.you {
+    justify-content: flex-end;
+}
+
+/* Allineamento a sinistra per i messaggi del partner */
+.message-wrapper.other {
+    justify-content: flex-start;
+}
+
+/* Pulsante di reazione - Stile base per MOBILE (visibile) */
+.add-reaction-btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--text-color);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    cursor: pointer;
+    margin: 0 8px;
+    flex-shrink: 0;
+    opacity: 0.7; /* Sempre visibile ma discreto su mobile */
+}
+
+/* --- Stili aggiuntivi solo per DESKTOP (schermi > 768px) --- */
+@media (min-width: 769px) {
+    /* Su Desktop, il pulsante è invisibile di default */
+    .add-reaction-btn {
+        opacity: 0;
+        transform: scale(0.8);
+        transition: opacity 0.2s ease, transform 0.2s ease;
+    }
+
+    /* E compare solo al passaggio del mouse */
+    .message-wrapper:hover .add-reaction-btn {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    /* UNICA REGOLA PER L'ORDINE:
+       Inverti l'ordine solo per i messaggi del PARTNER su DESKTOP */
+    .message-wrapper.other .message {
+        order: 2;
+    }
+    .message-wrapper.other .add-reaction-btn {
+        order: 1;
+    }
+}
+
+
+/* --- Stili per la palette e le reazioni visualizzate (invariati) --- */
+
+.reaction-palette {
+    position: absolute;
+    top: -40px;
+    background: var(--card-background-color);
+    padding: 6px 8px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(5px) scale(0.9);
+    transition: all 0.2s ease;
+}
+
+.reaction-palette.visible {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+.message-wrapper.other .reaction-palette {
+    left: 40px;
+}
+
+.message-wrapper.you .reaction-palette {
+    right: 40px;
+}
+
+.palette-emoji {
+    cursor: pointer;
+    font-size: 22px;
+    transition: transform 0.15s ease;
+}
+
+.palette-emoji:hover {
+    transform: scale(1.3);
+}
+
+.reactions-display {
+    display: flex;
+    gap: 4px;
+    padding: 4px 8px 0 8px;
+    justify-content: flex-start;
+}
+
+.message.you .reactions-display {
+    justify-content: flex-end;
+}
+
+.reaction-chip {
+    background-color: var(--secondary-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+}
+/* Stile per i messaggi di sistema (con animazione) */
+.system-message {
+    align-self: center;
+    background-color: var(--secondary-color);
+    color: var(--placeholder-color);
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 15px;
+    margin: 10px 0;
+    max-width: fit-content;
+
+    /* Preparazione per l'animazione */
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* Stato finale dell'animazione */
+.system-message.visible {
+    opacity: 1;
+    transform: translateY(0);
+}
+/* --- STILI PER ANIMAZIONE DI CARICAMENTO --- */
+
+/* Contenitore principale dell'animazione */
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    opacity: 0;
+    transition: opacity 0.5s ease;
+}
+
+.loading-container.visible {
+    opacity: 1;
+}
+
+/* Area dove danzano gli orbs */
+.orb-canvas {
+    position: relative;
+    width: 200px;
+    height: 150px;
+}
+
+/* Stile base degli orbs */
+.orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(25px);
+    opacity: 0.8;
+}
+
+.orb-1 {
+    width: 80px;
+    height: 80px;
+    background-color: var(--primary-color);
+    animation: float-orb-1 12s infinite ease-in-out;
+}
+
+.orb-2 {
+    width: 60px;
+    height: 60px;
+    background-color: var(--warning-color);
+    animation: float-orb-2 15s infinite ease-in-out;
+}
+
+/* Testo sotto l'animazione */
+.loading-text {
+    margin-top: 1rem;
+    color: var(--placeholder-color);
+    font-style: italic;
+    animation: pulse-text 2s infinite ease-in-out;
+}
+
+/* Animazione per il testo */
+@keyframes pulse-text {
+    0% { opacity: 0.7; }
+    50% { opacity: 1; }
+    100% { opacity: 0.7; }
+}
+
+/* Animazione per il primo orb */
+@keyframes float-orb-1 {
+    0%   { transform: translate(50px, 50px) scale(1); }
+    25%  { transform: translate(100px, 20px) scale(1.1); }
+    50%  { transform: translate(40px, 80px) scale(0.9); }
+    75%  { transform: translate(10px, 10px) scale(1.1); }
+    100% { transform: translate(50px, 50px) scale(1); }
+}
+
+/* Animazione per il secondo orb (diversa per un effetto più naturale) */
+@keyframes float-orb-2 {
+    0%   { transform: translate(100px, 40px) scale(1); }
+    25%  { transform: translate(20px, 80px) scale(0.9); }
+    50%  { transform: translate(80px, 10px) scale(1.1); }
+    75%  { transform: translate(120px, 60px) scale(1); }
+    100% { transform: translate(100px, 40px) scale(1); }
+}
