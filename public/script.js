@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Riceve tutti i dati del profilo del partner
         partnerProfile = data.partnerProfile || {};
-        partnerAvatar = data.partnerProfile.avatarUrl || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
+        partnerAvatar = data.partnerProfile.avatarUrl;
         partnerIp = data.partnerIp;
         
         // Mostra sempre il pulsante del profilo una volta connessi
