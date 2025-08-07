@@ -166,8 +166,10 @@
                 <div id="avatar-grid" class="avatar-grid"></div>
     
                 <div class="settings-group toggle-group">
-                    <label for="showProfileCheckbox" class="toggle-label">Rendi il mio profilo visibile agli altri</label>
-                    <input type="checkbox" id="showProfileCheckbox" class="toggle-checkbox">
+                    <label class="toggle-label">Rendi il mio profilo visibile agli altri</label>
+                    <button id="showProfileBtn" class="control-btn primary toggle-btn">
+                        <i class="fas fa-eye"></i> <span>Mostra Profilo</span>
+                    </button>
                 </div>
               </div>
     
@@ -185,14 +187,13 @@
           <div class="profile-details">
               <div class="profile-detail-item">
                   <h4>Canzone preferita</h4>
-                  <div id="partnerProfileSongDisplay" class="song-display">
+                  <div id="partnerProfileSongDisplay" class="song-display hidden">
                     <img id="partnerProfileSongCover" src="" alt="Copertina">
                     <div class="song-details">
                         <p id="partnerProfileSongTitle"></p>
                         <p id="partnerProfileSongArtist"></p>
                     </div>
                   </div>
-                  <p id="partnerProfileSongFallback" class="song-fallback hidden">Non disponibile</p>
               </div>
               <div class="profile-detail-item">
                   <h4>Bio</h4>
