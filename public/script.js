@@ -381,40 +381,51 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarModal.classList.add('hidden');
     }
 
-    // Funzione per simulare la ricerca e mostrare i risultati
-    function displaySongSearchResults(query) {
+    // Funzione per cercare canzoni e mostrare i risultati dall'API di Deezer
+    async function displaySongSearchResults(query) {
         songResultsDiv.innerHTML = '';
         if (query.length < 3) return;
 
-        const mockResults = [
-            { title: "Silent Bob", artist: "Massimo Pericolo", cover: "https://i.scdn.co/image/ab67616d00001e02421f151b66b26d36e2f4702b" },
-            { title: "Another Brick in the Wall", artist: "Pink Floyd", cover: "https://upload.wikimedia.org/wikipedia/en/9/93/Pink_Floyd_-_The_Wall_Live_1980-81.jpg" },
-            { title: "Bohemian Rhapsody", artist: "Queen", cover: "https://upload.wikimedia.org/wikipedia/it/thumb/a/a2/A_Night_at_the_Opera.jpg/300px-A_Night_at_the_Opera.jpg" },
-            { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" },
-            { title: "Tears of the Kingdom", artist: "Nintendo", cover: "https://upload.wikimedia.org/wikipedia/en/f/f6/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover_art.jpg" },
-            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" }
-        ].filter(song => song.title.toLowerCase().includes(query.toLowerCase()) || song.artist.toLowerCase().includes(query.toLowerCase()));
+        try {
+            // Mostra un indicatore di caricamento
+            songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Caricamento...</p>';
+            
+            // Fai la chiamata all'API di Deezer
+            const response = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(query)}`);
+            const data = await response.json();
+            const results = data.data;
 
-        mockResults.forEach(song => {
-            const card = document.createElement('div');
-            card.className = 'song-result-card';
-            card.innerHTML = `
-                <img src="${song.cover}" alt="Copertina di ${song.title}">
-                <h4>${song.title}</h4>
-                <p>${song.artist}</p>
-            `;
-            card.addEventListener('click', () => {
-                userSongInput.value = `${song.title} - ${song.artist}`;
-                selectedSongDisplay.textContent = userSongInput.value;
-                selectedSongDisplay.classList.remove('hidden');
-                songResultsDiv.innerHTML = '';
-                userSongSearchInput.value = '';
-                const allCards = document.querySelectorAll('.song-result-card');
-                allCards.forEach(c => c.classList.remove('selected'));
-                card.classList.add('selected');
+            songResultsDiv.innerHTML = '';
+
+            if (results.length === 0) {
+                songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Nessun risultato trovato.</p>';
+                return;
+            }
+
+            results.forEach(song => {
+                const card = document.createElement('div');
+                card.className = 'song-result-card';
+                card.innerHTML = `
+                    <img src="${song.album.cover_medium}" alt="Copertina di ${song.title}">
+                    <h4>${song.title}</h4>
+                    <p>${song.artist.name}</p>
+                `;
+                card.addEventListener('click', () => {
+                    userSongInput.value = `${song.title} - ${song.artist.name}`;
+                    selectedSongDisplay.textContent = userSongInput.value;
+                    selectedSongDisplay.classList.remove('hidden');
+                    songResultsDiv.innerHTML = '';
+                    userSongSearchInput.value = '';
+                    const allCards = document.querySelectorAll('.song-result-card');
+                    allCards.forEach(c => c.classList.remove('selected'));
+                    card.classList.add('selected');
+                });
+                songResultsDiv.appendChild(card);
             });
-            songResultsDiv.appendChild(card);
-        });
+        } catch (error) {
+            console.error("Errore durante la ricerca della canzone:", error);
+            songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem; color: var(--danger-color);">Errore nel caricamento dei risultati. Riprova.</p>';
+        }
     }
     
     loadUserSettings();
