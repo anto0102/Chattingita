@@ -316,3 +316,139 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
         order: 1;
     }
 }
+/* --- AGGIUNTE PER FUNZIONALITÀ AVATAR --- */
+
+/* Controlli nell'header della chat */
+.header-controls {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-left: auto;
+}
+
+.online-counter {
+    margin-left: 0; /* Rimuove il margine precedente */
+}
+
+.settings-btn {
+    background: none;
+    border: none;
+    color: var(--text-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.settings-btn:hover {
+    color: var(--primary-color);
+    transform: rotate(45deg);
+}
+
+/* Pannello Modale per Scelta Avatar */
+.avatar-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(5px);
+    z-index: 2000;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.3s ease, visibility 0.3s ease;
+}
+
+.avatar-modal-overlay:not(.hidden) {
+    opacity: 1;
+    visibility: visible;
+}
+
+.avatar-modal-content {
+    background: rgba(44, 44, 44, 0.7); /* Effetto vetro scuro */
+    padding: 2rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 var(--shadow-color);
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    width: 90%;
+    max-width: 500px;
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+}
+
+body.light-mode .avatar-modal-content {
+    background: rgba(255, 255, 255, 0.7); /* Effetto vetro chiaro */
+    border: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.avatar-modal-overlay:not(.hidden) .avatar-modal-content {
+    transform: scale(1);
+}
+
+.avatar-modal-content h3 {
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+
+.avatar-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
+    gap: 1rem;
+    justify-items: center;
+    margin-bottom: 2rem;
+}
+
+.avatar-choice {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 3px solid transparent;
+    padding: 3px;
+    background-color: var(--secondary-color);
+}
+
+.avatar-choice:hover {
+    transform: scale(1.1);
+}
+
+.avatar-choice.selected {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 15px var(--primary-color);
+}
+
+
+/* Avatar visibile nella chat */
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    margin: 0 10px;
+    border: 2px solid var(--border-color);
+    align-self: flex-end; /* Allinea l'avatar alla base del messaggio */
+}
+
+/* Modifiche al message-wrapper per ospitare l'avatar */
+.message-wrapper {
+    align-items: flex-end; 
+}
+
+.message-wrapper.other .message { order: 2; }
+.message-wrapper.other .add-reaction-btn { order: 3; }
+.message-wrapper.other .chat-avatar { order: 1; }
+
+.message-wrapper.you .message { order: 1; }
+.message-wrapper.you .add-reaction-btn { order: 0; }
+.message-wrapper.you .chat-avatar { order: 2; }
+
+/* Adatta la palette delle reazioni alla nuova struttura */
+@media (min-width: 769px) {
+    .message-wrapper.other .reaction-palette { left: 60px; } /* Spostata per far spazio all'avatar */
+    .message-wrapper.you .reaction-palette { right: 60px; }
+}
