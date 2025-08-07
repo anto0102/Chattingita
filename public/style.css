@@ -481,6 +481,38 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     font-weight: 600;
 }
 
+/* --- NUOVO: Stili per le nuove impostazioni utente nel modale --- */
+.settings-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.settings-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.settings-group input,
+.settings-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    resize: none;
+}
+
+.settings-group input:focus,
+.settings-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
 
 /* --- STILI PER FUNZIONALITÀ AVATAR --- */
 .settings-btn { background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; line-height: 1; transition: color 0.3s ease, transform 0.3s ease; }
