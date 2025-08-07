@@ -31,6 +31,9 @@
             <a href="#faq-section" class="nav-btn" data-section="faq">FAQ</a>
             <a href="#contact-section" class="nav-btn" data-section="contact">Contatti</a>
             
+            <a href="#settings-section" class="nav-btn settings-btn-nav" data-section="settings" id="settingsNavBtn">
+                <i class="fas fa-cog"></i>
+            </a>
             <img id="currentUserAvatarDisplay" class="user-avatar-display" src="" alt="Il tuo avatar">
             
             <button id="themeToggle" class="nav-btn theme-toggle">
@@ -57,9 +60,6 @@
                 </div>
                 <button id="viewPartnerProfileBtn" class="profile-btn hidden" aria-label="Visualizza profilo partner">
                     <i class="fas fa-user-circle"></i>
-                </button>
-                <button id="settingsBtn" class="settings-btn" aria-label="Impostazioni">
-                  <i class="fas fa-cog"></i>
                 </button>
               </div>
           </div>
@@ -131,8 +131,8 @@
       </div>
       
       <div id="settings-section" class="content-section">
-          <div class="avatar-modal-content">
-              <h3>Impostazioni Utente</h3>
+          <div class="settings-content">
+              <h3><i class="fas fa-cog"></i> Impostazioni Utente</h3>
               
               <div class="settings-content-scrollable">
                 <div class="settings-group">
@@ -171,7 +171,7 @@
                 </div>
               </div>
     
-              <button id="saveSettingsBtn" class="control-btn primary">Salva e Chiudi</button>
+              <button id="saveSettingsBtn" class="control-btn primary"><i class="fas fa-arrow-left"></i> Torna alla Chat</button>
           </div>
       </div>
   </main>
