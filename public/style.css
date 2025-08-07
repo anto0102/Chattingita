@@ -108,6 +108,21 @@ a:hover {
 .hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; justify-content: space-between; width: 30px; height: 21px; }
 .hamburger .bar { height: 3px; width: 100%; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s ease; }
 
+/* NUOVO: Stile per l'icona delle impostazioni nella nav-bar */
+#settingsNavBtn {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+#settingsNavBtn .fas {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+#settingsNavBtn.active {
+    transform: rotate(45deg);
+}
+
 /* --- MAIN CONTAINER --- */
 .container { flex-grow: 1; max-width: 1000px;  margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; }
 .content-section { background-color: var(--card-background-color); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); margin-bottom: 2rem; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; display: none; }
@@ -751,12 +766,6 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     text-align: left;
     margin-bottom: 2rem;
 }
-.profile-detail-item {
-    background-color: var(--secondary-color);
-    padding: 1rem;
-    border-radius: 10px;
-    margin-bottom: 1rem;
-}
 .profile-detail-item h4 {
     margin: 0 0 0.5rem 0;
     font-size: 1rem;
@@ -793,14 +802,8 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     opacity: 0.8;
 }
 
-.settings-section-controls {
-    display: flex;
-    justify-content: flex-end;
-    margin-top: 1.5rem;
-}
-
-/* NUOVO: Stili per il contenuto della sezione impostazioni */
-#settings-section .avatar-modal-content {
+/* NUOVO: Stile per la sezione impostazioni */
+#settings-section .settings-content {
     background: none;
     box-shadow: none;
     border: none;
@@ -808,8 +811,20 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     height: auto;
     padding: 0;
     text-align: left;
+    display: flex;
+    flex-direction: column;
 }
 #settings-section .settings-content-scrollable {
+    flex-grow: 1;
     overflow-y: visible;
     padding-right: 0;
+}
+#settings-section h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+#settings-section h3 .fas {
+    margin-right: 10px;
 }
