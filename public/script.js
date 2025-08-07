@@ -7,43 +7,53 @@ let isTyping = false;
 let socket;
 let currentUserAvatar;
 let partnerAvatar;
+// NUOVO: Variabile per la selezione temporanea dell'avatar
+let pendingAvatar; 
 
-// --- NUOVO: LISTA AVATAR AGGIORNATA ---
+// --- NUOVO: LISTA AVATAR AMPLIATA E RINNOVATA ---
 const AVATAR_CATEGORIES = {
-    'Fantasy': [
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Aria',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Kael',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Seraphina',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Gael',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Lyra',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Roric'
+    'Artistici': [
+        'https://api.dicebear.com/8.x/shapes/svg?seed=Angel',
+        'https://api.dicebear.com/8.x/shapes/svg?seed=Leo',
+        'https://api.dicebear.com/8.x/shapes/svg?seed=Willow',
+        'https://api.dicebear.com/8.x/shapes/svg?seed=Jasper',
+        'https://api.dicebear.com/8.x/glass/svg?seed=Rowan',
+        'https://api.dicebear.com/8.x/glass/svg?seed=Iris',
+        'https://api.dicebear.com/8.x/glass/svg?seed=Felix',
+        'https://api.dicebear.com/8.x/glass/svg?seed=Shadow'
     ],
-    'Sci-Fi': [
-        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Unit-01',
-        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Zeta',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Nebula',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Orion',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Nova',
-        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Cygnus'
+    'Personaggi': [
+        'https://api.dicebear.com/8.x/personas/svg?seed=Max',
+        'https://api.dicebear.com/8.x/personas/svg?seed=Ruby',
+        'https://api.dicebear.com/8.x/personas/svg?seed=Zane',
+        'https://api.dicebear.com/8.x/personas/svg?seed=Cleo',
+        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Jax',
+        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Zoe',
+        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Rex',
+        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Ivy'
     ],
-    'Creature': [
-        'https://api.dicebear.com/8.x/miniavs/svg?seed=Griffin',
-        'https://api.dicebear.com/8.x/miniavs/svg?seed=Phoenix',
-        'https://api.dicebear.com/8.x/miniavs/svg?seed=Basilisk',
-        'https://api.dicebear.com/8.x/croodles/svg?seed=Dragon',
-        'https://api.dicebear.com/8.x/croodles/svg?seed=Kraken',
-        'https://api.dicebear.com/8.x/croodles/svg?seed=Yeti'
+    'Strambi': [
+        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Gizmo',
+        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Sparky',
+        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Clank',
+        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Bolt',
+        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Widget',
+        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Unit-734',
+        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Data',
+        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Alpha'
     ],
-    'Icone': [
-        'https://api.dicebear.com/8.x/icons/svg?seed=Anchor',
-        'https://api.dicebear.com/8.x/icons/svg?seed=Compass',
-        'https://api.dicebear.com/8.x/icons/svg?seed=Feather',
-        'https://api.dicebear.com/8.x/icons/svg?seed=Key',
-        'https://api.dicebear.com/8.x/icons/svg?seed=Leaf',
-        'https://api.dicebear.com/8.x/icons/svg?seed=Star'
+    'Retrò': [
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Annie',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Sam',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Mia',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Alex',
+        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Chloe',
+        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=David',
+        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Emily',
+        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Frank'
     ]
 };
-const DEFAULT_AVATAR_CATEGORY = 'Fantasy';
+const DEFAULT_AVATAR_CATEGORY = 'Artistici';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
@@ -148,7 +158,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { sysMsgDiv.classList.add('visible'); }, 10);
     }
 
-    // NUOVO: Funzione per mostrare il messaggio di cambio avatar
     function addAvatarChangeMessage(newAvatarUrl) {
         const avatarMsgDiv = document.createElement('div');
         avatarMsgDiv.className = 'avatar-change-message';
@@ -158,9 +167,20 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
         chatMessages.append(avatarMsgDiv);
         scrollToBottom();
-        setTimeout(() => {
-            avatarMsgDiv.classList.add('visible');
-        }, 10);
+        setTimeout(() => { avatarMsgDiv.classList.add('visible'); }, 10);
+    }
+    
+    // NUOVO: Funzione per la notifica personale di cambio avatar
+    function addSelfAvatarChangeMessage(newAvatarUrl) {
+        const avatarMsgDiv = document.createElement('div');
+        avatarMsgDiv.className = 'self-avatar-change-message';
+        avatarMsgDiv.innerHTML = `
+            <img src="${newAvatarUrl}" alt="Il tuo nuovo avatar">
+            <p>Hai cambiato il tuo avatar.</p>
+        `;
+        chatMessages.append(avatarMsgDiv);
+        scrollToBottom();
+        setTimeout(() => { avatarMsgDiv.classList.add('visible'); }, 10);
     }
 
     function sendMessage() {
@@ -230,7 +250,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- NUOVO: LOGICA PER AVATAR CON CATEGORIE ---
+    // --- NUOVO: LOGICA AVATAR CONFERMATA ALLA CHIUSURA ---
 
     function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
@@ -240,42 +260,62 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = avatarSrc;
             img.className = 'avatar-choice';
             img.dataset.src = avatarSrc;
-            if (avatarSrc === currentUserAvatar) {
+            // Evidenzia l'avatar PENDENTE, non quello corrente
+            if (avatarSrc === pendingAvatar) {
                 img.classList.add('selected');
             }
             avatarGrid.appendChild(img);
         });
     }
 
-    function populateCategorySelector() {
+    function populateCategorySelector(activeCategory) {
         avatarCategorySelector.innerHTML = '';
         Object.keys(AVATAR_CATEGORIES).forEach(category => {
             const btn = document.createElement('button');
             btn.className = 'category-btn';
             btn.textContent = category;
             btn.dataset.category = category;
+            if (category === activeCategory) {
+                btn.classList.add('active');
+            }
             avatarCategorySelector.appendChild(btn);
         });
     }
 
-    function selectAvatar(avatarSrc) {
-        currentUserAvatar = avatarSrc;
-        localStorage.setItem('userAvatar', avatarSrc);
-
+    function handleAvatarSelection(avatarSrc) {
+        pendingAvatar = avatarSrc; // Salva la scelta temporaneamente
+        // Aggiorna solo la UI della griglia per mostrare la nuova selezione
         const currentSelected = avatarGrid.querySelector('.selected');
         if (currentSelected) { currentSelected.classList.remove('selected'); }
         const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
         if (newSelected) { newSelected.classList.add('selected'); }
-
-        if (socket && connected) {
-            socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
-        }
     }
+    
+    // Funzione che finalizza il cambio di avatar
+    function finalizeAvatarChange() {
+        if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
+            currentUserAvatar = pendingAvatar;
+            localStorage.setItem('userAvatar', currentUserAvatar);
+            
+            // Mostra la notifica a te stesso
+            if(connected) {
+                addSelfAvatarChangeMessage(currentUserAvatar);
+            }
 
+            // Comunica al server il cambio
+            if (socket && connected) {
+                socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
+            }
+        }
+        avatarModal.classList.add('hidden');
+    }
+    
+    // --- Inizializzazione e Gestori Eventi Avatar ---
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
 
     settingsBtn.addEventListener('click', () => {
-        populateCategorySelector();
+        pendingAvatar = currentUserAvatar; // Imposta la selezione pendente a quella attuale
+        
         let currentCategory = DEFAULT_AVATAR_CATEGORY;
         for (const category in AVATAR_CATEGORIES) {
             if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
@@ -283,17 +323,24 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             }
         }
-        document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-        const activeBtn = document.querySelector(`.category-btn[data-category="${currentCategory}"]`);
-        if(activeBtn) activeBtn.classList.add('active');
-
+        
+        populateCategorySelector(currentCategory);
         populateAvatarGrid(currentCategory);
         avatarModal.classList.remove('hidden');
     });
 
-    closeAvatarModalBtn.addEventListener('click', () => { avatarModal.classList.add('hidden'); });
-    avatarModal.addEventListener('click', (e) => { if (e.target === avatarModal) { avatarModal.classList.add('hidden'); } });
-    avatarGrid.addEventListener('click', (e) => { if (e.target.classList.contains('avatar-choice')) { selectAvatar(e.target.dataset.src); } });
+    closeAvatarModalBtn.addEventListener('click', finalizeAvatarChange);
+    avatarModal.addEventListener('click', (e) => { 
+        if (e.target === avatarModal) {
+            finalizeAvatarChange();
+        } 
+    });
+    
+    avatarGrid.addEventListener('click', (e) => { 
+        if (e.target.classList.contains('avatar-choice')) { 
+            handleAvatarSelection(e.target.dataset.src);
+        } 
+    });
 
     avatarCategorySelector.addEventListener('click', (e) => {
         if (e.target.classList.contains('category-btn')) {
@@ -320,11 +367,10 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(messageObject);
     });
     
-    // NUOVO: Gestione aggiornamento avatar del partner
     socket.on('partner_avatar_updated', (data) => {
         const newAvatarUrl = data.avatarUrl;
-        partnerAvatar = newAvatarUrl; // Aggiorna la variabile globale
-        addAvatarChangeMessage(newAvatarUrl); // Mostra il messaggio di notifica
+        partnerAvatar = newAvatarUrl; 
+        addAvatarChangeMessage(newAvatarUrl); 
     });
 
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
