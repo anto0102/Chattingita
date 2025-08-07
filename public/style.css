@@ -415,7 +415,7 @@ a:hover {
 
 .input-area {
     display: flex;
-    align-items: center; /* Allinea verticalmente i pulsanti e l'input */
+    align-items: center;
     padding: 1rem;
     background-color: var(--card-background-color);
     border-top: 1px solid var(--border-color);
@@ -785,7 +785,7 @@ a:hover {
     }
 }
 
-/* --- MODIFICA: STILI EMOJI PICKER --- */
+/* --- STILI EMOJI PICKER --- */
 .emoji-btn {
     background-color: transparent;
     color: var(--text-color);
@@ -816,9 +816,4 @@ emoji-picker {
     --button-hover-background: var(--secondary-color);
     border-radius: 10px;
     box-shadow: 0 5px 15px var(--shadow-color);
-    display: none; /* Nascosto di default */
-}
-
-emoji-picker.show {
-    display: block; /* Mostrato quando ha la classe 'show' */
 }
