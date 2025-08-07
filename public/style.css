@@ -1006,3 +1006,13 @@ emoji-picker {
     font-size: 0.8rem;
     border: 1px solid var(--border-color);
 }
+/* Stile per i messaggi di sistema (es. info sul paese) */
+.system-message {
+    text-align: center;
+    color: var(--placeholder-color);
+    font-style: italic;
+    font-size: 0.9rem;
+    width: 100%;
+    padding: 10px 0;
+    margin-bottom: 10px;
+}
