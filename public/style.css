@@ -128,6 +128,29 @@ a:hover {
 .content-section { background-color: var(--card-background-color); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); margin-bottom: 2rem; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; display: none; }
 .content-section.active { opacity: 1; transform: translateY(0); display: block; }
 
+/* NUOVO: Stile per il container a schermo intero per la sezione impostazioni */
+@media (min-width: 769px) {
+    main.container:has(#settings-section.active) {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 61px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main.container:has(#settings-section.active) #settings-section.active {
+        width: 100%;
+        max-width: 900px;
+        flex-grow: 0;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+}
+
 /* --- CHAT SECTION --- */
 #chat-section .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
 #chat-section .header .chat-title { font-size: 1.5rem; color: var(--primary-color); display: flex; align-items: center; white-space: nowrap; margin-right: 1rem; }
@@ -435,6 +458,26 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     main.container:has(#chat-section.active) .chat-content { max-width: 900px; width: 100%; margin: 0 auto; }
     main.container:has(#chat-section.active) .input-area { max-width: 900px; width: 100%; margin: 0 auto 1rem auto; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); }
     main.container:has(#chat-section.active) .controls-area { background-color: var(--card-background-color); padding: 1.5rem 2rem; }
+    
+    main.container:has(#settings-section.active) {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 61px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main.container:has(#settings-section.active) #settings-section.active {
+        width: 100%;
+        max-width: 900px;
+        flex-grow: 0;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
 }
 
 /* --- STILI PER ANIMAZIONE DI CARICAMENTO --- */
@@ -523,47 +566,21 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     border-color: var(--primary-color);
 }
 
-/* Stile per il toggle switch */
+/* NUOVO: Stile per il pulsante di visibilità del profilo */
 .toggle-group {
     display: flex;
     justify-content: space-between;
     align-items: center;
     gap: 10px;
 }
-.toggle-checkbox {
-    appearance: none;
-    -webkit-appearance: none;
-    position: relative;
-    width: 50px;
-    height: 25px;
-    background: var(--border-color);
-    border-radius: 25px;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    flex-shrink: 0;
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
 }
-.toggle-checkbox:checked {
-    background: var(--success-color);
-}
-.toggle-checkbox::after {
-    content: '';
-    position: absolute;
-    top: 2px;
-    left: 2px;
-    width: 21px;
-    height: 21px;
-    background-color: var(--text-color);
-    border-radius: 50%;
-    transition: transform 0.3s ease;
-}
-.toggle-checkbox:checked::after {
-    transform: translateX(25px);
-}
-.toggle-label {
-    cursor: pointer;
-    user-select: none;
-    line-height: 1.2;
-    flex-grow: 1;
+.toggle-btn .fas {
+    font-size: 1rem;
 }
 
 /* Stili per la ricerca canzoni */
@@ -675,8 +692,19 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 
 
 /* --- STILI PER FUNZIONALITÀ AVATAR --- */
-.settings-btn { background: none; border: none; color: var(--text-color); font-size: 1.5rem; cursor: pointer; line-height: 1; transition: color 0.3s ease, transform 0.3s ease; }
-.settings-btn:hover { color: var(--primary-color); transform: rotate(45deg); }
+.settings-btn-nav {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+.settings-btn-nav .fas {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+.settings-btn-nav.active {
+    transform: rotate(45deg);
+}
 .avatar-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
 .avatar-modal-overlay:not(.hidden) { opacity: 1; visibility: visible; }
 
@@ -800,6 +828,9 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     margin: 0;
     color: var(--text-color);
     opacity: 0.8;
+}
+.song-display.hidden {
+    display: none;
 }
 
 /* NUOVO: Stile per la sezione impostazioni */
