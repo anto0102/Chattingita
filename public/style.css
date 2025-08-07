@@ -883,7 +883,7 @@ emoji-picker {
         padding: 1.5rem 2rem;
     }
 }
-/* --- STILI PER REAZIONI AI MESSAGGI (v3 - Corretto per Mobile) --- */
+/* --- STILI PER REAZIONI AI MESSAGGI (v4 - Ordine Corretto) --- */
 
 /* Contenitore principale che allinea messaggio e pulsante */
 .message-wrapper {
@@ -903,14 +903,7 @@ emoji-picker {
     justify-content: flex-start;
 }
 
-/* --- Stili di base per MOBILE --- */
-
-/* Il messaggio viene PRIMA del pulsante */
-.message {
-    order: 1;
-}
-
-/* Il pulsante di reazione viene DOPO il messaggio */
+/* Pulsante di reazione - Stile base per MOBILE (visibile) */
 .add-reaction-btn {
     background: var(--secondary-color);
     border: none;
@@ -923,15 +916,11 @@ emoji-picker {
     text-align: center;
     cursor: pointer;
     margin: 0 8px;
-    flex-shrink: 0; /* Impedisce al pulsante di rimpicciolirsi */
-    
-    /* Su Mobile è sempre visibile ma discreto */
-    opacity: 0.7;
-    order: 2;
+    flex-shrink: 0;
+    opacity: 0.7; /* Sempre visibile ma discreto su mobile */
 }
 
-
-/* --- Stili aggiuntivi solo per DESKTOP (schermi più grandi di 768px) --- */
+/* --- Stili aggiuntivi solo per DESKTOP (schermi > 768px) --- */
 @media (min-width: 769px) {
     /* Su Desktop, il pulsante è invisibile di default */
     .add-reaction-btn {
@@ -946,7 +935,8 @@ emoji-picker {
         transform: scale(1);
     }
 
-    /* Ripristiniamo l'ordine che ti piaceva su Desktop per i messaggi del partner */
+    /* UNICA REGOLA PER L'ORDINE:
+       Inverti l'ordine solo per i messaggi del PARTNER su DESKTOP */
     .message-wrapper.other .message {
         order: 2;
     }
