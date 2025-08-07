@@ -313,19 +313,15 @@ a:hover {
 .chat-wrapper {
     display: flex;
     flex-direction: column;
-    height: 600px; /* MODIFICA: Altezza fissa e definitiva della chat box */
-    max-width: 900px; /* MODIFICA: Larghezza fissa della chat box */
+    height: 600px;
+    max-width: 900px;
     width: 100%;
     margin: 0 auto;
     border-radius: 10px;
     overflow: hidden;
     background-color: var(--secondary-color);
     position: relative;
-    /* Rimosso: transizione perché la dimensione è ora fissa */
 }
-
-/* Rimosso: non serve più la classe .connected per cambiare altezza */
-/* .chat-wrapper.connected { ... } */
 
 .chat-content {
     flex-grow: 1;
@@ -419,6 +415,7 @@ a:hover {
 
 .input-area {
     display: flex;
+    align-items: center; /* Allinea verticalmente i pulsanti e l'input */
     padding: 1rem;
     background-color: var(--card-background-color);
     border-top: 1px solid var(--border-color);
@@ -749,7 +746,7 @@ a:hover {
     }
     
     .chat-wrapper {
-        height: 500px; /* MODIFICA: Altezza fissa anche per mobile */
+        height: 500px;
     }
     
     .message {
@@ -765,7 +762,6 @@ a:hover {
         width: 100%;
     }
     
-    /* FIX: Aggiunto media query per adattare il titolo su schermi piccoli */
     #chat-section .header {
         flex-direction: row;
         align-items: center;
@@ -787,4 +783,42 @@ a:hover {
         opacity: 1;
         transform: translateY(0);
     }
+}
+
+/* --- MODIFICA: STILI EMOJI PICKER --- */
+.emoji-btn {
+    background-color: transparent;
+    color: var(--text-color);
+    border: none;
+    border-radius: 50%;
+    width: 45px;
+    height: 45px;
+    margin-right: 5px; /* Spazio tra il pulsante emoji e l'input */
+    cursor: pointer;
+    font-size: 1.5rem;
+    transition: color 0.3s ease, transform 0.2s ease;
+}
+
+.emoji-btn:hover {
+    color: var(--primary-color);
+    transform: scale(1.1);
+}
+
+emoji-picker {
+    position: absolute;
+    bottom: 75px; /* Posizionato sopra l'area di input */
+    right: 1rem;
+    z-index: 1001; /* Assicura che sia sopra gli altri elementi */
+    --background: var(--card-background-color);
+    --border-color: var(--border-color);
+    --text-color: var(--text-color);
+    --secondary-text-color: var(--placeholder-color);
+    --button-hover-background: var(--secondary-color);
+    border-radius: 10px;
+    box-shadow: 0 5px 15px var(--shadow-color);
+    display: none; /* Nascosto di default */
+}
+
+emoji-picker.show {
+    display: block; /* Mostrato quando ha la classe 'show' */
 }
