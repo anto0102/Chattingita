@@ -16,6 +16,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SELETTORI DEGLI ELEMENTI DEL DOM ---
     const navLinks = document.getElementById('nav-links');
     const hamburger = document.getElementById('hamburger');
+    // ... (tutti gli altri selettori rimangono invariati)
     const themeToggleBtn = document.getElementById('themeToggle');
     const activeIndicator = document.querySelector('.active-indicator');
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -60,11 +61,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isYou) { chatLog.push(text); }
     }
 
-    // MODIFICA: Nuova funzione per i messaggi di sistema
     function addSystemMessage(text) {
         const sysMsgDiv = document.createElement('div');
         sysMsgDiv.className = 'system-message';
-        sysMsgDiv.textContent = text;
+        sysMsgDiv.innerHTML = text; // Usiamo innerHTML per poter inserire le emoji
         chatMessages.append(sysMsgDiv);
         scrollToBottom();
     }
@@ -72,6 +72,19 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() { const messageText = input.value.trim(); if (messageText !== '' && connected) { emitStopTyping.cancel(); socket.emit('message', messageText); input.value = ''; if (isTyping) { socket.emit('stop_typing'); isTyping = false; } sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); if (!emojiPicker.hidden) { emojiPicker.hidden = true; } } }
     function showTypingIndicator() { if (typingIndicatorContainer.innerHTML === '') { typingIndicatorContainer.innerHTML = `<div class="typing-indicator"><span>Il partner sta scrivendo</span><div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`; scrollToBottom(); } }
     function removeTypingIndicator() { typingIndicatorContainer.innerHTML = ''; }
+
+    // MODIFICA: Nuova funzione per trasformare il codice del paese in una bandiera emoji
+    function getFlagEmoji(countryCode) {
+        if (!countryCode || countryCode.length !== 2) {
+            return '🌍'; // Globo generico come fallback
+        }
+        // Converte un carattere (es. "I") nel suo punto di codice Unicode per le bandiere
+        const codePoints = countryCode
+            .toUpperCase()
+            .split('')
+            .map(char => 127397 + char.charCodeAt());
+        return String.fromCodePoint(...codePoints);
+    }
 
     // --- LOGICA PER LE REAZIONI ---
     const REACTION_EMOJIS = ['👍', '❤️', '😂', '😯', '😢', '🙏'];
@@ -103,7 +116,7 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { status.textContent = 'In attesa di un altro utente...'; });
 
-    // MODIFICA: L'evento 'match' gestisce il paese del partner
+    // MODIFICA: L'evento 'match' ora crea un messaggio di benvenuto più bello
     socket.on('match', (data) => {
         status.textContent = 'Connesso! Puoi iniziare a chattare.';
         inputArea.classList.remove('hidden');
@@ -121,12 +134,13 @@ document.addEventListener('DOMContentLoaded', () => {
         if (data && data.partnerCountry && data.partnerCountry !== 'Sconosciuto') {
             try {
                 const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry);
-                addSystemMessage(`Sei stato connesso con un utente da: ${countryName}`);
+                const flag = getFlagEmoji(data.partnerCountry);
+                addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`);
             } catch (e) {
-                addSystemMessage(`Sei stato connesso con un altro utente.`);
+                addSystemMessage(`Sei connesso con un altro utente 🌍`);
             }
         } else {
-            addSystemMessage(`Sei stato connesso con un altro utente.`);
+            addSystemMessage(`Sei stato connesso con un altro utente 🌍`);
         }
     });
 
