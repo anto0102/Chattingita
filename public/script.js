@@ -4,29 +4,19 @@ let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
-let socket; // Definiamo la variabile socket qui, ma la inizializziamo dopo
+let socket; 
 
 // --- FUNZIONI UTILITY GLOBALI ---
 
 function debounce(callback, delay = 1000) {
     let timeout;
-    const debounced = (...args) => {
-        clearTimeout(timeout);
-        timeout = setTimeout(() => {
-            callback(...args);
-        }, delay);
-    };
-    debounced.cancel = () => {
-        clearTimeout(timeout);
-    };
+    const debounced = (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { callback(...args); }, delay); };
+    debounced.cancel = () => { clearTimeout(timeout); };
     return debounced;
 }
 
 const emitStopTyping = debounce(() => {
-    if (isTyping && socket) { // Controlla che socket esista
-        socket.emit('stop_typing');
-        isTyping = false;
-    }
+    if (isTyping && socket) { socket.emit('stop_typing'); isTyping = false; }
 }, 2000);
 
 
@@ -37,6 +27,7 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- SELETTORI DEGLI ELEMENTI DEL DOM ---
     const navLinks = document.getElementById('nav-links');
     const hamburger = document.getElementById('hamburger');
+    // ... (tutti gli altri selettori rimangono invariati)
     const themeToggleBtn = document.getElementById('themeToggle');
     const activeIndicator = document.querySelector('.active-indicator');
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -60,16 +51,9 @@ document.addEventListener('DOMContentLoaded', () => {
     let serverURL;
     const currentHostname = window.location.hostname;
 
-    if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") {
-        console.log("Sito Pubblico: mi collego al server di produzione.");
-        serverURL = publicServerURL;
-    } else if (currentHostname === "chattingitabeta.netlify.app") {
-        console.log("Sito Beta: mi collego al server beta su Railway.");
-        serverURL = betaServerURL;
-    } else {
-        console.log("Ambiente non di produzione: mi collego al server beta per i test.");
-        serverURL = betaServerURL;
-    }
+    if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") { serverURL = publicServerURL; } 
+    else if (currentHostname === "chattingitabeta.netlify.app") { serverURL = betaServerURL; } 
+    else { serverURL = betaServerURL; }
     
     socket = io(serverURL);
     
@@ -87,112 +71,67 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function showSection(sectionId, element) {
         const sections = document.querySelectorAll('.content-section');
-        sections.forEach(section => {
-            section.classList.remove('active');
-        });
-
+        sections.forEach(section => { section.classList.remove('active'); });
         const activeSection = document.getElementById(sectionId + '-section');
-        if (activeSection) {
-            activeSection.classList.add('active');
-        }
-
+        if (activeSection) { activeSection.classList.add('active'); }
         navButtons.forEach(btn => btn.classList.remove('active'));
-        if (element) {
-            element.classList.add('active');
-            moveActiveIndicator(element);
-        }
-
-        if (window.innerWidth <= 768) {
-            navLinks.classList.remove('open');
-            hamburger.classList.remove('open');
-        }
+        if (element) { element.classList.add('active'); moveActiveIndicator(element); }
+        if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); }
     }
 
     function resetChat() {
-        chatMessages.innerHTML = '';
-        input.value = '';
-        input.disabled = true;
-        sendBtn.disabled = true;
-        sendBtn.classList.remove('active-animation');
-        inputArea.classList.add('hidden');
-        removeTypingIndicator();
-        chatLog = [];
-        partnerIp = null;
-        reportSent = false;
-        isTyping = false;
-        startBtn.disabled = false;
-        disconnectBtn.disabled = true;
-        reportBtn.disabled = true;
+        chatMessages.innerHTML = ''; input.value = ''; input.disabled = true; sendBtn.disabled = true;
+        sendBtn.classList.remove('active-animation'); inputArea.classList.add('hidden'); removeTypingIndicator();
+        chatLog = []; partnerIp = null; reportSent = false; isTyping = false;
+        startBtn.disabled = false; disconnectBtn.disabled = true; reportBtn.disabled = true;
     }
 
     function scrollToBottom() {
-        if (chatContent) {
-            chatContent.scrollTop = chatContent.scrollHeight;
-        }
+        if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; }
     }
 
+    // MODIFICA: La funzione addMessage ora crea un WRAPPER per il messaggio.
     function addMessage(messageObject) {
         const { id, text, senderId } = messageObject;
-        
-        // Determina se il messaggio è nostro
         const isYou = senderId === socket.id;
-    
-        const msgDiv = document.createElement('div');
-        msgDiv.className = 'message ' + (isYou ? 'you' : 'other');
-        msgDiv.dataset.id = id;
-    
-        // Aggiungiamo il contenitore e il pulsante per le reazioni
-        msgDiv.innerHTML = `
-            <div class="add-reaction-container">
-                <button class="add-reaction-btn">🙂</button>
+
+        const wrapperDiv = document.createElement('div');
+        wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
+
+        // Creiamo la struttura interna con il pulsante e il messaggio
+        wrapperDiv.innerHTML = `
+            <button class="add-reaction-btn" data-message-id="${id}">+</button>
+            <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
+                <div class="message-content">
+                    <p class="message-text">${text}</p>
+                </div>
+                <div class="reactions-display"></div>
             </div>
-            <div class="message-content">
-                <p class="message-text">${text}</p>
-            </div>
-            <div class="reactions-display"></div>
         `;
         
-        chatMessages.appendChild(msgDiv);
+        // Usiamo append invece di appendChild per aggiungere l'elemento
+        chatMessages.append(wrapperDiv);
         scrollToBottom();
-    
-        // Aggiorna il log solo per i messaggi del partner
-        if (!isYou) {
-            chatLog.push(text);
-        }
+
+        if (!isYou) { chatLog.push(text); }
     }
 
     function sendMessage() {
         const messageText = input.value.trim();
         if (messageText !== '' && connected) {
             emitStopTyping.cancel(); 
-            
             socket.emit('message', messageText);
-            
             input.value = '';
-            if (isTyping) {
-                socket.emit('stop_typing');
-                isTyping = false;
-            }
+            if (isTyping) { socket.emit('stop_typing'); isTyping = false; }
             sendBtn.disabled = true;
             sendBtn.classList.remove('active-animation');
-            if (!emojiPicker.hidden) {
-                emojiPicker.hidden = true;
-            }
+            if (!emojiPicker.hidden) { emojiPicker.hidden = true; }
         }
     }
 
     function showTypingIndicator() {
         if (typingIndicatorContainer.innerHTML === '') {
-            typingIndicatorContainer.innerHTML = `
-                <div class="typing-indicator">
-                    <span>Il partner sta scrivendo</span>
-                    <div class="typing-dots">
-                        <span class="typing-dot"></span>
-                        <span class="typing-dot"></span>
-                        <span class="typing-dot"></span>
-                    </div>
-                </div>
-            `;
+            typingIndicatorContainer.innerHTML = `<div class="typing-indicator"><span>Il partner sta scrivendo</span><div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
             scrollToBottom();
         }
     }
@@ -201,201 +140,95 @@ document.addEventListener('DOMContentLoaded', () => {
         typingIndicatorContainer.innerHTML = '';
     }
 
-    // --- EVENT LISTENERS PER ELEMENTI DEL DOM ---
+    // --- LOGICA PER LE REAZIONI ---
+    const REACTION_EMOJIS = ['👍', '❤️', '😂', '😯', '😢', '🙏'];
+    let activePalette = null; // Terrà traccia della palette attualmente visibile
+
+    function createReactionPalette(messageId) {
+        const palette = document.createElement('div');
+        palette.className = 'reaction-palette';
+        palette.dataset.messageId = messageId;
+
+        REACTION_EMOJIS.forEach(emoji => {
+            const emojiSpan = document.createElement('span');
+            emojiSpan.className = 'palette-emoji';
+            emojiSpan.textContent = emoji;
+            palette.appendChild(emojiSpan);
+        });
+
+        return palette;
+    }
     
-    startBtn.addEventListener('click', () => {
-        if (!connected) {
-            socket.emit('start_chat');
-            status.textContent = 'In attesa di un altro utente...';
-            startBtn.disabled = true;
-            disconnectBtn.disabled = false;
+    // Usiamo event delegation per gestire i click sui pulsanti di reazione
+    chatMessages.addEventListener('click', (event) => {
+        const target = event.target;
+
+        // Se clicco su un'emoji nella palette
+        if (target.classList.contains('palette-emoji')) {
+            const palette = target.closest('.reaction-palette');
+            const messageId = palette.dataset.messageId;
+            const emoji = target.textContent;
+            
+            console.log(`Reazione '${emoji}' aggiunta al messaggio '${messageId}'`);
+            // QUI IN FUTURO INVIEREMO L'EVENTO AL SERVER
+            // socket.emit('add_reaction', { messageId, emoji });
+            
+            if (activePalette) {
+                activePalette.remove();
+                activePalette = null;
+            }
+            return;
+        }
+
+        // Se una palette è già aperta, la chiudo
+        if (activePalette) {
+            activePalette.remove();
+            activePalette = null;
+        }
+
+        // Se clicco sul pulsante '+' per aggiungere una reazione
+        if (target.classList.contains('add-reaction-btn')) {
+            const messageId = target.dataset.messageId;
+            const messageWrapper = target.closest('.message-wrapper');
+            
+            activePalette = createReactionPalette(messageId);
+            messageWrapper.appendChild(activePalette);
+            
+            // Un piccolo timeout per permettere al browser di renderizzare l'elemento prima di applicare la transizione
+            setTimeout(() => {
+                activePalette.classList.add('visible');
+            }, 10);
         }
     });
 
-    disconnectBtn.addEventListener('click', () => {
-        socket.emit('disconnect_chat');
-        status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
-        resetChat();
-        connected = false;
-    });
 
+    // --- EVENT LISTENERS GENERALI ---
+    startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat'); status.textContent = 'In attesa di un altro utente...'; startBtn.disabled = true; disconnectBtn.disabled = false; } });
+    disconnectBtn.addEventListener('click', () => { socket.emit('disconnect_chat'); status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
     sendBtn.addEventListener('click', sendMessage);
-
-    input.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter' && !sendBtn.disabled) sendMessage();
-    });
-
-    input.addEventListener('input', () => {
-        if (!connected) return;
-        if (input.value.trim().length > 0) {
-            sendBtn.disabled = false;
-            sendBtn.classList.add('active-animation');
-        } else {
-            sendBtn.disabled = true;
-            sendBtn.classList.remove('active-animation');
-        }
-        if (!isTyping) {
-            socket.emit('typing');
-            isTyping = true;
-        }
-        emitStopTyping();
-    });
-
-    reportBtn.addEventListener('click', () => {
-        if (!connected || !partnerIp) {
-            alert("Nessun partner da segnalare.");
-            return;
-        }
-        if (reportSent) {
-            alert("Hai già segnalato questo utente. La segnalazione è in revisione.");
-            return;
-        }
-        socket.emit("report_user", { partnerIp, chatLog });
-        alert("Segnalazione inviata. Il tuo partner è stato disconnesso.");
-        reportSent = true;
-        socket.emit('disconnect_chat');
-        status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti';
-        resetChat();
-        connected = false;
-    });
-
-    const savedTheme = localStorage.getItem('theme');
-    const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-    if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
-        document.body.classList.add('light-mode');
-        themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
-    } else {
-        document.body.classList.remove('light-mode');
-        themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
-    }
-
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', (e) => {
-            e.preventDefault();
-            const sectionId = btn.dataset.section;
-            if (sectionId) {
-                showSection(sectionId, btn);
-            }
-        });
-    });
-
-    const activeBtn = document.querySelector('.nav-btn.active');
-    if (activeBtn) {
-        showSection(activeBtn.dataset.section, activeBtn);
-    } else {
-        const initialSection = document.getElementById('chat-section');
-        if (initialSection) {
-            initialSection.classList.add('active');
-            const chatBtn = document.querySelector('[data-section="chat"]');
-            if (chatBtn) {
-                moveActiveIndicator(chatBtn);
-                chatBtn.classList.add('active');
-            }
-        }
-    }
-
-    document.querySelectorAll('.faq-header').forEach(header => {
-        header.addEventListener('click', () => {
-            const faqItem = header.closest('.faq-item');
-            faqItem.classList.toggle('active');
-        });
-    });
-
-    themeToggleBtn.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
-        const isLightMode = document.body.classList.contains('light-mode');
-        themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
-        localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-        emojiPicker.classList.toggle('dark', !isLightMode);
-        emojiPicker.classList.toggle('light', isLightMode);
-    });
-
-    hamburger.addEventListener('click', () => {
-        navLinks.classList.toggle('open');
-        hamburger.classList.toggle('open');
-    });
-
-    window.addEventListener('resize', () => {
-        const activeBtn = document.querySelector('.nav-btn.active');
-        if (activeBtn) {
-            moveActiveIndicator(activeBtn);
-        }
-    });
-
-    const contactForm = document.getElementById('contact-form');
-    contactForm.addEventListener('submit', (e) => {
-        e.preventDefault();
-    });
-
-    emojiBtn.addEventListener('click', (event) => {
-        event.stopPropagation();
-        emojiPicker.hidden = !emojiPicker.hidden;
-    });
-
-    emojiPicker.addEventListener('emoji-click', event => {
-        input.value += event.detail.unicode;
-        input.focus();
-        if (sendBtn.disabled) {
-           sendBtn.disabled = false;
-           sendBtn.classList.add('active-animation');
-        }
-    });
-
-    document.body.addEventListener('click', () => {
-        if (!emojiPicker.hidden) {
-            emojiPicker.hidden = true;
-        }
-    });
-    
-    const isLightModeOnLoad = document.body.classList.contains('light-mode');
-    emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
-    emojiPicker.classList.toggle('light', isLightModeOnLoad);
+    input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendMessage(); });
+    input.addEventListener('input', () => { if (!connected) return; if (input.value.trim().length > 0) { sendBtn.disabled = false; sendBtn.classList.add('active-animation'); } else { sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); } if (!isTyping) { socket.emit('typing'); isTyping = true; } emitStopTyping(); });
+    reportBtn.addEventListener('click', () => { if (!connected || !partnerIp) { alert("Nessun partner da segnalare."); return; } if (reportSent) { alert("Hai già segnalato questo utente. La segnalazione è in revisione."); return; } socket.emit("report_user", { partnerIp, chatLog }); alert("Segnalazione inviata. Il tuo partner è stato disconnesso."); reportSent = true; socket.emit('disconnect_chat'); status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
+    const savedTheme = localStorage.getItem('theme'); const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches; if (savedTheme === 'light' || (!savedTheme && prefersLight)) { document.body.classList.add('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; } else { document.body.classList.remove('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; }
+    navButtons.forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const sectionId = btn.dataset.section; if (sectionId) { showSection(sectionId, btn); } }); });
+    const activeBtn = document.querySelector('.nav-btn.active'); if (activeBtn) { showSection(activeBtn.dataset.section, activeBtn); } else { const initialSection = document.getElementById('chat-section'); if (initialSection) { initialSection.classList.add('active'); const chatBtn = document.querySelector('[data-section="chat"]'); if (chatBtn) { moveActiveIndicator(chatBtn); chatBtn.classList.add('active'); } } }
+    document.querySelectorAll('.faq-header').forEach(header => { header.addEventListener('click', () => { const faqItem = header.closest('.faq-item'); faqItem.classList.toggle('active'); }); });
+    themeToggleBtn.addEventListener('click', () => { document.body.classList.toggle('light-mode'); const isLightMode = document.body.classList.contains('light-mode'); themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>'; localStorage.setItem('theme', isLightMode ? 'light' : 'dark'); emojiPicker.classList.toggle('dark', !isLightMode); emojiPicker.classList.toggle('light', isLightMode); });
+    hamburger.addEventListener('click', () => { navLinks.classList.toggle('open'); hamburger.classList.toggle('open'); });
+    window.addEventListener('resize', () => { const activeBtn = document.querySelector('.nav-btn.active'); if (activeBtn) { moveActiveIndicator(activeBtn); } });
+    const contactForm = document.getElementById('contact-form'); contactForm.addEventListener('submit', (e) => { e.preventDefault(); });
+    emojiBtn.addEventListener('click', (event) => { event.stopPropagation(); emojiPicker.hidden = !emojiPicker.hidden; });
+    emojiPicker.addEventListener('emoji-click', event => { input.value += event.detail.unicode; input.focus(); if (sendBtn.disabled) { sendBtn.disabled = false; sendBtn.classList.add('active-animation'); } });
+    document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
+    const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
     // --- EVENTI SOCKET.IO ---
-    socket.on('online_count', (count) => {
-        onlineCount.textContent = count;
-    });
-
-    socket.on('waiting', () => {
-        status.textContent = 'In attesa di un altro utente...';
-    });
-
-    socket.on('match', (data) => {
-        status.textContent = 'Connesso! Puoi iniziare a chattare.';
-        inputArea.classList.remove('hidden');
-        input.disabled = false;
-        disconnectBtn.disabled = false;
-        reportBtn.disabled = false;
-        connected = true;
-        reportSent = false;
-        isTyping = false;
-        if (data && data.partnerIp) {
-            partnerIp = data.partnerIp;
-        }
-    });
-
-    socket.on('new_message', (messageObject) => {
-        removeTypingIndicator();
-        addMessage(messageObject);
-    });
-
-    socket.on('typing', () => {
-        showTypingIndicator();
-    });
-
-    socket.on('stop_typing', () => {
-        removeTypingIndicator();
-    });
-
-    socket.on('partner_disconnected', () => {
-        status.textContent = 'Il tuo partner si è disconnesso.';
-        resetChat();
-        connected = false;
-    });
-
-    socket.on('connect_error', (err) => {
-        status.textContent = 'Errore di connessione: ' + err.message;
-        resetChat();
-        connected = false;
-    });
+    socket.on('online_count', (count) => { onlineCount.textContent = count; });
+    socket.on('waiting', () => { status.textContent = 'In attesa di un altro utente...'; });
+    socket.on('match', (data) => { status.textContent = 'Connesso! Puoi iniziare a chattare.'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; if (data && data.partnerIp) { partnerIp = data.partnerIp; } });
+    socket.on('new_message', (messageObject) => { removeTypingIndicator(); addMessage(messageObject); });
+    socket.on('typing', () => { showTypingIndicator(); });
+    socket.on('stop_typing', () => { removeTypingIndicator(); });
+    socket.on('partner_disconnected', () => { status.textContent = 'Il tuo partner si è disconnesso.'; resetChat(); connected = false; });
+    socket.on('connect_error', (err) => { status.textContent = 'Errore di connessione: ' + err.message; resetChat(); connected = false; });
 });
