@@ -17,12 +17,13 @@ const disconnectBtn = document.getElementById('disconnectBtn');
 const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
 const reportBtn = document.getElementById('reportBtn');
+const chatContent = document.querySelector('.chat-content'); // <-- 1. MODIFICA AGGIUNTA
 
 // Stato della chat
 let connected = false;
 let typingIndicator = null;
 let chatLog = [];
-let partnerIp = null; // Modificato per memorizzare l'IP del partner
+let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
 
@@ -76,12 +77,14 @@ function resetChat() {
     startBtn.disabled = false;
     disconnectBtn.disabled = true;
     reportBtn.disabled = true;
-    // Rimosso: document.querySelector('.chat-wrapper').classList.remove('connected');
 }
 
-// Funzione per lo scroll automatico
+// Funzione per lo scroll automatico (versione corretta)
 function scrollToBottom() {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    // Ora usiamo chatContent, l'elemento che ha davvero la barra di scorrimento
+    if (chatContent) {
+        chatContent.scrollTop = chatContent.scrollHeight;
+    }
 }
 
 // Funzione addMessage aggiornata per includere lo scroll
@@ -90,7 +93,7 @@ function addMessage(text, isYou = false) {
     msg.className = 'message ' + (isYou ? 'you' : 'other');
     msg.textContent = text;
     chatMessages.appendChild(msg);
-    scrollToBottom();
+    scrollToBottom(); // La chiamata qui è corretta e ora funzionerà
 
     if (!isYou) {
         chatLog.push(text);
@@ -124,7 +127,7 @@ function showTypingIndicator() {
             </div>
         `;
         chatMessages.appendChild(typingIndicator);
-        scrollToBottom();
+        scrollToBottom(); // La chiamata qui è corretta e ora funzionerà
     }
 }
 
@@ -294,7 +297,6 @@ socket.on('match', (data) => {
     connected = true;
     reportSent = false;
     isTyping = false;
-    // Rimosso: document.querySelector('.chat-wrapper').classList.add('connected');
     
     if (data && data.partnerIp) {
         partnerIp = data.partnerIp;
@@ -325,4 +327,3 @@ socket.on('connect_error', (err) => {
     resetChat();
     connected = false;
 });
-
