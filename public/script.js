@@ -46,7 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
     function moveActiveIndicator(element) { if (element && window.innerWidth > 768) { activeIndicator.style.width = `${element.offsetWidth}px`; activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`; activeIndicator.style.opacity = 1; } else { activeIndicator.style.opacity = 0; } }
     function showSection(sectionId, element) { const sections = document.querySelectorAll('.content-section'); sections.forEach(section => { section.classList.remove('active'); }); const activeSection = document.getElementById(sectionId + '-section'); if (activeSection) { activeSection.classList.add('active'); } navButtons.forEach(btn => btn.classList.remove('active')); if (element) { element.classList.add('active'); moveActiveIndicator(element); } if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); } }
-    function resetChat() { chatMessages.innerHTML = ''; input.value = ''; input.disabled = true; sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); inputArea.classList.add('hidden'); removeTypingIndicator(); chatLog = []; partnerIp = null; reportSent = false; isTyping = false; startBtn.disabled = false; disconnectBtn.disabled = true; reportBtn.disabled = true; }
+    
+    function resetChat() {
+        chatMessages.innerHTML = '';
+        input.value = '';
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.classList.remove('active-animation');
+        inputArea.classList.add('hidden');
+        removeTypingIndicator();
+        hideLoadingAnimation(); // MODIFICA: Nasconde l'animazione al reset
+        chatLog = [];
+        partnerIp = null;
+        reportSent = false;
+        isTyping = false;
+        startBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        reportBtn.disabled = true;
+    }
+
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
     function addMessage(messageObject) {
@@ -60,15 +78,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!isYou) { chatLog.push(text); }
     }
 
-    // MODIFICA: La funzione ora attiva l'animazione CSS
     function addSystemMessage(text) {
         const sysMsgDiv = document.createElement('div');
         sysMsgDiv.className = 'system-message';
         sysMsgDiv.innerHTML = text;
         chatMessages.append(sysMsgDiv);
         scrollToBottom();
-
-        // Aggiunge la classe 'visible' dopo un istante per attivare la transizione CSS
         setTimeout(() => {
             sysMsgDiv.classList.add('visible');
         }, 10);
@@ -77,11 +92,36 @@ document.addEventListener('DOMContentLoaded', () => {
     function sendMessage() { const messageText = input.value.trim(); if (messageText !== '' && connected) { emitStopTyping.cancel(); socket.emit('message', messageText); input.value = ''; if (isTyping) { socket.emit('stop_typing'); isTyping = false; } sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); if (!emojiPicker.hidden) { emojiPicker.hidden = true; } } }
     function showTypingIndicator() { if (typingIndicatorContainer.innerHTML === '') { typingIndicatorContainer.innerHTML = `<div class="typing-indicator"><span>Il partner sta scrivendo</span><div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`; scrollToBottom(); } }
     function removeTypingIndicator() { typingIndicatorContainer.innerHTML = ''; }
+    function getFlagEmoji(countryCode) { if (!countryCode || countryCode.length !== 2) { return '🌍'; } const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt()); return String.fromCodePoint(...codePoints); }
 
-    function getFlagEmoji(countryCode) {
-        if (!countryCode || countryCode.length !== 2) { return '🌍'; }
-        const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt());
-        return String.fromCodePoint(...codePoints);
+    // MODIFICA: Nuove funzioni per l'animazione di caricamento
+    function showLoadingAnimation() {
+        chatMessages.innerHTML = '';
+        status.style.display = 'none';
+        const loadingHTML = `
+            <div class="loading-container" id="loading-container">
+                <div class="orb-canvas">
+                    <div class="orb orb-1"></div>
+                    <div class="orb orb-2"></div>
+                </div>
+                <p class="loading-text">In attesa di un altro utente...</p>
+            </div>
+        `;
+        chatContent.insertAdjacentHTML('beforeend', loadingHTML);
+        setTimeout(() => {
+            const loadingContainer = document.getElementById('loading-container');
+            if (loadingContainer) {
+                loadingContainer.classList.add('visible');
+            }
+        }, 10);
+    }
+
+    function hideLoadingAnimation() {
+        const loadingContainer = document.getElementById('loading-container');
+        if (loadingContainer) {
+            loadingContainer.remove();
+        }
+        status.style.display = 'block';
     }
 
     // --- LOGICA PER LE REAZIONI ---
@@ -112,9 +152,15 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
-    socket.on('waiting', () => { status.textContent = 'In attesa di un altro utente...'; });
+
+    socket.on('waiting', () => {
+        showLoadingAnimation();
+    });
+
     socket.on('match', (data) => {
+        hideLoadingAnimation();
         status.textContent = 'Connesso! Puoi iniziare a chattare.';
+        status.style.display = 'block';
         inputArea.classList.remove('hidden');
         input.disabled = false;
         disconnectBtn.disabled = false;
@@ -135,6 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
+
     socket.on('new_message', (messageObject) => { removeTypingIndicator(); addMessage(messageObject); });
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageWrapper = document.querySelector(`.message-wrapper .message[data-id="${messageId}"]`); if (!messageWrapper) return; const reactionsDisplay = messageWrapper.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
     socket.on('typing', () => { showTypingIndicator(); });
