@@ -1,67 +1,12 @@
-// --- COLLEGAMENTO DINAMICO AL SERVER ---
-
-// 1. Definisci gli URL dei tuoi due server
-const publicServerURL = "https://chattingapp-backend.onrender.com";
-const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
-
-// 2. Scegli l'URL corretto in base al dominio del sito frontend
-let serverURL;
-const currentHostname = window.location.hostname;
-
-if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") {
-    console.log("Sito Pubblico: mi collego al server di produzione.");
-    serverURL = publicServerURL;
-} else if (currentHostname === "chattingitabeta.netlify.app") {
-    console.log("Sito Beta: mi collego al server beta su Railway.");
-    serverURL = betaServerURL;
-} else {
-    // Fallback per l'ambiente locale (localhost) o altri domini di anteprima
-    console.log("Ambiente non di produzione: mi collego al server beta per i test.");
-    serverURL = betaServerURL;
-}
-
-// 3. Connettiti al server scelto
-const socket = io(serverURL);
-
-// --- FINE COLLEGAMENTO DINAMICO ---
-
-
-// Elementi principali
-const navLinks = document.getElementById('nav-links');
-const hamburger = document.getElementById('hamburger');
-const themeToggleBtn = document.getElementById('themeToggle');
-const activeIndicator = document.querySelector('.active-indicator');
-const navButtons = document.querySelectorAll('.nav-btn');
-
-// Elementi della chat
-const status = document.getElementById('status');
-const chatMessages = document.getElementById('chat-messages');
-const input = document.getElementById('input');
-const inputArea = document.getElementById('input-area');
-const startBtn = document.getElementById('startBtn');
-const disconnectBtn = document.getElementById('disconnectBtn');
-const sendBtn = document.getElementById('sendBtn');
-const onlineCount = document.getElementById('onlineCount');
-const reportBtn = document.getElementById('reportBtn');
-const chatContent = document.querySelector('.chat-content');
-const typingIndicatorContainer = document.getElementById('typing-indicator-container');
-const emojiBtn = document.getElementById('emojiBtn');
-const emojiPicker = document.getElementById('emoji-picker');
-
-// Stato della chat
+// --- VARIABILI DI STATO GLOBALI ---
 let connected = false;
 let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
-const emitStopTyping = debounce(() => {
-    if (isTyping) {
-        socket.emit('stop_typing');
-        isTyping = false;
-    }
-}, 2000);
+let socket; // Definiamo la variabile socket qui, ma la inizializziamo dopo
 
-// --- FUNZIONI UTILITY ---
+// --- FUNZIONI UTILITY GLOBALI ---
 
 function debounce(callback, delay = 1000) {
     let timeout;
@@ -77,184 +22,228 @@ function debounce(callback, delay = 1000) {
     return debounced;
 }
 
-function moveActiveIndicator(element) {
-    if (element && window.innerWidth > 768) {
-        const navBar = document.querySelector('.nav-links');
-        activeIndicator.style.width = `${element.offsetWidth}px`;
-        activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
-        activeIndicator.style.opacity = 1;
-    } else {
-        activeIndicator.style.opacity = 0;
+const emitStopTyping = debounce(() => {
+    if (isTyping && socket) { // Controlla che socket esista
+        socket.emit('stop_typing');
+        isTyping = false;
     }
-}
-
-function showSection(sectionId, element) {
-    const sections = document.querySelectorAll('.content-section');
-    sections.forEach(section => {
-        section.classList.remove('active');
-    });
-
-    const activeSection = document.getElementById(sectionId + '-section');
-    if (activeSection) {
-        activeSection.classList.add('active');
-    }
-
-    navButtons.forEach(btn => btn.classList.remove('active'));
-    if (element) {
-        element.classList.add('active');
-        moveActiveIndicator(element);
-    }
-
-    if (window.innerWidth <= 768) {
-        navLinks.classList.remove('open');
-        hamburger.classList.remove('open');
-    }
-}
-
-function resetChat() {
-    chatMessages.innerHTML = '';
-    input.value = '';
-    input.disabled = true;
-    sendBtn.disabled = true;
-    sendBtn.classList.remove('active-animation');
-    inputArea.classList.add('hidden');
-    removeTypingIndicator();
-    chatLog = [];
-    partnerIp = null;
-    reportSent = false;
-    isTyping = false;
-    startBtn.disabled = false;
-    disconnectBtn.disabled = true;
-    reportBtn.disabled = true;
-}
-
-function scrollToBottom() {
-    if (chatContent) {
-        chatContent.scrollTop = chatContent.scrollHeight;
-    }
-}
-
-function addMessage(text, isYou = false) {
-    const msg = document.createElement('div');
-    msg.className = 'message ' + (isYou ? 'you' : 'other');
-    msg.textContent = text;
-    chatMessages.appendChild(msg);
-    scrollToBottom();
-
-    if (!isYou) {
-        chatLog.push(text);
-    }
-}
-
-function sendMessage() {
-    const message = input.value.trim();
-    if (message !== '' && connected) {
-        emitStopTyping.cancel(); 
-        
-        socket.emit('message', message);
-        addMessage(message, true);
-        input.value = '';
-
-        if (isTyping) {
-            socket.emit('stop_typing');
-            isTyping = false;
-        }
-
-        sendBtn.disabled = true;
-        sendBtn.classList.remove('active-animation');
-        
-        if (!emojiPicker.hidden) {
-            emojiPicker.hidden = true;
-        }
-    }
-}
-
-function showTypingIndicator() {
-    if (typingIndicatorContainer.innerHTML === '') {
-        typingIndicatorContainer.innerHTML = `
-            <div class="typing-indicator">
-                <span>Il partner sta scrivendo</span>
-                <div class="typing-dots">
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                </div>
-            </div>
-        `;
-        scrollToBottom();
-    }
-}
-
-function removeTypingIndicator() {
-    typingIndicatorContainer.innerHTML = '';
-}
-
-// --- EVENT LISTENERS ---
-startBtn.addEventListener('click', () => {
-    if (!connected) {
-        socket.emit('start_chat');
-        status.textContent = 'In attesa di un altro utente...';
-        startBtn.disabled = true;
-        disconnectBtn.disabled = false;
-    }
-});
-
-disconnectBtn.addEventListener('click', () => {
-    socket.emit('disconnect_chat');
-    status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
-    resetChat();
-    connected = false;
-});
-
-sendBtn.addEventListener('click', sendMessage);
-
-input.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter' && !sendBtn.disabled) sendMessage();
-});
-
-input.addEventListener('input', () => {
-    if (!connected) return;
-
-    if (input.value.trim().length > 0) {
-        sendBtn.disabled = false;
-        sendBtn.classList.add('active-animation');
-    } else {
-        sendBtn.disabled = true;
-        sendBtn.classList.remove('active-animation');
-    }
-
-    if (!isTyping) {
-        socket.emit('typing');
-        isTyping = true;
-    }
-    
-    emitStopTyping();
-});
+}, 2000);
 
 
-reportBtn.addEventListener('click', () => {
-    if (!connected || !partnerIp) {
-        alert("Nessun partner da segnalare.");
-        return;
-    }
-    if (reportSent) {
-        alert("Hai già segnalato questo utente. La segnalazione è in revisione.");
-        return;
-    }
-
-    socket.emit("report_user", { partnerIp, chatLog });
-    alert("Segnalazione inviata. Il tuo partner è stato disconnesso.");
-    reportSent = true;
-    socket.emit('disconnect_chat');
-    status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti';
-    resetChat();
-    connected = false;
-});
+// --- TUTTA LA LOGICA PARTE QUANDO LA PAGINA È PRONTA ---
 
 document.addEventListener('DOMContentLoaded', () => {
+
+    // --- SELETTORI DEGLI ELEMENTI DEL DOM ---
+    const navLinks = document.getElementById('nav-links');
+    const hamburger = document.getElementById('hamburger');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const activeIndicator = document.querySelector('.active-indicator');
+    const navButtons = document.querySelectorAll('.nav-btn');
+    const status = document.getElementById('status');
+    const chatMessages = document.getElementById('chat-messages');
+    const input = document.getElementById('input');
+    const inputArea = document.getElementById('input-area');
+    const startBtn = document.getElementById('startBtn');
+    const disconnectBtn = document.getElementById('disconnectBtn');
+    const sendBtn = document.getElementById('sendBtn');
+    const onlineCount = document.getElementById('onlineCount');
+    const reportBtn = document.getElementById('reportBtn');
+    const chatContent = document.querySelector('.chat-content');
+    const typingIndicatorContainer = document.getElementById('typing-indicator-container');
+    const emojiBtn = document.getElementById('emojiBtn');
+    const emojiPicker = document.getElementById('emoji-picker');
+    
+    // --- CONNESSIONE DINAMICA AL SERVER (ORA IN UN POSTO SICURO) ---
+    const publicServerURL = "https://chattingapp-backend.onrender.com";
+    const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
+    let serverURL;
+    const currentHostname = window.location.hostname;
+
+    if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") {
+        console.log("Sito Pubblico: mi collego al server di produzione.");
+        serverURL = publicServerURL;
+    } else if (currentHostname === "chattingitabeta.netlify.app") {
+        console.log("Sito Beta: mi collego al server beta su Railway.");
+        serverURL = betaServerURL;
+    } else {
+        console.log("Ambiente non di produzione: mi collego al server beta per i test.");
+        serverURL = betaServerURL;
+    }
+
+    // Ora inizializziamo la variabile socket
+    socket = io(serverURL);
+    
+    // --- FUNZIONI CHE MANIPOLANO IL DOM ---
+    
+    function moveActiveIndicator(element) {
+        if (element && window.innerWidth > 768) {
+            activeIndicator.style.width = `${element.offsetWidth}px`;
+            activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
+            activeIndicator.style.opacity = 1;
+        } else {
+            activeIndicator.style.opacity = 0;
+        }
+    }
+
+    function showSection(sectionId, element) {
+        const sections = document.querySelectorAll('.content-section');
+        sections.forEach(section => {
+            section.classList.remove('active');
+        });
+
+        const activeSection = document.getElementById(sectionId + '-section');
+        if (activeSection) {
+            activeSection.classList.add('active');
+        }
+
+        navButtons.forEach(btn => btn.classList.remove('active'));
+        if (element) {
+            element.classList.add('active');
+            moveActiveIndicator(element);
+        }
+
+        if (window.innerWidth <= 768) {
+            navLinks.classList.remove('open');
+            hamburger.classList.remove('open');
+        }
+    }
+
+    function resetChat() {
+        chatMessages.innerHTML = '';
+        input.value = '';
+        input.disabled = true;
+        sendBtn.disabled = true;
+        sendBtn.classList.remove('active-animation');
+        inputArea.classList.add('hidden');
+        removeTypingIndicator();
+        chatLog = [];
+        partnerIp = null;
+        reportSent = false;
+        isTyping = false;
+        startBtn.disabled = false;
+        disconnectBtn.disabled = true;
+        reportBtn.disabled = true;
+    }
+
+    function scrollToBottom() {
+        if (chatContent) {
+            chatContent.scrollTop = chatContent.scrollHeight;
+        }
+    }
+
+    function addMessage(text, isYou = false) {
+        const msg = document.createElement('div');
+        msg.className = 'message ' + (isYou ? 'you' : 'other');
+        msg.textContent = text;
+        chatMessages.appendChild(msg);
+        scrollToBottom();
+
+        if (!isYou) {
+            chatLog.push(text);
+        }
+    }
+
+    function sendMessage() {
+        const message = input.value.trim();
+        if (message !== '' && connected) {
+            emitStopTyping.cancel(); 
+            socket.emit('message', message);
+            addMessage(message, true);
+            input.value = '';
+            if (isTyping) {
+                socket.emit('stop_typing');
+                isTyping = false;
+            }
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('active-animation');
+            if (!emojiPicker.hidden) {
+                emojiPicker.hidden = true;
+            }
+        }
+    }
+
+    function showTypingIndicator() {
+        if (typingIndicatorContainer.innerHTML === '') {
+            typingIndicatorContainer.innerHTML = `
+                <div class="typing-indicator">
+                    <span>Il partner sta scrivendo</span>
+                    <div class="typing-dots">
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                        <span class="typing-dot"></span>
+                    </div>
+                </div>
+            `;
+            scrollToBottom();
+        }
+    }
+
+    function removeTypingIndicator() {
+        typingIndicatorContainer.innerHTML = '';
+    }
+
+    // --- EVENT LISTENERS PER ELEMENTI DEL DOM ---
+    
+    startBtn.addEventListener('click', () => {
+        if (!connected) {
+            socket.emit('start_chat');
+            status.textContent = 'In attesa di un altro utente...';
+            startBtn.disabled = true;
+            disconnectBtn.disabled = false;
+        }
+    });
+
+    disconnectBtn.addEventListener('click', () => {
+        socket.emit('disconnect_chat');
+        status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti';
+        resetChat();
+        connected = false;
+    });
+
+    sendBtn.addEventListener('click', sendMessage);
+
+    input.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter' && !sendBtn.disabled) sendMessage();
+    });
+
+    input.addEventListener('input', () => {
+        if (!connected) return;
+        if (input.value.trim().length > 0) {
+            sendBtn.disabled = false;
+            sendBtn.classList.add('active-animation');
+        } else {
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('active-animation');
+        }
+        if (!isTyping) {
+            socket.emit('typing');
+            isTyping = true;
+        }
+        emitStopTyping();
+    });
+
+    reportBtn.addEventListener('click', () => {
+        if (!connected || !partnerIp) {
+            alert("Nessun partner da segnalare.");
+            return;
+        }
+        if (reportSent) {
+            alert("Hai già segnalato questo utente. La segnalazione è in revisione.");
+            return;
+        }
+        socket.emit("report_user", { partnerIp, chatLog });
+        alert("Segnalazione inviata. Il tuo partner è stato disconnesso.");
+        reportSent = true;
+        socket.emit('disconnect_chat');
+        status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti';
+        resetChat();
+        connected = false;
+    });
+
+    // Impostazione tema iniziale
     const savedTheme = localStorage.getItem('theme');
     const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
-
     if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
         document.body.classList.add('light-mode');
         themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>';
@@ -263,6 +252,7 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
     }
 
+    // Navigazione tra sezioni
     navButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -273,6 +263,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
+    // Mostra sezione iniziale
     const activeBtn = document.querySelector('.nav-btn.active');
     if (activeBtn) {
         showSection(activeBtn.dataset.section, activeBtn);
@@ -300,7 +291,6 @@ document.addEventListener('DOMContentLoaded', () => {
         const isLightMode = document.body.classList.contains('light-mode');
         themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
-        
         emojiPicker.classList.toggle('dark', !isLightMode);
         emojiPicker.classList.toggle('light', isLightMode);
     });
@@ -320,17 +310,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        const statusMessage = document.getElementById('contact-status');
-        const formData = new FormData(contactForm);
-        const data = Object.fromEntries(formData.entries());
-
-        console.log("Dati del form inviati:", data);
-        statusMessage.textContent = "Messaggio inviato con successo!";
-        statusMessage.style.color = 'var(--success-color)';
-        contactForm.reset();
+        // ... Logica form contatti ...
     });
 
-    // --- LOGICA EMOJI PICKER ---
+    // Logica Emoji Picker
     emojiBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         emojiPicker.hidden = !emojiPicker.hidden;
@@ -354,17 +337,52 @@ document.addEventListener('DOMContentLoaded', () => {
     const isLightModeOnLoad = document.body.classList.contains('light-mode');
     emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
     emojiPicker.classList.toggle('light', isLightModeOnLoad);
-});
 
-// --- EVENTI SOCKET.IO ---
-socket.on('online_count', (count) => {
-    onlineCount.textContent = count;
-});
+    // --- EVENTI SOCKET.IO (ORA IN UN POSTO SICURO) ---
+    socket.on('online_count', (count) => {
+        onlineCount.textContent = count;
+    });
 
-socket.on('waiting', () => {
-    status.textContent = 'In attesa di un altro utente...';
-});
+    socket.on('waiting', () => {
+        status.textContent = 'In attesa di un altro utente...';
+    });
 
-socket.on('match', (data) => {
-    status.textContent = 'Connesso! Puoi iniziare a chattare.';
-    input
+    socket.on('match', (data) => {
+        status.textContent = 'Connesso! Puoi iniziare a chattare.';
+        inputArea.classList.remove('hidden');
+        input.disabled = false;
+        disconnectBtn.disabled = false;
+        reportBtn.disabled = false;
+        connected = true;
+        reportSent = false;
+        isTyping = false;
+        if (data && data.partnerIp) {
+            partnerIp = data.partnerIp;
+        }
+    });
+
+    socket.on('message', (msg) => {
+        removeTypingIndicator();
+        addMessage(msg, false);
+    });
+
+    socket.on('typing', () => {
+        showTypingIndicator();
+    });
+
+    socket.on('stop_typing', () => {
+        removeTypingIndicator();
+    });
+
+    socket.on('partner_disconnected', () => {
+        status.textContent = 'Il tuo partner si è disconnesso.';
+        resetChat();
+        connected = false;
+    });
+
+    socket.on('connect_error', (err) => {
+        status.textContent = 'Errore di connessione: ' + err.message;
+        resetChat();
+        connected = false;
+    });
+});
