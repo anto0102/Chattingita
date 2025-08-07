@@ -130,11 +130,23 @@
   
   <div id="avatar-modal" class="avatar-modal-overlay hidden">
       <div class="avatar-modal-content">
+          <h3>Impostazioni Utente</h3>
+          
+          <div class="settings-group">
+            <label for="userNameInput">Scegli il tuo nome:</label>
+            <input type="text" id="userNameInput" placeholder="Anonimo">
+          </div>
+
+          <div class="settings-group">
+            <label for="userBioInput">Scrivi una bio:</label>
+            <textarea id="userBioInput" placeholder="Racconta qualcosa di te..." rows="3"></textarea>
+          </div>
+          
           <h3>Scegli il tuo Avatar</h3>
           <div id="avatar-category-selector" class="avatar-category-selector"></div>
           <div id="avatar-grid" class="avatar-grid">
               </div>
-          <button id="closeAvatarModal" class="control-btn primary">Chiudi</button>
+          <button id="closeAvatarModal" class="control-btn primary">Salva e Chiudi</button>
       </div>
   </div>
 
