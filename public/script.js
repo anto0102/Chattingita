@@ -8,60 +8,42 @@ let socket;
 let currentUserAvatar;
 let partnerAvatar;
 
-// --- NUOVO: AVATAR ORGANIZZATI PER CATEGORIE ---
+// --- NUOVO: LISTA AVATAR AGGIORNATA ---
 const AVATAR_CATEGORIES = {
-    'Avventurieri': [
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Rowan',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Iris',
-        'https://api.dicebear.com/8.x/adventurer/svg?seed=Felix'
+    'Fantasy': [
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Aria',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Kael',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Seraphina',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Gael',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Lyra',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Roric'
     ],
-    'Pixel Art': [
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Max',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ruby',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zane',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Cleo',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Jax',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zoe',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Rex',
-        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ivy'
+    'Sci-Fi': [
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Unit-01',
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Zeta',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Nebula',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Orion',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Nova',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Cygnus'
     ],
-    'Robot': [
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Widget',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Unit-734',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Data',
-        'https://api.dicebear.com/8.x/bottts/svg?seed=Alpha'
+    'Creature': [
+        'https://api.dicebear.com/8.x/miniavs/svg?seed=Griffin',
+        'https://api.dicebear.com/8.x/miniavs/svg?seed=Phoenix',
+        'https://api.dicebear.com/8.x/miniavs/svg?seed=Basilisk',
+        'https://api.dicebear.com/8.x/croodles/svg?seed=Dragon',
+        'https://api.dicebear.com/8.x/croodles/svg?seed=Kraken',
+        'https://api.dicebear.com/8.x/croodles/svg?seed=Yeti'
     ],
-    'Ritratti': [
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Alex',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Chloe',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=David',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Emily',
-        'https://api.dicebear.com/8.x/lorelei/svg?seed=Frank'
-    ],
-     'Animali': [
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Felix',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Milo',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Oscar',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Toby',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Zoe',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Casper',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Gizmo',
-        'https://api.dicebear.com/8.x/notionists/svg?seed=Midnight'
+    'Icone': [
+        'https://api.dicebear.com/8.x/icons/svg?seed=Anchor',
+        'https://api.dicebear.com/8.x/icons/svg?seed=Compass',
+        'https://api.dicebear.com/8.x/icons/svg?seed=Feather',
+        'https://api.dicebear.com/8.x/icons/svg?seed=Key',
+        'https://api.dicebear.com/8.x/icons/svg?seed=Leaf',
+        'https://api.dicebear.com/8.x/icons/svg?seed=Star'
     ]
 };
-const DEFAULT_AVATAR_CATEGORY = 'Avventurieri';
+const DEFAULT_AVATAR_CATEGORY = 'Fantasy';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
@@ -94,7 +76,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarModal = document.getElementById('avatar-modal');
     const avatarGrid = document.getElementById('avatar-grid');
     const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
-    // NUOVO: Selettore per le categorie
     const avatarCategorySelector = document.getElementById('avatar-category-selector');
 
 
@@ -167,6 +148,21 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { sysMsgDiv.classList.add('visible'); }, 10);
     }
 
+    // NUOVO: Funzione per mostrare il messaggio di cambio avatar
+    function addAvatarChangeMessage(newAvatarUrl) {
+        const avatarMsgDiv = document.createElement('div');
+        avatarMsgDiv.className = 'avatar-change-message';
+        avatarMsgDiv.innerHTML = `
+            <img src="${newAvatarUrl}" alt="Nuovo Avatar">
+            <p>Il tuo partner ha cambiato avatar.</p>
+        `;
+        chatMessages.append(avatarMsgDiv);
+        scrollToBottom();
+        setTimeout(() => {
+            avatarMsgDiv.classList.add('visible');
+        }, 10);
+    }
+
     function sendMessage() {
         const messageText = input.value.trim();
         if (messageText !== '' && connected) {
@@ -236,7 +232,6 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- NUOVO: LOGICA PER AVATAR CON CATEGORIE ---
 
-    // Popola la griglia degli avatar in base alla categoria scelta
     function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
         const avatars = AVATAR_CATEGORIES[category] || [];
@@ -252,7 +247,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Popola i pulsanti delle categorie
     function populateCategorySelector() {
         avatarCategorySelector.innerHTML = '';
         Object.keys(AVATAR_CATEGORIES).forEach(category => {
@@ -260,9 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
             btn.className = 'category-btn';
             btn.textContent = category;
             btn.dataset.category = category;
-            if (category === DEFAULT_AVATAR_CATEGORY) {
-                btn.classList.add('active');
-            }
             avatarCategorySelector.appendChild(btn);
         });
     }
@@ -281,12 +272,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // --- Inizializzazione e Gestori Eventi Avatar ---
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
 
     settingsBtn.addEventListener('click', () => {
         populateCategorySelector();
-        // Cerca la categoria dell'avatar corrente, o usa il default
         let currentCategory = DEFAULT_AVATAR_CATEGORY;
         for (const category in AVATAR_CATEGORIES) {
             if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
@@ -294,7 +283,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 break;
             }
         }
-        // Evidenzia il pulsante della categoria attiva
         document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
         const activeBtn = document.querySelector(`.category-btn[data-category="${currentCategory}"]`);
         if(activeBtn) activeBtn.classList.add('active');
@@ -307,7 +295,6 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarModal.addEventListener('click', (e) => { if (e.target === avatarModal) { avatarModal.classList.add('hidden'); } });
     avatarGrid.addEventListener('click', (e) => { if (e.target.classList.contains('avatar-choice')) { selectAvatar(e.target.dataset.src); } });
 
-    // Gestore per i click sui pulsanti di categoria
     avatarCategorySelector.addEventListener('click', (e) => {
         if (e.target.classList.contains('category-btn')) {
             const category = e.target.dataset.category;
@@ -333,8 +320,11 @@ document.addEventListener('DOMContentLoaded', () => {
         addMessage(messageObject);
     });
     
+    // NUOVO: Gestione aggiornamento avatar del partner
     socket.on('partner_avatar_updated', (data) => {
-        partnerAvatar = data.avatarUrl;
+        const newAvatarUrl = data.avatarUrl;
+        partnerAvatar = newAvatarUrl; // Aggiorna la variabile globale
+        addAvatarChangeMessage(newAvatarUrl); // Mostra il messaggio di notifica
     });
 
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
