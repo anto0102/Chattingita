@@ -1,211 +1,861 @@
-<!DOCTYPE html>
-<html lang="it">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat Anonima BETA VERSION</title>
-    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+/* --- VARABILI CSS (CUSTOM PROPERTIES) --- */
+:root {
+    /* Tema scuro (default) */
+    --background-color: #1a1a1a;
+    --card-background-color: #2c2c2c;
+    --text-color: #e0e0e0;
+    --primary-color: #6c63ff;
+    --secondary-color: #3e3e3e;
+    --success-color: #4CAF50;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --border-color: #3e3e3e;
+    --shadow-color: rgba(0, 0, 0, 0.5);
+    --placeholder-color: #a0a0a0;
+    --online-dot-color: #4CAF50;
+    --circle-color-1: rgba(108, 99, 255, 0.2);
+    --circle-color-2: rgba(255, 152, 0, 0.2);
+    --circle-color-3: rgba(244, 67, 54, 0.2);
+}
+
+/* Tema chiaro */
+body.light-mode {
+    --background-color: #f0f2f5;
+    --card-background-color: #ffffff;
+    --text-color: #333333;
+    --primary-color: #5d53d6;
+    --secondary-color: #e0e0e0;
+    --success-color: #4CAF50;
+    --danger-color: #f44336;
+    --warning-color: #ff9800;
+    --border-color: #cccccc;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    --placeholder-color: #666666;
+    --online-dot-color: #4CAF50;
+    --circle-color-1: rgba(108, 99, 255, 0.1);
+    --circle-color-2: rgba(255, 152, 0, 0.1);
+    --circle-color-3: rgba(244, 67, 54, 0.1);
+}
+
+/* --- STILI GLOBALI E RESETS --- */
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+    background-color: var(--background-color);
+    color: var(--text-color);
+    line-height: 1.6;
+    transition: background-color 0.3s ease, color 0.3s ease;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+h1, h2, h3 {
+    color: var(--text-color);
+    font-weight: 600;
+}
+
+h1 { font-size: 2rem; }
+h2 { font-size: 1.75rem; }
+h3 { font-size: 1.2rem; }
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+a:hover {
+    color: var(--primary-color);
+    text-decoration: underline;
+}
+
+/* --- BACKGROUND ANIMATO --- */
+.background-container {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    z-index: -1;
+}
+
+.circle { position: absolute; border-radius: 50%; filter: blur(100px); }
+.circle-1 { width: 300px; height: 300px; top: -100px; left: -100px; background-color: var(--circle-color-1); animation: moveCircle1 20s infinite alternate; }
+.circle-2 { width: 400px; height: 400px; bottom: -150px; right: -150px; background-color: var(--circle-color-2); animation: moveCircle2 25s infinite alternate; }
+.circle-3 { width: 250px; height: 250px; top: 50%; left: 50%; transform: translate(-50%, -50%); background-color: var(--circle-color-3); animation: moveCircle3 30s infinite alternate; }
+@keyframes moveCircle1 { 0% { transform: translate(0, 0); } 100% { transform: translate(200px, 300px); } }
+@keyframes moveCircle2 { 0% { transform: translate(0, 0); } 100% { transform: translate(-200px, -250px); } }
+@keyframes moveCircle3 { 0% { transform: scale(1); } 100% { transform: scale(1.2); } }
+
+/* --- HEADER E NAV BAR --- */
+.header-main { background: var(--card-background-color); box-shadow: 0 4px 6px var(--shadow-color); position: sticky; top: 0; z-index: 1000; }
+.navbar { display: flex; justify-content: space-between; align-items: center; padding: 1rem 2rem; max-width: 1200px; margin: 0 auto; }
+.logo { font-weight: 700; font-size: 1.5rem; color: var(--primary-color); text-transform: uppercase; }
+.nav-links { display: flex; align-items: center; position: relative; gap: 1.5rem; }
+.nav-btn { background: none; border: none; font-family: inherit; font-size: 1rem; color: var(--text-color); padding: 0.5rem 0.5rem; cursor: pointer; transition: color 0.3s ease; position: relative; }
+.nav-btn:hover { color: var(--primary-color); }
+.nav-btn.active { color: var(--primary-color); }
+.active-indicator { position: absolute; bottom: -5px; height: 3px; background-color: var(--primary-color); border-radius: 2px; transition: width 0.3s ease, transform 0.3s ease, opacity 0.3s ease; opacity: 0; }
+.theme-toggle { font-size: 1.2rem; }
+.theme-toggle .fas { color: var(--text-color); transition: color 0.3s ease; }
+.hamburger { display: none; background: none; border: none; cursor: pointer; flex-direction: column; justify-content: space-between; width: 30px; height: 21px; }
+.hamburger .bar { height: 3px; width: 100%; background-color: var(--text-color); border-radius: 10px; transition: all 0.3s ease; }
+
+/* NUOVO: Stile per l'icona delle impostazioni nella nav-bar */
+.settings-btn-nav {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+.settings-btn-nav .fas {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+.settings-btn-nav.active {
+    transform: rotate(45deg);
+}
+
+/* --- MAIN CONTAINER --- */
+.container { flex-grow: 1; max-width: 1000px;  margin: 2rem auto; padding: 0 1rem; display: flex; flex-direction: column; }
+.content-section { background-color: var(--card-background-color); padding: 2rem; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); margin-bottom: 2rem; opacity: 0; transform: translateY(20px); transition: opacity 0.5s ease, transform 0.5s ease; display: none; }
+.content-section.active { opacity: 1; transform: translateY(0); display: block; }
+
+/* NUOVO: Stile per il container a schermo intero per la sezione impostazioni */
+@media (min-width: 769px) {
+    main.container:has(#settings-section.active) {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 61px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+
+    main.container:has(#settings-section.active) #settings-section.active {
+        width: 100%;
+        max-width: 900px;
+        flex-grow: 0;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+}
+
+/* --- CHAT SECTION --- */
+#chat-section .header { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+#chat-section .header .chat-title { font-size: 1.5rem; color: var(--primary-color); display: flex; align-items: center; white-space: nowrap; margin-right: 1rem; }
+#chat-section .header .chat-title .fas { margin-right: 0.5rem; color: var(--primary-color); }
+.header-controls { display: flex; align-items: center; gap: 1rem; margin-left: auto; }
+.online-counter { display: flex; align-items: center; font-size: 0.9rem; color: var(--text-color); white-space: nowrap; margin-left: 0; }
+.online-dot { height: 10px; width: 10px; background-color: var(--online-dot-color); border-radius: 50%; margin-right: 8px; animation: pulse-online 1.5s infinite cubic-bezier(0.66, 0, 0.34, 1); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); }
+@keyframes pulse-online { 0% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0.4); } 70% { transform: scale(1.1); box-shadow: 0 0 0 10px rgba(76, 175, 80, 0); } 100% { transform: scale(1); box-shadow: 0 0 0 0 rgba(76, 175, 80, 0); } }
+.chat-wrapper { display: flex; flex-direction: column; height: 600px; max-width: 900px; width: 100%; margin: 0 auto; border-radius: 10px; overflow: hidden; background-color: var(--secondary-color); position: relative; }
+.chat-content { flex-grow: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; }
+#chat-messages { display: flex; flex-direction: column; gap: 4px; }
+.status-message { text-align: center; color: var(--text-color); opacity: 0.7; font-style: italic; margin: auto; font-size: 1.2em; }
+
+/* --- CORREZIONE: Stili Messaggi, Avatar e Reazioni --- */
+.message-wrapper {
+    display: flex;
+    align-items: flex-end; /* Allinea avatar in basso rispetto al messaggio */
+    gap: 10px;
+    max-width: 85%;
+    position: relative; /* Aggiunto per posizionare il pulsante + */
+}
+
+.message-wrapper.you {
+    justify-content: flex-end;
+    align-self: flex-end;
+}
+
+.message-wrapper.other {
+    justify-content: flex-start;
+    align-self: flex-start;
+}
+
+.chat-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--border-color);
+    flex-shrink: 0;
+}
+
+/* Ordine per i messaggi 'you' (destra) */
+.message-wrapper.you .chat-avatar { order: 2; }
+.message-wrapper.you .message-and-button-container { order: 1; }
+
+/* Ordine per i messaggi 'other' (sinistra) */
+.message-wrapper.other .chat-avatar { order: 1; }
+.message-wrapper.other .message-and-button-container { order: 2; }
+
+.message-and-button-container {
+    display: flex;
+    flex-direction: column;
+    position: relative;
+    align-items: flex-start;
+}
+.message-wrapper.you .message-and-button-container { align-items: flex-end; }
+
+.message {
+    padding: 10px 15px;
+    border-radius: 20px;
+    max-width: 100%;
+    line-height: 1.4;
+    word-wrap: break-word;
+    animation: fadeIn 0.3s ease-out;
+}
+.message.you { background-color: var(--primary-color); color: #ffffff; }
+.message.other { background-color: var(--card-background-color); color: var(--text-color); }
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.add-reaction-btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--text-color);
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 16px;
+    line-height: 24px;
+    text-align: center;
+    flex-shrink: 0;
+    opacity: 0; /* Nascosto di default */
+    transform: scale(0.8);
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    cursor: pointer;
+    position: absolute;
+    bottom: 0;
+    margin-bottom: -5px; /* Sposta il pulsante più in basso */
+}
+/* Posizione per i messaggi 'you' (a sinistra del messaggio) */
+.message-wrapper.you .add-reaction-btn {
+    left: -20px; /* Posizionamento esatto */
+}
+/* Posizione per i messaggi 'other' (a destra del messaggio) */
+.message-wrapper.other .add-reaction-btn {
+    right: -20px; /* Posizionamento esatto */
+}
+
+/* Mostra il bottone solo su hover del wrapper del messaggio */
+.message-wrapper:hover .add-reaction-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Su mobile, il bottone è sempre visibile */
+@media (max-width: 768px) {
+    .add-reaction-btn {
+        opacity: 0.7;
+    }
+}
+
+.reaction-palette {
+    position: absolute;
+    top: -45px; /* Sposta la palette sopra il contenitore */
+    background: var(--card-background-color); padding: 6px 8px; border-radius: 20px;
+    box-shadow: 0 4px 12px var(--shadow-color); display: flex; gap: 8px; z-index: 10;
+    opacity: 0; visibility: hidden; transform: translateY(5px) scale(0.9);
+    transition: all 0.2s ease;
+}
+.reaction-palette.visible { opacity: 1; visibility: visible; transform: translateY(0) scale(1); }
+
+/* Posiziona la palette correttamente rispetto al contenitore */
+.message-wrapper.other .reaction-palette { left: 0; }
+.message-wrapper.you .reaction-palette { right: 0; }
+
+.reactions-display {
+    display: flex; gap: 4px; padding: 4px 8px 0 8px;
+    /* L'allineamento è gestito dal parent: .message-and-button-container */
+}
+/* Allineamento a sinistra o destra della reazione */
+.message-wrapper.other .reactions-display { align-self: flex-start; }
+.message-wrapper.you .reactions-display { align-self: flex-end; }
+
+
+/* Stile per i messaggi di sistema */
+.system-message { align-self: center; background-color: var(--secondary-color); color: var(--placeholder-color); font-style: normal; font-weight: 500; font-size: 0.85rem; padding: 6px 12px; border-radius: 15px; margin: 10px 0; max-width: fit-content; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
+.system-message.visible { opacity: 1; transform: translateY(0); }
+
+/* Stile per notifica cambio avatar (partner) */
+.avatar-change-message {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 10px;
+    background-color: var(--secondary-color);
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin: 10px 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.avatar-change-message.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.avatar-change-message img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+}
+
+.avatar-change-message p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* NUOVO: Stile per notifica cambio avatar (personale) */
+.self-avatar-change-message {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 10px;
+    background-color: var(--success-color); /* Colore diverso per distinguerlo */
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin: 10px 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.self-avatar-change-message.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.self-avatar-change-message img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+.self-avatar-change-message p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ffffff; /* Testo bianco per contrasto */
+    font-weight: 600;
+}
+
+
+/* --- STILE INDICATORE "STA SCRIVENDO" --- */
+.typing-indicator {
+    background-color: var(--card-background-color);
+    color: var(--text-color);
+    padding: 10px 15px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    max-width: fit-content;
+}
+.typing-dots { display: flex; align-items: center; gap: 6px; }
+.typing-dot { width: 8px; height: 8px; background-color: var(--placeholder-color); border-radius: 50%; animation: morph-and-move 1.6s infinite ease-in-out; }
+.typing-dot:nth-child(2) { animation-delay: 0.25s; }
+.typing-dot:nth-child(3) { animation-delay: 0.5s; }
+@keyframes morph-and-move { 0% { transform: translateY(0) scale(1); } 25% { transform: translateY(-8px) scale(0.9); } 50% { transform: translateY(0) scale(1.1); } 75% { transform: translateY(0) scale(1); } 100% { transform: translateY(0) scale(1); } }
+
+.input-area { display: flex; align-items: center; padding: 1rem; background-color: var(--card-background-color); border-top: 1px solid var(--border-color); }
+.input-area.hidden { display: none; }
+#input { flex-grow: 1; padding: 0.75rem 1rem; border-radius: 25px; border: 1px solid var(--border-color); background-color: var(--secondary-color); color: var(--text-color); outline: none; transition: border-color 0.3s ease, box-shadow 0.3s ease; }
+#input::placeholder { color: var(--placeholder-color); }
+#input:focus { border-color: var(--primary-color); box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.5); }
+.send-btn { background-color: var(--primary-color); color: #ffffff; border: none; border-radius: 50%; width: 45px; height: 45px; margin-left: 10px; cursor: pointer; font-size: 1.2rem; transition: background-color 0.3s ease, transform 0.2s ease, opacity 0.3s ease; }
+.send-btn:disabled { background-color: var(--border-color); cursor: not-allowed; opacity: 0.6; }
+.send-btn:not(:disabled):hover { transform: scale(1.05); }
+.send-btn.active-animation { animation: sendBtnPulse 2s infinite ease-in-out; }
+@keyframes sendBtnPulse { 0% { transform: scale(1); } 50% { transform: scale(1.03); } 100% { transform: scale(1); } }
+.controls-area { display: flex; justify-content: center; gap: 1rem; margin-top: 1rem; }
+.control-btn { padding: 0.75rem 1.5rem; border-radius: 25px; border: none; font-size: 1rem; font-weight: 600; cursor: pointer; transition: background-color 0.3s ease, transform 0.2s ease; }
+.control-btn.primary { background-color: var(--primary-color); color: #ffffff; }
+.control-btn.danger { background-color: var(--danger-color); color: #ffffff; }
+.control-btn.warning { background-color: var(--warning-color); color: #ffffff; }
+.control-btn:disabled { background-color: var(--border-color); cursor: not-allowed; opacity: 0.6; }
+
+/* --- SEZIONI ABOUT, FAQ, CONTACT --- */
+.about-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin-top: 2rem; }
+.about-card { background-color: var(--secondary-color); padding: 2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px var(--shadow-color); transition: transform 0.3s ease; }
+.about-card:hover { transform: translateY(-5px); }
+.about-card .icon { font-size: 3rem; color: var(--primary-color); margin-bottom: 1rem; }
+.about-card h3 { margin-bottom: 0.5rem; }
+.intro-text { font-size: 1.1rem; line-height: 1.8; }
+.faq-container { margin-top: 1.5rem; }
+.faq-item { background-color: var(--secondary-color); padding: 1.5rem; border-radius: 10px; margin-bottom: 1rem; cursor: pointer; overflow: hidden; transition: background-color 0.3s ease, box-shadow 0.3s ease; }
+.faq-item:hover { box-shadow: 0 4px 10px var(--shadow-color); }
+.faq-header { display: flex; justify-content: space-between; align-items: center; }
+.faq-header h3 { margin: 0; font-weight: 600; }
+.faq-header .fas { transition: transform 0.3s ease; color: var(--text-color); }
+.faq-item.active .faq-header .fas { transform: rotate(180deg); }
+.faq-body { max-height: 0; opacity: 0; transition: max-height 0.5s ease, opacity 0.5s ease; padding-top: 0; }
+.faq-item.active .faq-body { max-height: 200px; opacity: 1; padding-top: 1rem; }
+.faq-body p { margin-top: 1rem; line-height: 1.6; }
+.contact-details-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1.5rem; margin: 2rem 0; }
+.contact-card { background-color: var(--secondary-color); padding: 2rem; border-radius: 10px; text-align: center; box-shadow: 0 2px 10px var(--shadow-color); }
+.contact-card .icon { font-size: 2.5rem; color: var(--primary-color); margin-bottom: 0.5rem; }
+.contact-card h3 { margin-bottom: 0.5rem; }
+.contact-card a { font-weight: 600; word-break: break-all; }
+.contact-form { display: flex; flex-direction: column; gap: 1rem; }
+.form-group { display: flex; flex-direction: column; }
+.form-group label { margin-bottom: 0.5rem; font-weight: 600; }
+.form-group input, .form-group textarea { padding: 0.75rem 1rem; border-radius: 8px; border: 1px solid var(--border-color); background-color: var(--card-background-color); color: var(--text-color); font-family: inherit; font-size: 1rem; transition: border-color 0.3s ease; }
+.form-group input:focus, .form-group textarea:focus { outline: none; border-color: var(--primary-color); }
+
+/* --- MEDIA QUERIES --- */
+@media (max-width: 768px) {
+    .navbar { flex-wrap: wrap; }
+    .nav-links { display: none; flex-direction: column; width: 100%; text-align: center; background-color: var(--card-background-color); box-shadow: 0 4px 6px var(--shadow-color); position: absolute; top: 60px; left: 0; z-index: 999; padding: 1rem 0; transition: all 0.3s ease; }
+    .nav-links.open { display: flex; animation: fadeInDown 0.5s; }
+    .nav-btn { width: 100%; padding: 1rem; border-bottom: 1px solid var(--border-color); }
+    .nav-btn:last-child { border-bottom: none; }
+    .active-indicator { display: none; }
+    .hamburger { display: flex; }
+    .hamburger.open .bar:nth-child(1) { transform: rotate(-45deg) translate(-5px, 6px); }
+    .hamburger.open .bar:nth-child(2) { opacity: 0; }
+    .hamburger.open .bar:nth-child(3) { transform: rotate(45deg) translate(-5px, -6px); }
+    .container { padding: 0 0.5rem; }
+    .content-section { padding: 1rem; }
+    .chat-wrapper { height: 500px; }
+    .message-wrapper { max-width: 90%; }
+    .controls-area { flex-direction: column; gap: 0.5rem; }
+    .control-btn { width: 100%; }
+    #chat-section .header { flex-direction: row; align-items: center; justify-content: space-between; gap: 0.5rem; }
+    #chat-section .header .chat-title { margin-right: 0; font-size: 1.2rem; }
+}
+@keyframes fadeInDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+
+/* --- STILI EMOJI PICKER --- */
+.emoji-btn { background-color: transparent; color: var(--text-color); border: none; border-radius: 50%; width: 45px; height: 45px; margin-right: 5px; cursor: pointer; font-size: 1.5rem; transition: color 0.3s ease, transform 0.2s ease; }
+.emoji-btn:hover { color: var(--primary-color); transform: scale(1.1); }
+emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --background: var(--card-background-color); --border-color: var(--border-color); --text-color: var(--text-color); --secondary-text-color: var(--placeholder-color); --button-hover-background: var(--secondary-color); border-radius: 10px; box-shadow: 0 5px 15px var(--shadow-color); }
+
+/* --- STILI PER CHAT A SCHERMO INTERO (SOLO DESKTOP) --- */
+@media (min-width: 769px) {
+    main.container:has(#chat-section.active) { max-width: 100%; padding: 0; margin: 0; height: calc(100vh - 61px); display: flex; flex-direction: column; }
+    main.container:has(#chat-section.active) #chat-section.active { flex-grow: 1; padding: 0; margin: 0; border-radius: 0; display: flex; flex-direction: column; box-shadow: none; min-height: 0; }
+    main.container:has(#chat-section.active) #chat-section .header { padding: 1rem 2rem; }
+    main.container:has(#chat-section.active) .chat-wrapper { max-width: none; height: auto; flex-grow: 1; min-height: 0; border-radius: 0; background-color: var(--background-color); }
+    main.container:has(#chat-section.active) .chat-content { max-width: 900px; width: 100%; margin: 0 auto; }
+    main.container:has(#chat-section.active) .input-area { max-width: 900px; width: 100%; margin: 0 auto 1rem auto; border-radius: 10px; box-shadow: 0 4px 15px var(--shadow-color); }
+    main.container:has(#chat-section.active) .controls-area { background-color: var(--card-background-color); padding: 1.5rem 2rem; }
     
-    <link rel="icon" type="image/png" href="unknown.png">
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
+    main.container:has(#settings-section.active) {
+        max-width: 100%;
+        padding: 0;
+        margin: 0;
+        height: calc(100vh - 61px);
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
 
-  <div class="background-container">
-      <div class="circle circle-1"></div>
-      <div class="circle circle-2"></div>
-      <div class="circle circle-3"></div>
-  </div>
+    main.container:has(#settings-section.active) #settings-section.active {
+        width: 100%;
+        max-width: 900px;
+        flex-grow: 0;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 15px var(--shadow-color);
+    }
+}
 
-  <header class="header-main">
-    <nav class="navbar">
-        <a href="#" class="logo">Chat Anonima BETA</a>
-        <div class="nav-links" id="nav-links">
-            <a href="#chat-section" class="nav-btn active" data-section="chat">Chat</a>
-            <a href="#about-section" class="nav-btn" data-section="about">Chi Siamo</a>
-            <a href="#faq-section" class="nav-btn" data-section="faq">FAQ</a>
-            <a href="#contact-section" class="nav-btn" data-section="contact">Contatti</a>
-            
-            <a href="#settings-section" class="nav-btn settings-btn-nav" data-section="settings" id="settingsNavBtn">
-                <i class="fas fa-cog"></i>
-            </a>
-            <img id="currentUserAvatarDisplay" class="user-avatar-display" src="" alt="Il tuo avatar">
-            
-            <button id="themeToggle" class="nav-btn theme-toggle">
-                <i class="fas fa-moon"></i>
-            </button>
-            <div class="active-indicator"></div>
-        </div>
-        <button class="hamburger" id="hamburger">
-          <span class="bar"></span>
-          <span class="bar"></span>
-          <span class="bar"></span>
-        </button>
-    </nav>
-  </header>
+/* --- STILI PER ANIMAZIONE DI CARICAMENTO --- */
+.loading-container { display: flex; flex-direction: column; justify-content: center; align-items: center; position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; transition: opacity 0.5s ease; }
+.loading-container.visible { opacity: 1; }
+.orb-canvas { position: relative; width: 200px; height: 150px; }
+.orb { position: absolute; border-radius: 50%; filter: blur(25px); opacity: 0.8; }
+.orb-1 { width: 80px; height: 80px; background-color: var(--primary-color); animation: float-orb-1 12s infinite ease-in-out; }
+.orb-2 { width: 60px; height: 60px; background-color: var(--warning-color); animation: float-orb-2 15s infinite ease-in-out; }
+.loading-text { margin-top: 1rem; color: var(--placeholder-color); font-style: italic; animation: pulse-text 2s infinite ease-in-out; }
+@keyframes pulse-text { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
+@keyframes float-orb-1 { 0% { transform: translate(50px, 50px) scale(1); } 25% { transform: translate(100px, 20px) scale(1.1); } 50% { transform: translate(40px, 80px) scale(0.9); } 75% { transform: translate(10px, 10px) scale(1.1); } 100% { transform: translate(50px, 50px) scale(1); } }
+@keyframes float-orb-2 { 0% { transform: translate(100px, 40px) scale(1); } 25% { transform: translate(20px, 80px) scale(0.9); } 50% { transform: translate(80px, 10px) scale(1.1); } 75% { transform: translate(120px, 60px) scale(1); } 100% { transform: translate(100px, 40px) scale(1); } }
 
-  <main class="container">
-      <div id="chat-section" class="content-section active">
-          <div class="header">
-              <h1 class="chat-title"><i class="fas fa-comment-dots"></i> Chat Anonima</h1>
-              <div class="header-controls">
-                <div class="online-counter">
-                    <span class="online-dot"></span>
-                    <span class="online-text">Online: <span id="onlineCount">0</span></span>
-                </div>
-                <button id="viewPartnerProfileBtn" class="profile-btn hidden" aria-label="Visualizza profilo partner">
-                    <i class="fas fa-user-circle"></i>
-                </button>
-              </div>
-          </div>
-          
-          <div class="chat-wrapper">
-              <div class="chat-content">
-                  <div id="status" class="status-message">Premi "Inizia Chat" per connetterti</div>
-                  <div id="chat-messages"></div>
-                  <div id="typing-indicator-container"></div>
-              </div>
-              <div id="input-area" class="input-area hidden">
-                  <button id="emojiBtn" class="emoji-btn" aria-label="Scegli un emoji">
-                      <i class="fas fa-smile"></i>
-                  </button>
-                  <input id="input" type="text" placeholder="Scrivi un messaggio...">
-                  <button id="sendBtn" class="send-btn" disabled>
-                      <i class="fas fa-paper-plane"></i>
-                  </button>
-              </div>
-              <emoji-picker class="light" id="emoji-picker" hidden></emoji-picker>
-          </div>
+/* --- NUOVO: Stili per il selettore di categorie Avatar --- */
+.avatar-category-selector {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--border-color);
+}
 
-          <div id="controls" class="controls-area">
-              <button id="startBtn" class="control-btn primary">
-                  <i class="fas fa-play"></i> Inizia Chat
-              </button>
-              <button id="disconnectBtn" class="control-btn danger" disabled>
-                  <i class="fas fa-times"></i> Disconnetti
-              </button>
-              <button id="reportBtn" class="control-btn warning" disabled>
-                  <i class="fas fa-flag"></i> Segnala
-              </button>
-          </div>
-      </div>
+.category-btn {
+    background-color: var(--secondary-color);
+    color: var(--text-color);
+    border: 1px solid var(--border-color);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+}
 
-      <div id="about-section" class="content-section">
-        <h2><i class="fas fa-users"></i> Chi Siamo</h2>
-        <p class="intro-text">Sono un piccolo sviluppatore di siti e ho voluto creare questo sito perché ero animato dalla visione di creare uno spazio digitale sicuro e accessibile dove chiunque possa connettersi senza barriere.</p>
-        <div class="about-grid">
-            <div class="about-card"><i class="fas fa-user-secret icon"></i><h3>Anonimato e Libertà</h3><p>Crediamo fermamente nel diritto di ciascuno di esprimersi in un ambiente privo di giudizio. ChatAnonima nasce per offrirti questa libertà, senza tracciamenti.</p></div>
-            <div class="about-card"><i class="fas fa-shield-alt icon"></i><h3>Sicurezza e Fiducia</h3><p>Ogni chat è effimera, nessun dato viene memorizzato. La tua privacy non è solo una caratteristica, è il fondamento del nostro servizio.</p></div>
-            <div class="about-card"><i class="fas fa-hands-helping icon"></i><h3>Comunità e Rispetto</h3><p>Promuoviamo una comunità basata sul rispetto reciproco. Ci impegniamo a mantenere la piattaforma pulita e sicura, con strumenti semplici per segnalare comportamenti inappropriati.</p></div>
-            <div class="about-card"><i class="fas fa-code icon"></i><h3>Innovazione Continua</h3><p>Siamo costantemente al lavoro per migliorare il servizio. Il feedback dei nostri utenti è essenziale per rendere la piattaforma sempre più intuitiva e all'avanguardia.</p></div>
-        </div>
-      </div>
-      <div id="faq-section" class="content-section">
-          <h2><i class="fas fa-question-circle"></i> Domande Frequenti</h2>
-          <div class="faq-container">
-            <div class="faq-item"><div class="faq-header"><h3>1. Cos'è ChatAnonima e come funziona?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-body"><p>ChatAnonima è una piattaforma online che ti permette di connetterti e chattare con persone casuali da tutto il mondo, in modo completamente anonimo. Non è richiesta alcuna registrazione. Basta cliccare su "Inizia Chat" e sarai abbinato a un utente disponibile.</p></div></div>
-            <div class="faq-item"><div class="faq-header"><h3>2. La mia privacy è garantita?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-body"><p>Assolutamente sì. La tua privacy è la nostra priorità. Non raccogliamo, né memorizziamo alcun dato personale o le conversazioni. Una volta che la chat termina, tutti i messaggi vengono eliminati e non sono recuperabili.</p></div></div>
-            <div class="faq-item"><div class="faq-header"><h3>3. Posso scegliere con chi chattare?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-body"><p>No, le connessioni sono completamente casuali per mantenere l'anonimato e l'imprevedibilità. Non ci sono filtri per età, genere o interessi. Ogni nuova chat è un'opportunità per incontrare qualcuno di diverso.</p></div></div>
-            <div class="faq-item"><div class="faq-header"><h3>4. Le mie conversazioni vengono monitorate?</h3><i class="fas fa-chevron-down"></i></div><div class="faq-body"><p>No, le conversazioni non vengono monitorate attivamente né registrate. La natura anonima e temporanea della chat significa che i messaggi esistono solo per la durata della sessione tra i due utenti connessi. Nessun log viene mantenuto sui nostri server.</p></div></div>
-          </div>
-      </div>
-      <div id="contact-section" class="content-section">
-          <h2><i class="fas fa-envelope"></i> Contattaci</h2>
-          <p class="intro-text">Hai domande, suggerimenti o vuoi segnalare un problema? Compila il modulo sottostante o scrivimi a la email che trovi qui sotto o contattami su telegram. Rispondero il prima possibile!</p>
-          <div class="contact-details-grid">
-              <div class="contact-card"><i class="fas fa-paper-plane icon"></i><h3>Canale Telegram</h3><a href="https://t.me/Antoo553" target="_blank">@Antoo553</a></div>
-              <div class="contact-card"><i class="fas fa-envelope icon"></i><h3>Email</h3><a href="mailto:info@chatita.me">info@chatita.me</a></div>
-          </div>
-          <form id="contact-form" class="contact-form">
-              <div class="form-group"><label for="contact-name">Nome</label><input type="text" id="contact-name" name="name" required></div>
-              <div class="form-group"><label for="contact-email">Email</label><input type="email" id="contact-email" name="email" required></div>
-              <div class="form-group"><label for="contact-message">Messaggio</label><textarea id="contact-message" name="message" rows="5" required></textarea></div>
-              <button type="submit" class="control-btn primary"><i class="fas fa-paper-plane"></i> Invia Messaggio</button>
-          </form>
-          <div id="contact-status" class="status-message"></div>
-      </div>
-      
-      <div id="settings-section" class="content-section">
-          <div class="settings-content">
-              <h3><i class="fas fa-cog"></i> Impostazioni Utente</h3>
-              
-              <div class="settings-content-scrollable">
-                <div class="settings-group">
-                  <label for="userNameInput">Scegli il tuo nome:</label>
-                  <input type="text" id="userNameInput" placeholder="Anonimo">
-                </div>
-    
-                <div class="settings-group">
-                  <label for="userBioInput">Scrivi una bio:</label>
-                  <textarea id="userBioInput" placeholder="Racconta qualcosa di te..." rows="3"></textarea>
-                </div>
-    
-                <div class="settings-group">
-                  <label for="userSongSearchInput">Cerca la tua canzone preferita:</label>
-                  <div class="search-container">
-                      <input type="text" id="userSongSearchInput" placeholder="Es: Another Brick in the Wall">
-                      <button id="songSearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
-                  </div>
-                  <div id="songResults" class="song-results-grid"></div>
-                  <div id="selectedSongDisplay" class="selected-song-display hidden">
-                    <img id="selectedSongCover" src="" alt="Copertina">
-                    <div class="song-details">
-                        <h4 id="selectedSongTitle"></h4>
-                        <p id="selectedSongArtist"></p>
-                    </div>
-                  </div>
-                </div>
-                
-                <h3>Scegli il tuo Avatar</h3>
-                <div id="avatar-category-selector" class="avatar-category-selector"></div>
-                <div id="avatar-grid" class="avatar-grid"></div>
-    
-                <div class="settings-group toggle-group">
-                    <label class="toggle-label">Rendi il mio profilo visibile agli altri</label>
-                    <button id="showProfileBtn" class="control-btn primary toggle-btn">
-                        <i class="fas fa-eye"></i> <span>Mostra Profilo</span>
-                    </button>
-                </div>
-              </div>
-    
-              <button id="saveSettingsBtn" class="control-btn primary"><i class="fas fa-arrow-left"></i> Torna alla Chat</button>
-          </div>
-      </div>
-  </main>
-  
-  <div id="partner-profile-modal" class="avatar-modal-overlay hidden">
-      <div class="avatar-modal-content">
-          <div class="profile-header">
-              <img id="partnerProfileAvatar" class="profile-avatar" src="" alt="Avatar del partner">
-              <h3 id="partnerProfileName">Anonimo</h3>
-          </div>
-          <div class="profile-details">
-              <div class="profile-detail-item">
-                  <h4>Canzone preferita</h4>
-                  <div id="partnerProfileSongDisplay" class="song-display hidden">
-                    <img id="partnerProfileSongCover" src="" alt="Copertina">
-                    <div class="song-details">
-                        <p id="partnerProfileSongTitle"></p>
-                        <p id="partnerProfileSongArtist"></p>
-                    </div>
-                  </div>
-              </div>
-              <div class="profile-detail-item">
-                  <h4>Bio</h4>
-                  <p id="partnerProfileBio">Non disponibile</p>
-              </div>
-          </div>
-          <button id="closePartnerProfileBtn" class="control-btn primary">Chiudi</button>
-      </div>
-  </div>
+.category-btn:hover {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+}
+
+.category-btn.active {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+    color: #ffffff;
+    font-weight: 600;
+}
+
+/* --- Stili per le nuove impostazioni utente nel modale --- */
+.settings-content-scrollable {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding-right: 15px;
+    padding-top: 1rem;
+    padding-bottom: 1rem;
+}
+.settings-group {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.settings-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.5rem;
+}
+
+.settings-group input,
+.settings-group textarea {
+    width: 100%;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background-color: var(--card-background-color);
+    color: var(--text-color);
+    font-family: inherit;
+    font-size: 1rem;
+    transition: border-color 0.3s ease;
+    resize: none;
+}
+
+.settings-group input:focus,
+.settings-group textarea:focus {
+    outline: none;
+    border-color: var(--primary-color);
+}
+
+/* NUOVO: Stile per il pulsante di visibilità del profilo */
+.toggle-group {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+.toggle-btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 150px;
+}
+.toggle-btn .fas {
+    font-size: 1rem;
+}
+
+/* Stili per la ricerca canzoni */
+.search-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+}
+#userSongSearchInput {
+    padding-right: 3rem;
+}
+.search-btn {
+    position: absolute;
+    right: 5px;
+    top: 50%;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: var(--placeholder-color);
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+}
+.search-btn:hover {
+    color: var(--primary-color);
+}
+.song-results-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 1rem;
+    margin-top: 1rem;
+    max-height: 200px;
+    overflow-y: auto;
+    padding: 0.5rem;
+    border-radius: 8px;
+    background-color: var(--secondary-color);
+}
+.song-result-card {
+    background-color: var(--card-background-color);
+    border-radius: 8px;
+    padding: 0.5rem;
+    text-align: center;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 2px solid transparent;
+}
+.song-result-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 4px 8px var(--shadow-color);
+}
+.song-result-card.selected {
+    border-color: var(--primary-color);
+}
+.song-result-card img {
+    width: 100%;
+    border-radius: 4px;
+    margin-bottom: 0.5rem;
+}
+.song-result-card h4 {
+    font-size: 0.9rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.song-result-card p {
+    font-size: 0.8rem;
+    color: var(--placeholder-color);
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+/* MODIFICATO: Stili per il display della canzone selezionata */
+.selected-song-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: var(--secondary-color);
+    border-radius: 8px;
+    border: 1px solid var(--primary-color);
+}
+
+.selected-song-display img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.selected-song-display .song-details h4 {
+    font-size: 1rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.selected-song-display .song-details p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+.selected-song-display.hidden {
+    display: none;
+}
 
 
-  <script src="https://cdn.socket.io/4.7.2/socket.io.min.js" crossorigin="anonymous"></script>
-  <script src="script.js"></script>
-</body>
-</html>
+/* --- STILI PER FUNZIONALITÀ AVATAR --- */
+.settings-btn-nav {
+    font-size: 1.2rem;
+    padding: 0.5rem;
+    line-height: 1;
+    transition: transform 0.3s ease;
+}
+.settings-btn-nav .fas {
+    color: var(--text-color);
+    transition: color 0.3s ease;
+}
+.settings-btn-nav.active {
+    transform: rotate(45deg);
+}
+.avatar-modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.6); backdrop-filter: blur(5px); z-index: 2000; display: flex; justify-content: center; align-items: center; opacity: 0; visibility: hidden; transition: opacity 0.3s ease, visibility 0.3s ease; }
+.avatar-modal-overlay:not(.hidden) { opacity: 1; visibility: visible; }
+
+/* MODIFICATO: Modale più grande e con padding */
+.avatar-modal-content {
+    background: var(--card-background-color);
+    padding: 2.5rem;
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 var(--shadow-color);
+    border: 1px solid var(--border-color);
+    width: 95%; /* Aumentato per desktop */
+    max-width: 700px; /* Aumentato per desktop */
+    height: 90vh; /* Aumentato per desktop */
+    text-align: center;
+    transform: scale(0.95);
+    transition: transform 0.3s ease;
+    display: flex;
+    flex-direction: column;
+}
+.avatar-modal-overlay:not(.hidden) .avatar-modal-content { transform: scale(1); }
+.avatar-modal-content h3 { margin-bottom: 1.5rem; color: var(--primary-color); }
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 1rem; justify-items: center; margin-bottom: 2rem; max-height: 300px; overflow-y: auto; padding-right: 10px; }
+.avatar-choice { width: 80px; height: 80px; border-radius: 50%; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; border: 3px solid transparent; padding: 3px; background-color: var(--secondary-color); }
+.avatar-choice:hover { transform: scale(1.1); }
+.avatar-choice.selected { border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
+
+/* --- Stili per l'avatar nella barra di navigazione --- */
+.user-avatar-display {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    margin-left: 0.5rem; /* Spazio a sinistra */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.user-avatar-display:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .user-avatar-display {
+        display: none; /* Nasconde l'avatar su mobile */
+    }
+}
+
+/* Stili per il pulsante del profilo del partner */
+.profile-btn {
+    background: none;
+    border: none;
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    cursor: pointer;
+    transition: color 0.3s ease;
+    line-height: 1;
+    margin-left: -0.5rem;
+}
+.profile-btn:hover {
+    color: var(--text-color);
+}
+.profile-btn.hidden {
+    display: none;
+}
+
+/* Stili per il modale del profilo del partner */
+#partner-profile-modal .avatar-modal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.profile-header {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+.profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 3px solid var(--primary-color);
+    margin-bottom: 0.5rem;
+}
+.profile-details {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 2rem;
+}
+.profile-detail-item h4 {
+    margin: 0 0 0.5rem 0;
+    font-size: 1rem;
+    color: var(--primary-color);
+}
+.profile-detail-item p {
+    margin: 0;
+}
+
+/* AGGIUNTO: Stile per la visualizzazione della canzone nel profilo partner */
+.song-display {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.song-display img {
+    width: 50px;
+    height: 50px;
+    object-fit: cover;
+    border-radius: 4px;
+}
+.song-display .song-details h4 {
+    font-size: 1rem;
+    margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+.song-display .song-details p {
+    font-size: 0.9rem;
+    margin: 0;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+.song-display.hidden {
+    display: none;
+}
+
+/* NUOVO: Stile per la sezione impostazioni */
+#settings-section .settings-content {
+    background: none;
+    box-shadow: none;
+    border: none;
+    max-width: none;
+    height: auto;
+    padding: 0;
+    text-align: left;
+    display: flex;
+    flex-direction: column;
+}
+#settings-section .settings-content-scrollable {
+    flex-grow: 1;
+    overflow-y: visible;
+    padding-right: 0;
+}
+#settings-section h3 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 1.5rem;
+    color: var(--primary-color);
+}
+#settings-section h3 .fas {
+    margin-right: 10px;
+}
