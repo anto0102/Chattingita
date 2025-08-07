@@ -132,26 +132,50 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function addMessage(text, isYou = false) {
-        const msg = document.createElement('div');
-        msg.className = 'message ' + (isYou ? 'you' : 'other');
-        msg.textContent = text;
-        chatMessages.appendChild(msg);
+    // MODIFICA 1: La funzione addMessage ora riceve un oggetto e costruisce un HTML più complesso.
+    function addMessage(messageObject) {
+        const { id, text, senderId } = messageObject;
+        
+        // Determina se il messaggio è nostro confrontando il senderId con il nostro id socket
+        const isYou = senderId === socket.id;
+
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'message ' + (isYou ? 'you' : 'other');
+        
+        // Aggiungiamo l'ID del messaggio come data-attribute. FONDAMENTALE per le reazioni!
+        msgDiv.dataset.id = id;
+
+        // Creiamo la struttura interna per testo e future reazioni
+        msgDiv.innerHTML = `
+            <div class="message-content">
+                <p class="message-text">${text}</p>
+            </div>
+            <div class="reactions-display"></div>
+        `;
+        
+        chatMessages.appendChild(msgDiv);
         scrollToBottom();
 
+        // Aggiorna il log solo per i messaggi del partner
         if (!isYou) {
             chatLog.push(text);
         }
     }
 
+    // MODIFICA 2: sendMessage ora invia solo il testo al server e non aggiunge il messaggio localmente.
     function sendMessage() {
-        const message = input.value.trim();
-        if (message !== '' && connected) {
+        const messageText = input.value.trim(); // Rinominato per chiarezza
+        if (messageText !== '' && connected) {
             emitStopTyping.cancel(); 
-            socket.emit('message', message);
-            addMessage(message, true);
+            
+            // Invia solo il testo. Il server si occuperà di creare l'oggetto con l'ID.
+            socket.emit('message', messageText);
+            
+            // RIMOSSO: addMessage(message, true); 
+            // Non aggiungiamo più il nostro messaggio subito, aspettiamo che il server ce lo rimandi.
+
             input.value = '';
-            if (isTyping) {
+            if (isT`yping) {
                 socket.emit('stop_typing');
                 isTyping = false;
             }
@@ -338,7 +362,7 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
     emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- EVENTI SOCKET.IO (ORA IN UN POSTO SICURO) ---
+    // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => {
         onlineCount.textContent = count;
     });
@@ -361,9 +385,10 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    socket.on('message', (msg) => {
+    // MODIFICA 3: Ascoltiamo il nuovo evento 'new_message' invece di 'message'.
+    socket.on('new_message', (messageObject) => {
         removeTypingIndicator();
-        addMessage(msg, false);
+        addMessage(messageObject);
     });
 
     socket.on('typing', () => {
