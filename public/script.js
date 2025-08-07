@@ -7,21 +7,10 @@ let isTyping = false;
 let socket; 
 
 // --- FUNZIONI UTILITY GLOBALI ---
-
-function debounce(callback, delay = 1000) {
-    let timeout;
-    const debounced = (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { callback(...args); }, delay); };
-    debounced.cancel = () => { clearTimeout(timeout); };
-    return debounced;
-}
-
-const emitStopTyping = debounce(() => {
-    if (isTyping && socket) { socket.emit('stop_typing'); isTyping = false; }
-}, 2000);
-
+function debounce(callback, delay = 1000) { let timeout; const debounced = (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { callback(...args); }, delay); }; debounced.cancel = () => { clearTimeout(timeout); }; return debounced; }
+const emitStopTyping = debounce(() => { if (isTyping && socket) { socket.emit('stop_typing'); isTyping = false; } }, 2000);
 
 // --- TUTTA LA LOGICA PARTE QUANDO LA PAGINA È PRONTA ---
-
 document.addEventListener('DOMContentLoaded', () => {
 
     // --- SELETTORI DEGLI ELEMENTI DEL DOM ---
@@ -49,134 +38,46 @@ document.addEventListener('DOMContentLoaded', () => {
     const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
     let serverURL;
     const currentHostname = window.location.hostname;
-
     if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") { serverURL = publicServerURL; } 
     else if (currentHostname === "chattingitabeta.netlify.app") { serverURL = betaServerURL; } 
     else { serverURL = betaServerURL; }
-    
     socket = io(serverURL);
     
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
-    
-    function moveActiveIndicator(element) {
-        if (element && window.innerWidth > 768) {
-            activeIndicator.style.width = `${element.offsetWidth}px`;
-            activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
-            activeIndicator.style.opacity = 1;
-        } else { activeIndicator.style.opacity = 0; }
-    }
+    function moveActiveIndicator(element) { if (element && window.innerWidth > 768) { activeIndicator.style.width = `${element.offsetWidth}px`; activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`; activeIndicator.style.opacity = 1; } else { activeIndicator.style.opacity = 0; } }
+    function showSection(sectionId, element) { const sections = document.querySelectorAll('.content-section'); sections.forEach(section => { section.classList.remove('active'); }); const activeSection = document.getElementById(sectionId + '-section'); if (activeSection) { activeSection.classList.add('active'); } navButtons.forEach(btn => btn.classList.remove('active')); if (element) { element.classList.add('active'); moveActiveIndicator(element); } if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); } }
+    function resetChat() { chatMessages.innerHTML = ''; input.value = ''; input.disabled = true; sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); inputArea.classList.add('hidden'); removeTypingIndicator(); chatLog = []; partnerIp = null; reportSent = false; isTyping = false; startBtn.disabled = false; disconnectBtn.disabled = true; reportBtn.disabled = true; }
+    function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
-    function showSection(sectionId, element) {
-        const sections = document.querySelectorAll('.content-section');
-        sections.forEach(section => { section.classList.remove('active'); });
-        const activeSection = document.getElementById(sectionId + '-section');
-        if (activeSection) { activeSection.classList.add('active'); }
-        navButtons.forEach(btn => btn.classList.remove('active'));
-        if (element) { element.classList.add('active'); moveActiveIndicator(element); }
-        if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); }
-    }
-
-    function resetChat() {
-        chatMessages.innerHTML = ''; input.value = ''; input.disabled = true; sendBtn.disabled = true;
-        sendBtn.classList.remove('active-animation'); inputArea.classList.add('hidden'); removeTypingIndicator();
-        chatLog = []; partnerIp = null; reportSent = false; isTyping = false;
-        startBtn.disabled = false; disconnectBtn.disabled = true; reportBtn.disabled = true;
-    }
-
-    function scrollToBottom() {
-        if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; }
-    }
-
-    // MODIFICA: Invertito l'ordine di .message e .add-reaction-btn
     function addMessage(messageObject) {
         const { id, text, senderId } = messageObject;
         const isYou = senderId === socket.id;
-
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
-
-        wrapperDiv.innerHTML = `
-            <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
-                <div class="message-content">
-                    <p class="message-text">${text}</p>
-                </div>
-                <div class="reactions-display"></div>
-            </div>
-            <button class="add-reaction-btn" data-message-id="${id}">+</button>
-        `;
-        
+        wrapperDiv.innerHTML = `<div class="message ${isYou ? 'you' : 'other'}" data-id="${id}"><div class="message-content"><p class="message-text">${text}</p></div><div class="reactions-display"></div></div><button class="add-reaction-btn" data-message-id="${id}">+</button>`;
         chatMessages.append(wrapperDiv);
         scrollToBottom();
-
         if (!isYou) { chatLog.push(text); }
     }
 
-    function sendMessage() {
-        const messageText = input.value.trim();
-        if (messageText !== '' && connected) {
-            emitStopTyping.cancel(); 
-            socket.emit('message', messageText);
-            input.value = '';
-            if (isTyping) { socket.emit('stop_typing'); isTyping = false; }
-            sendBtn.disabled = true;
-            sendBtn.classList.remove('active-animation');
-            if (!emojiPicker.hidden) { emojiPicker.hidden = true; }
-        }
+    // MODIFICA: Nuova funzione per i messaggi di sistema
+    function addSystemMessage(text) {
+        const sysMsgDiv = document.createElement('div');
+        sysMsgDiv.className = 'system-message';
+        sysMsgDiv.textContent = text;
+        chatMessages.append(sysMsgDiv);
+        scrollToBottom();
     }
 
-    function showTypingIndicator() {
-        if (typingIndicatorContainer.innerHTML === '') {
-            typingIndicatorContainer.innerHTML = `<div class="typing-indicator"><span>Il partner sta scrivendo</span><div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`;
-            scrollToBottom();
-        }
-    }
-
-    function removeTypingIndicator() {
-        typingIndicatorContainer.innerHTML = '';
-    }
+    function sendMessage() { const messageText = input.value.trim(); if (messageText !== '' && connected) { emitStopTyping.cancel(); socket.emit('message', messageText); input.value = ''; if (isTyping) { socket.emit('stop_typing'); isTyping = false; } sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); if (!emojiPicker.hidden) { emojiPicker.hidden = true; } } }
+    function showTypingIndicator() { if (typingIndicatorContainer.innerHTML === '') { typingIndicatorContainer.innerHTML = `<div class="typing-indicator"><span>Il partner sta scrivendo</span><div class="typing-dots"><span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span></div></div>`; scrollToBottom(); } }
+    function removeTypingIndicator() { typingIndicatorContainer.innerHTML = ''; }
 
     // --- LOGICA PER LE REAZIONI ---
     const REACTION_EMOJIS = ['👍', '❤️', '😂', '😯', '😢', '🙏'];
     let activePalette = null;
-
-    function createReactionPalette(messageId) {
-        const palette = document.createElement('div');
-        palette.className = 'reaction-palette';
-        palette.dataset.messageId = messageId;
-        REACTION_EMOJIS.forEach(emoji => {
-            const emojiSpan = document.createElement('span');
-            emojiSpan.className = 'palette-emoji';
-            emojiSpan.textContent = emoji;
-            palette.appendChild(emojiSpan);
-        });
-        return palette;
-    }
-    
-    chatMessages.addEventListener('click', (event) => {
-        const target = event.target;
-
-        if (target.classList.contains('palette-emoji')) {
-            const palette = target.closest('.reaction-palette');
-            const messageId = palette.dataset.messageId;
-            const emoji = target.textContent;
-            socket.emit('add_reaction', { messageId, emoji });
-            if (activePalette) { activePalette.remove(); activePalette = null; }
-            return;
-        }
-
-        if (activePalette) {
-            activePalette.remove();
-            activePalette = null;
-        }
-
-        if (target.classList.contains('add-reaction-btn')) {
-            const messageId = target.dataset.messageId;
-            const messageWrapper = target.closest('.message-wrapper');
-            activePalette = createReactionPalette(messageId);
-            messageWrapper.appendChild(activePalette);
-            setTimeout(() => { activePalette.classList.add('visible'); }, 10);
-        }
-    });
+    function createReactionPalette(messageId) { const palette = document.createElement('div'); palette.className = 'reaction-palette'; palette.dataset.messageId = messageId; REACTION_EMOJIS.forEach(emoji => { const emojiSpan = document.createElement('span'); emojiSpan.className = 'palette-emoji'; emojiSpan.textContent = emoji; palette.appendChild(emojiSpan); }); return palette; }
+    chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const messageWrapper = target.closest('.message-wrapper'); activePalette = createReactionPalette(messageId); messageWrapper.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
 
     // --- EVENT LISTENERS GENERALI ---
     startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat'); status.textContent = 'In attesa di un altro utente...'; startBtn.disabled = true; disconnectBtn.disabled = false; } });
@@ -201,27 +102,36 @@ document.addEventListener('DOMContentLoaded', () => {
     // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { status.textContent = 'In attesa di un altro utente...'; });
-    socket.on('match', (data) => { status.textContent = 'Connesso! Puoi iniziare a chattare.'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; if (data && data.partnerIp) { partnerIp = data.partnerIp; } });
-    socket.on('new_message', (messageObject) => { removeTypingIndicator(); addMessage(messageObject); });
-    
-    socket.on('update_reactions', ({ messageId, reactions }) => {
-        const messageWrapper = document.querySelector(`.message-wrapper .message[data-id="${messageId}"]`);
-        if (!messageWrapper) return;
 
-        const reactionsDisplay = messageWrapper.querySelector('.reactions-display');
-        if (!reactionsDisplay) return;
-
-        reactionsDisplay.innerHTML = '';
-        let reactionsHTML = '';
-        for (const emoji in reactions) {
-            const count = reactions[emoji];
-            if (count > 0) {
-                 reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`;
-            }
+    // MODIFICA: L'evento 'match' gestisce il paese del partner
+    socket.on('match', (data) => {
+        status.textContent = 'Connesso! Puoi iniziare a chattare.';
+        inputArea.classList.remove('hidden');
+        input.disabled = false;
+        disconnectBtn.disabled = false;
+        reportBtn.disabled = false;
+        connected = true;
+        reportSent = false;
+        isTyping = false;
+        
+        if (data && data.partnerIp) {
+            partnerIp = data.partnerIp;
         }
-        reactionsDisplay.innerHTML = reactionsHTML;
+
+        if (data && data.partnerCountry && data.partnerCountry !== 'Sconosciuto') {
+            try {
+                const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry);
+                addSystemMessage(`Sei stato connesso con un utente da: ${countryName}`);
+            } catch (e) {
+                addSystemMessage(`Sei stato connesso con un altro utente.`);
+            }
+        } else {
+            addSystemMessage(`Sei stato connesso con un altro utente.`);
+        }
     });
 
+    socket.on('new_message', (messageObject) => { removeTypingIndicator(); addMessage(messageObject); });
+    socket.on('update_reactions', ({ messageId, reactions }) => { const messageWrapper = document.querySelector(`.message-wrapper .message[data-id="${messageId}"]`); if (!messageWrapper) return; const reactionsDisplay = messageWrapper.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
     socket.on('typing', () => { showTypingIndicator(); });
     socket.on('stop_typing', () => { removeTypingIndicator(); });
     socket.on('partner_disconnected', () => { status.textContent = 'Il tuo partner si è disconnesso.'; resetChat(); connected = false; });
