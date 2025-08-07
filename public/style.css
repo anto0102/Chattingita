@@ -299,3 +299,20 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 @keyframes pulse-text { 0% { opacity: 0.7; } 50% { opacity: 1; } 100% { opacity: 0.7; } }
 @keyframes float-orb-1 { 0% { transform: translate(50px, 50px) scale(1); } 25% { transform: translate(100px, 20px) scale(1.1); } 50% { transform: translate(40px, 80px) scale(0.9); } 75% { transform: translate(10px, 10px) scale(1.1); } 100% { transform: translate(50px, 50px) scale(1); } }
 @keyframes float-orb-2 { 0% { transform: translate(100px, 40px) scale(1); } 25% { transform: translate(20px, 80px) scale(0.9); } 50% { transform: translate(80px, 10px) scale(1.1); } 75% { transform: translate(120px, 60px) scale(1); } 100% { transform: translate(100px, 40px) scale(1); } }
+/* Stile per il segnaposto dell'indicatore di scrittura */
+.typing-indicator-placeholder {
+    width: 24px;
+    height: 24px;
+    margin: 0 8px;
+    flex-shrink: 0;
+}
+
+/* Applica l'ordine corretto anche al segnaposto su desktop */
+@media (min-width: 769px) {
+    .message-wrapper.other .typing-indicator {
+        order: 2;
+    }
+    .message-wrapper.other .typing-indicator-placeholder {
+        order: 1;
+    }
+}
