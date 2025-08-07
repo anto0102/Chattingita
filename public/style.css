@@ -1006,9 +1006,9 @@ emoji-picker {
     font-size: 0.8rem;
     border: 1px solid var(--border-color);
 }
-/* Stile per i messaggi di sistema (più moderno) */
+/* Stile per i messaggi di sistema (con animazione) */
 .system-message {
-    align-self: center; /* Si centra da solo nel contenitore flessibile */
+    align-self: center;
     background-color: var(--secondary-color);
     color: var(--placeholder-color);
     font-style: normal;
@@ -1017,5 +1017,16 @@ emoji-picker {
     padding: 6px 12px;
     border-radius: 15px;
     margin: 10px 0;
-    max-width: fit-content; /* La larghezza si adatta al contenuto */
+    max-width: fit-content;
+
+    /* Preparazione per l'animazione */
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.5s ease-out, transform 0.5s ease-out;
+}
+
+/* Stato finale dell'animazione */
+.system-message.visible {
+    opacity: 1;
+    transform: translateY(0);
 }
