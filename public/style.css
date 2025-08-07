@@ -998,3 +998,11 @@ emoji-picker {
 .message.you .reactions-display {
     justify-content: flex-end;
 }
+/* Stile per le reazioni visualizzate sotto il messaggio */
+.reaction-chip {
+    background-color: var(--secondary-color);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    border: 1px solid var(--border-color);
+}
