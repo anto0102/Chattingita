@@ -130,7 +130,37 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
     function moveActiveIndicator(element) { if (element && window.innerWidth > 768) { activeIndicator.style.width = `${element.offsetWidth}px`; activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`; activeIndicator.style.opacity = 1; } else { activeIndicator.style.opacity = 0; } }
-    function showSection(sectionId, element) { const sections = document.querySelectorAll('.content-section'); sections.forEach(section => { section.classList.remove('active'); }); const activeSection = document.getElementById(sectionId + '-section'); if (activeSection) { activeSection.classList.add('active'); } navButtons.forEach(btn => btn.classList.remove('active')); if (element) { element.classList.add('active'); moveActiveIndicator(element); } if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); } }
+    function showSection(sectionId, element) { 
+        const sections = document.querySelectorAll('.content-section'); 
+        sections.forEach(section => { section.classList.remove('active'); }); 
+        const activeSection = document.getElementById(sectionId + '-section'); 
+        if (activeSection) { activeSection.classList.add('active'); } 
+        navButtons.forEach(btn => btn.classList.remove('active')); 
+        if (element) { 
+            element.classList.add('active'); 
+            moveActiveIndicator(element); 
+        } 
+        if (window.innerWidth <= 768) { 
+            navLinks.classList.remove('open'); 
+            hamburger.classList.remove('open'); 
+        }
+
+        // NUOVO: Carica le impostazioni solo quando si apre la sezione settings
+        if (sectionId === 'settings') {
+            pendingAvatar = currentUserAvatar; 
+            loadUserSettings(); 
+            
+            let currentCategory = DEFAULT_AVATAR_CATEGORY;
+            for (const category in AVATAR_CATEGORIES) {
+                if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
+                    currentCategory = category;
+                    break;
+                }
+            }
+            populateCategorySelector(currentCategory);
+            populateAvatarGrid(currentCategory);
+        }
+    }
 
     function resetChat() {
         chatMessages.innerHTML = '';
@@ -297,7 +327,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- LOGICA AVATAR E PROFILO CONFERMATA ALLA CHIUSURA ---
+    // --- LOGICA AVATAR E PROFILO ---
 
     function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
@@ -336,7 +366,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newSelected) { newSelected.classList.add('selected'); }
     }
     
-    // MODIFICATO: Salva i dati della canzone in un oggetto
     function loadUserSettings() {
         userName = localStorage.getItem('userName') || '';
         userBio = localStorage.getItem('userBio') || '';
@@ -363,7 +392,6 @@ document.addEventListener('DOMContentLoaded', () => {
         showProfileCheckbox.checked = showProfile;
     }
 
-    // MODIFICATO: Salva i dati della canzone come stringa JSON
     function saveUserSettings() {
         userName = userNameInput.value || 'Anonimo';
         userBio = userBioInput.value;
@@ -375,7 +403,6 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('showProfile', showProfile);
     }
     
-    // Modificata per la nuova implementazione
     function finalizeAvatarChange() {
         saveUserSettings();
         if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
@@ -399,11 +426,9 @@ document.addEventListener('DOMContentLoaded', () => {
         showSection('chat', document.querySelector('[data-section="chat"]'));
     }
     
-    // Nuovo event listener per il pulsante Salva e Chiudi nella sezione impostazioni
     saveSettingsBtn.addEventListener('click', finalizeAvatarChange);
 
 
-    // Funzione per cercare canzoni e mostrare i risultati usando il tuo proxy backend
     async function displaySongSearchResults(query) {
         songResultsDiv.innerHTML = '';
         if (query.length < 3) return;
@@ -411,7 +436,6 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Caricamento...</p>';
             
-            // Fai la chiamata al tuo server backend, non direttamente a Deezer
             const response = await fetch(`${serverURL}/api/search-songs?q=${encodeURIComponent(query)}`);
             
             if (!response.ok) {
@@ -437,7 +461,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>${song.artist.name}</p>
                 `;
                 card.addEventListener('click', () => {
-                    // MODIFICATO: Salva un oggetto canzone completo
                     userFavoriteSong = {
                         title: song.title,
                         artist: song.artist.name,
@@ -464,26 +487,6 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserSettings();
     updateAvatarDisplay();
 
-    // Rimosso l'event listener precedente per settingsBtn.
-    // La logica è ora gestita dal ciclo sui navButtons.
-
-    // Aggiungi un event listener per caricare le impostazioni quando si apre la sezione settings
-    document.querySelector('[data-section="settings"]').addEventListener('click', () => {
-        pendingAvatar = currentUserAvatar; 
-        loadUserSettings(); // Ricarica le impostazioni attuali
-        
-        let currentCategory = DEFAULT_AVATAR_CATEGORY;
-        for (const category in AVATAR_CATEGORIES) {
-            if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
-                currentCategory = category;
-                break;
-            }
-        }
-        
-        populateCategorySelector(currentCategory);
-        populateAvatarGrid(currentCategory);
-    });
-    
     avatarGrid.addEventListener('click', (e) => { 
         if (e.target.classList.contains('avatar-choice')) { 
             handleAvatarSelection(e.target.dataset.src);
@@ -499,7 +502,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Event listener per la ricerca della canzone
     songSearchBtn.addEventListener('click', () => {
         displaySongSearchResults(userSongSearchInput.value);
     });
@@ -514,12 +516,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
     if (currentUserAvatarDisplay) {
         currentUserAvatarDisplay.addEventListener('click', () => {
-             // Simula il clic sul nuovo pulsante delle impostazioni
-             document.querySelector('[data-section="settings"]').click();
+            showSection('settings', document.getElementById('settingsNavBtn'));
         });
     }
 
-    // MODIFICATO: Aggiorna il modale del partner per mostrare tutti i dettagli della canzone
     function showPartnerProfileModal() {
         if (partnerProfile && partnerProfile.showProfile === true) {
             partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
@@ -560,12 +560,10 @@ document.addEventListener('DOMContentLoaded', () => {
     socket.on('match', (data) => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
         
-        // Riceve tutti i dati del profilo del partner
         partnerProfile = data.partnerProfile || {};
         partnerAvatar = data.partnerAvatar;
         partnerIp = data.partnerIp;
         
-        // Mostra sempre il pulsante del profilo una volta connessi
         viewPartnerProfileBtn.classList.remove('hidden');
 
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
