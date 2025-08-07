@@ -381,17 +381,21 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarModal.classList.add('hidden');
     }
 
-    // Funzione per cercare canzoni e mostrare i risultati dall'API di Deezer
+    // Funzione per cercare canzoni e mostrare i risultati usando il tuo proxy backend
     async function displaySongSearchResults(query) {
         songResultsDiv.innerHTML = '';
         if (query.length < 3) return;
 
         try {
-            // Mostra un indicatore di caricamento
             songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Caricamento...</p>';
             
-            // Fai la chiamata all'API di Deezer
-            const response = await fetch(`https://api.deezer.com/search?q=${encodeURIComponent(query)}`);
+            // Fai la chiamata al tuo server backend, non direttamente a Deezer
+            const response = await fetch(`${serverURL}/api/search-songs?q=${encodeURIComponent(query)}`);
+            
+            if (!response.ok) {
+                 throw new Error("Errore dal server proxy.");
+            }
+            
             const data = await response.json();
             const results = data.data;
 
