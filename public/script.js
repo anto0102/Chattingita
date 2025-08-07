@@ -98,6 +98,10 @@ document.addEventListener('DOMContentLoaded', () => {
     // NUOVO: Selettori per le nuove impostazioni
     const userNameInput = document.getElementById('userNameInput');
     const userBioInput = document.getElementById('userBioInput');
+    const userSongSearchInput = document.getElementById('userSongSearchInput');
+    const songSearchBtn = document.getElementById('songSearchBtn');
+    const songResultsDiv = document.getElementById('songResults');
+    const selectedSongDisplay = document.getElementById('selectedSongDisplay');
     const userSongInput = document.getElementById('userSongInput');
     const showProfileCheckbox = document.getElementById('showProfileCheckbox');
     const viewPartnerProfileBtn = document.getElementById('viewPartnerProfileBtn');
@@ -337,6 +341,8 @@ document.addEventListener('DOMContentLoaded', () => {
         userNameInput.value = userName;
         userBioInput.value = userBio;
         userSongInput.value = userFavoriteSong;
+        selectedSongDisplay.textContent = userFavoriteSong;
+        if(userFavoriteSong) { selectedSongDisplay.classList.remove('hidden'); }
         showProfileCheckbox.checked = showProfile;
     }
 
@@ -353,6 +359,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function finalizeAvatarChange() {
+        saveUserSettings();
         if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
             currentUserAvatar = pendingAvatar;
             localStorage.setItem('userAvatar', currentUserAvatar);
@@ -371,8 +378,37 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.emit('update_profile', myProfile);
             }
         }
-        saveUserSettings();
         avatarModal.classList.add('hidden');
+    }
+
+    // NUOVO: Funzione per simulare la ricerca e mostrare i risultati
+    function displaySongSearchResults(query) {
+        songResultsDiv.innerHTML = '';
+        if (query.length < 3) return;
+
+        const mockResults = [
+            { title: "Another Brick in the Wall", artist: "Pink Floyd", cover: "https://upload.wikimedia.org/wikipedia/en/9/93/Pink_Floyd_-_The_Wall_Live_1980-81.jpg" },
+            { title: "Bohemian Rhapsody", artist: "Queen", cover: "https://upload.wikimedia.org/wikipedia/it/thumb/a/a2/A_Night_at_the_Opera.jpg/300px-A_Night_at_the_Opera.jpg" },
+            { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" }
+        ].filter(song => song.title.toLowerCase().includes(query.toLowerCase()) || song.artist.toLowerCase().includes(query.toLowerCase()));
+
+        mockResults.forEach(song => {
+            const card = document.createElement('div');
+            card.className = 'song-result-card';
+            card.innerHTML = `
+                <img src="${song.cover}" alt="Copertina di ${song.title}">
+                <h4>${song.title}</h4>
+                <p>${song.artist}</p>
+            `;
+            card.addEventListener('click', () => {
+                userSongInput.value = `${song.title} - ${song.artist}`;
+                selectedSongDisplay.textContent = userSongInput.value;
+                selectedSongDisplay.classList.remove('hidden');
+                songResultsDiv.innerHTML = '';
+                userSongSearchInput.value = '';
+            });
+            songResultsDiv.appendChild(card);
+        });
     }
     
     loadUserSettings();
@@ -415,6 +451,19 @@ document.addEventListener('DOMContentLoaded', () => {
             populateAvatarGrid(category);
         }
     });
+
+    // Event listener per la ricerca della canzone
+    songSearchBtn.addEventListener('click', () => {
+        displaySongSearchResults(userSongSearchInput.value);
+    });
+
+    userSongSearchInput.addEventListener('keypress', (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            displaySongSearchResults(userSongSearchInput.value);
+        }
+    });
+
 
     if (currentUserAvatarDisplay) {
         currentUserAvatarDisplay.addEventListener('click', () => {
