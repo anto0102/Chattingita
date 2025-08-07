@@ -486,6 +486,8 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     max-height: 400px;
     overflow-y: auto;
     padding-right: 15px; /* Spazio per la scrollbar */
+    padding-top: 1rem;
+    padding-bottom: 1rem;
 }
 .settings-group {
     margin-bottom: 1.5rem;
@@ -662,12 +664,12 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     text-align: center; 
     transform: scale(0.95); 
     transition: transform 0.3s ease; 
-    display: flex; /* Flexbox per il layout interno */
+    display: flex;
     flex-direction: column;
 }
 .avatar-modal-overlay:not(.hidden) .avatar-modal-content { transform: scale(1); }
 .avatar-modal-content h3 { margin-bottom: 1.5rem; color: var(--primary-color); }
-.avatar-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 1rem; justify-items: center; margin-bottom: 2rem; max-height: 300px; overflow-y: auto; padding-right: 10px; }
+.avatar-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(80px, 1fr)); gap: 1rem; justify-items: center; margin-bottom: 2rem; max-height: 300px; overflow-y: auto; padding-right: 10px; }
 .avatar-choice { width: 80px; height: 80px; border-radius: 50%; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; border: 3px solid transparent; padding: 3px; background-color: var(--secondary-color); }
 .avatar-choice:hover { transform: scale(1.1); }
 .avatar-choice.selected { border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
