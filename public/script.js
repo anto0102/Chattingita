@@ -332,7 +332,7 @@ document.addEventListener('DOMContentLoaded', () => {
     }
     
     function loadUserSettings() {
-        userName = localStorage.getItem('userName') || 'Anonimo';
+        userName = localStorage.getItem('userName') || '';
         userBio = localStorage.getItem('userBio') || '';
         userFavoriteSong = localStorage.getItem('userFavoriteSong') || '';
         currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
@@ -391,7 +391,8 @@ document.addEventListener('DOMContentLoaded', () => {
             { title: "Bohemian Rhapsody", artist: "Queen", cover: "https://upload.wikimedia.org/wikipedia/it/thumb/a/a2/A_Night_at_the_Opera.jpg/300px-A_Night_at_the_Opera.jpg" },
             { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" },
             { title: "Tears of the Kingdom", artist: "Nintendo", cover: "https://upload.wikimedia.org/wikipedia/en/f/f6/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover_art.jpg" },
-            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" }
+            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" },
+            { title: "Silent Bob", artist: "Massimo Pericolo", cover: "https://i.scdn.co/image/ab67616d00001e02421f151b66b26d36e2f4702b" },
         ].filter(song => song.title.toLowerCase().includes(query.toLowerCase()) || song.artist.toLowerCase().includes(query.toLowerCase()));
 
         mockResults.forEach(song => {
@@ -482,8 +483,8 @@ document.addEventListener('DOMContentLoaded', () => {
         if (partnerProfile && partnerProfile.showProfile === true) {
             partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
             partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
-            partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
-            partnerProfileSong.textContent = partnerProfile.favoriteSong || 'Non disponibile';
+            partnerProfileBio.textContent = partnerProfile.profileBio || 'Non disponibile';
+            partnerProfileSong.textContent = partnerProfile.profileSong || 'Non disponibile';
         } else {
             partnerProfileName.textContent = 'Profilo Anonimo';
             partnerProfileAvatar.src = 'unknown.png';
@@ -504,14 +505,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     socket.on('match', (data) => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
+        
+        // Riceve tutti i dati del profilo del partner
         partnerAvatar = data.partnerAvatar || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
+        partnerProfile = data.partnerProfile;
         partnerIp = data.partnerIp;
-        // Riceve i dati del profilo del partner se disponibili
-        partnerProfile = data.partnerProfile || {};
+        
         // Mostra sempre il pulsante del profilo una volta connessi
         viewPartnerProfileBtn.classList.remove('hidden');
 
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
+    });
+    
+    socket.on('update_profile_from_partner', (profileData) => {
+        partnerProfile = profileData;
+        partnerAvatar = profileData.avatarUrl;
+        addSystemMessage(`Il tuo partner ha aggiornato il suo profilo.`);
     });
 
     socket.on('new_message', (messageObject) => {
