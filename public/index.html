@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>ChatAnonima</title>
+    <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@^1/index.js"></script>
+    
     <link rel="icon" type="image/png" href="unknown.png">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -58,11 +60,15 @@
                   <div id="typing-indicator-container"></div>
               </div>
               <div id="input-area" class="input-area hidden">
+                  <button id="emojiBtn" class="emoji-btn" aria-label="Scegli un emoji">
+                      <i class="fas fa-smile"></i>
+                  </button>
                   <input id="input" type="text" placeholder="Scrivi un messaggio...">
                   <button id="sendBtn" class="send-btn" disabled>
                       <i class="fas fa-paper-plane"></i>
                   </button>
               </div>
+              <emoji-picker class="light" id="emoji-picker"></emoji-picker>
           </div>
 
           <div id="controls" class="controls-area">
