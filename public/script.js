@@ -1,4 +1,30 @@
-const socket = io("https://chattingapp-backend.onrender.com");
+// --- COLLEGAMENTO DINAMICO AL SERVER ---
+
+// 1. Definisci gli URL dei tuoi due server
+const publicServerURL = "https://chattingapp-backend.onrender.com";
+const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
+
+// 2. Scegli l'URL corretto in base al dominio del sito frontend
+let serverURL;
+const currentHostname = window.location.hostname;
+
+if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") {
+    console.log("Sito Pubblico: mi collego al server di produzione.");
+    serverURL = publicServerURL;
+} else if (currentHostname === "chattingitabeta.netlify.app") {
+    console.log("Sito Beta: mi collego al server beta su Railway.");
+    serverURL = betaServerURL;
+} else {
+    // Fallback per l'ambiente locale (localhost) o altri domini di anteprima
+    console.log("Ambiente non di produzione: mi collego al server beta per i test.");
+    serverURL = betaServerURL;
+}
+
+// 3. Connettiti al server scelto
+const socket = io(serverURL);
+
+// --- FINE COLLEGAMENTO DINAMICO ---
+
 
 // Elementi principali
 const navLinks = document.getElementById('nav-links');
@@ -51,12 +77,10 @@ function debounce(callback, delay = 1000) {
     return debounced;
 }
 
-// *** QUI LA CORREZIONE ***
 function moveActiveIndicator(element) {
     if (element && window.innerWidth > 768) {
         const navBar = document.querySelector('.nav-links');
         activeIndicator.style.width = `${element.offsetWidth}px`;
-        // Calcolo semplificato e corretto
         activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
         activeIndicator.style.opacity = 1;
     } else {
@@ -343,40 +367,4 @@ socket.on('waiting', () => {
 
 socket.on('match', (data) => {
     status.textContent = 'Connesso! Puoi iniziare a chattare.';
-    inputArea.classList.remove('hidden');
-    input.disabled = false;
-    disconnectBtn.disabled = false;
-    reportBtn.disabled = false;
-    connected = true;
-    reportSent = false;
-    isTyping = false;
-    
-    if (data && data.partnerIp) {
-        partnerIp = data.partnerIp;
-    }
-});
-
-socket.on('message', (msg) => {
-    removeTypingIndicator();
-    addMessage(msg, false);
-});
-
-socket.on('typing', () => {
-    showTypingIndicator();
-});
-
-socket.on('stop_typing', () => {
-    removeTypingIndicator();
-});
-
-socket.on('partner_disconnected', () => {
-    status.textContent = 'Il tuo partner si è disconnesso.';
-    resetChat();
-    connected = false;
-});
-
-socket.on('connect_error', (err) => {
-    status.textContent = 'Errore di connessione: ' + err.message;
-    resetChat();
-    connected = false;
-});
+    input
