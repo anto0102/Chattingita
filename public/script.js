@@ -387,12 +387,12 @@ document.addEventListener('DOMContentLoaded', () => {
         if (query.length < 3) return;
 
         const mockResults = [
+            { title: "Silent Bob", artist: "Massimo Pericolo", cover: "https://i.scdn.co/image/ab67616d00001e02421f151b66b26d36e2f4702b" },
             { title: "Another Brick in the Wall", artist: "Pink Floyd", cover: "https://upload.wikimedia.org/wikipedia/en/9/93/Pink_Floyd_-_The_Wall_Live_1980-81.jpg" },
             { title: "Bohemian Rhapsody", artist: "Queen", cover: "https://upload.wikimedia.org/wikipedia/it/thumb/a/a2/A_Night_at_the_Opera.jpg/300px-A_Night_at_the_Opera.jpg" },
             { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" },
             { title: "Tears of the Kingdom", artist: "Nintendo", cover: "https://upload.wikimedia.org/wikipedia/en/f/f6/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover_art.jpg" },
-            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" },
-            { title: "Silent Bob", artist: "Massimo Pericolo", cover: "https://i.scdn.co/image/ab67616d00001e02421f151b66b26d36e2f4702b" },
+            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" }
         ].filter(song => song.title.toLowerCase().includes(query.toLowerCase()) || song.artist.toLowerCase().includes(query.toLowerCase()));
 
         mockResults.forEach(song => {
@@ -508,7 +508,7 @@ document.addEventListener('DOMContentLoaded', () => {
         
         // Riceve tutti i dati del profilo del partner
         partnerProfile = data.partnerProfile || {};
-        partnerAvatar = data.partnerAvatar || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
+        partnerAvatar = data.partnerProfile.avatarUrl || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
         partnerIp = data.partnerIp;
         
         // Mostra sempre il pulsante del profilo una volta connessi
