@@ -4,7 +4,7 @@ let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
-let socket; 
+let socket;
 let currentUserAvatar;
 let partnerAvatar;
 
@@ -46,28 +46,25 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingIndicatorContainer = document.getElementById('typing-indicator-container');
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
-    
-    // SELETTORI PER AVATAR
     const settingsBtn = document.getElementById('settingsBtn');
     const avatarModal = document.getElementById('avatar-modal');
     const avatarGrid = document.getElementById('avatar-grid');
     const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
-
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
     const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
     let serverURL;
     const currentHostname = window.location.hostname;
-    if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") { serverURL = publicServerURL; } 
-    else if (currentHostname === "chattingitabeta.netlify.app") { serverURL = betaServerURL; } 
+    if (currentHostname === "chatita.me" || currentHostname === "www.chatita.me") { serverURL = publicServerURL; }
+    else if (currentHostname === "chattingitabeta.netlify.app") { serverURL = betaServerURL; }
     else { serverURL = betaServerURL; }
     socket = io(serverURL);
-    
+
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
     function moveActiveIndicator(element) { if (element && window.innerWidth > 768) { activeIndicator.style.width = `${element.offsetWidth}px`; activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`; activeIndicator.style.opacity = 1; } else { activeIndicator.style.opacity = 0; } }
     function showSection(sectionId, element) { const sections = document.querySelectorAll('.content-section'); sections.forEach(section => { section.classList.remove('active'); }); const activeSection = document.getElementById(sectionId + '-section'); if (activeSection) { activeSection.classList.add('active'); } navButtons.forEach(btn => btn.classList.remove('active')); if (element) { element.classList.add('active'); moveActiveIndicator(element); } if (window.innerWidth <= 768) { navLinks.classList.remove('open'); hamburger.classList.remove('open'); } }
-    
+
     function resetChat() {
         chatMessages.innerHTML = '';
         input.value = '';
@@ -88,28 +85,36 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
+    /**
+     * CORREZIONE: Funzione addMessage con la nuova struttura HTML
+     */
     function addMessage(messageObject) {
         const { id, text, senderId, avatarUrl } = messageObject;
         const isYou = senderId === socket.id;
-        const currentAvatar = isYou ? currentUserAvatar : partnerAvatar;
+        // Usa l'avatar specifico del messaggio, che il server ci ha inviato
+        const currentAvatar = avatarUrl; 
 
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
-        
+
+        // Nuova struttura HTML, più robusta e facile da stilare
         wrapperDiv.innerHTML = `
             <img src="${currentAvatar}" alt="Avatar" class="chat-avatar">
-            <div class="message-content-wrapper">
-              <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
-                  <p class="message-text">${text}</p>
-              </div>
-              <div class="reactions-display"></div>
+            <div class="message-and-button-container">
+                <div class="message-content-wrapper">
+                    <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
+                        <p class="message-text">${text}</p>
+                    </div>
+                    <div class="reactions-display"></div>
+                </div>
+                <button class="add-reaction-btn" data-message-id="${id}">+</button>
             </div>
-            <button class="add-reaction-btn" data-message-id="${id}">+</button>
         `;
         chatMessages.append(wrapperDiv);
         scrollToBottom();
         if (!isYou) { chatLog.push(text); }
     }
+
 
     function addSystemMessage(text) {
         const sysMsgDiv = document.createElement('div');
@@ -119,15 +124,12 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToBottom();
         setTimeout(() => { sysMsgDiv.classList.add('visible'); }, 10);
     }
-    
+
     function sendMessage() {
         const messageText = input.value.trim();
         if (messageText !== '' && connected) {
             emitStopTyping.cancel();
-            
-            // Il client invia il messaggio. Il server lo ritrasmetterà a tutti.
             socket.emit('message', messageText);
-            
             input.value = '';
             if (isTyping) {
                 socket.emit('stop_typing');
@@ -140,11 +142,12 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     }
-    
+
     function showTypingIndicator() {
       if (document.getElementById('typing-indicator-wrapper')) return;
 
       const wrapperDiv = document.createElement('div');
+      // Usa la stessa classe del message-wrapper per coerenza
       wrapperDiv.className = 'message-wrapper other';
       wrapperDiv.id = 'typing-indicator-wrapper';
       wrapperDiv.innerHTML = `
@@ -167,20 +170,16 @@ document.addEventListener('DOMContentLoaded', () => {
     const REACTION_EMOJIS = ['👍', '❤️', '😂', '😯', '😢', '🙏'];
     let activePalette = null;
     function createReactionPalette(messageId) { const palette = document.createElement('div'); palette.className = 'reaction-palette'; palette.dataset.messageId = messageId; REACTION_EMOJIS.forEach(emoji => { const emojiSpan = document.createElement('span'); emojiSpan.className = 'palette-emoji'; emojiSpan.textContent = emoji; palette.appendChild(emojiSpan); }); return palette; }
-    chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const messageWrapper = target.closest('.message-wrapper'); activePalette = createReactionPalette(messageId); messageWrapper.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
-    
+    chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const buttonContainer = target.closest('.message-and-button-container'); activePalette = createReactionPalette(messageId); buttonContainer.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
+
     // Logica dei pulsanti principali
-    startBtn.addEventListener('click', () => { if (!connected) { 
-        // Quando ci connettiamo, inviamo al server il nostro avatar scelto
-        socket.emit('start_chat', { avatarUrl: currentUserAvatar }); 
-        startBtn.disabled = true; disconnectBtn.disabled = false; 
-    }});
+    startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat', { avatarUrl: currentUserAvatar }); startBtn.disabled = true; disconnectBtn.disabled = false; }});
     disconnectBtn.addEventListener('click', () => { socket.emit('disconnect_chat'); status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
     sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendMessage(); });
     input.addEventListener('input', () => { if (!connected) return; if (input.value.trim().length > 0) { sendBtn.disabled = false; sendBtn.classList.add('active-animation'); } else { sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); } if (!isTyping) { socket.emit('typing'); isTyping = true; } emitStopTyping(); });
     reportBtn.addEventListener('click', () => { if (!connected || !partnerIp) { alert("Nessun partner da segnalare."); return; } if (reportSent) { alert("Hai già segnalato questo utente. La segnalazione è in revisione."); return; } socket.emit("report_user", { partnerIp, chatLog }); alert("Segnalazione inviata. Il tuo partner è stato disconnesso."); reportSent = true; socket.emit('disconnect_chat'); status.textContent = 'Hai segnalato il partner. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
-    
+
     // Logica di navigazione e tema
     const savedTheme = localStorage.getItem('theme'); const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches; if (savedTheme === 'light' || (!savedTheme && prefersLight)) { document.body.classList.add('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-sun"></i>'; } else { document.body.classList.remove('light-mode'); themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>'; }
     navButtons.forEach(btn => { btn.addEventListener('click', (e) => { e.preventDefault(); const sectionId = btn.dataset.section; if (sectionId) { showSection(sectionId, btn); } }); });
@@ -209,19 +208,30 @@ document.addEventListener('DOMContentLoaded', () => {
             avatarGrid.appendChild(img);
         });
     }
-
+    
+    /**
+     * CORREZIONE: Funzione selectAvatar che notifica il server del cambiamento
+     */
     function selectAvatar(avatarSrc) {
         currentUserAvatar = avatarSrc;
         localStorage.setItem('userAvatar', avatarSrc);
+
+        // Aggiorna la UI per mostrare la selezione
         const currentSelected = avatarGrid.querySelector('.selected');
         if (currentSelected) { currentSelected.classList.remove('selected'); }
         const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
         if (newSelected) { newSelected.classList.add('selected'); }
+
+        // Se siamo connessi a una chat, invia l'aggiornamento al server
+        if (socket && connected) {
+            socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
+        }
     }
 
-    // Carica l'avatar salvato o imposta un default
+
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATARS[0];
-    selectAvatar(currentUserAvatar); // Imposta lo stato iniziale
+    populateAvatarChoices(); // Popola la griglia al caricamento
+    selectAvatar(currentUserAvatar); // Imposta lo stato iniziale senza emettere eventi
 
     settingsBtn.addEventListener('click', () => { populateAvatarChoices(); avatarModal.classList.remove('hidden'); });
     closeAvatarModalBtn.addEventListener('click', () => { avatarModal.classList.add('hidden'); });
@@ -229,25 +239,26 @@ document.addEventListener('DOMContentLoaded', () => {
     avatarGrid.addEventListener('click', (e) => { if (e.target.classList.contains('avatar-choice')) { selectAvatar(e.target.dataset.src); } });
 
 
-    // --- EVENTI SOCKET.IO (CORRETTI) ---
+    // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { showLoadingAnimation(); });
-    
+
     socket.on('match', (data) => {
-        hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; 
-        
-        // Il server ci comunica l'avatar del nostro partner.
-        // Se non lo comunica, ne scegliamo uno di default per evitare errori.
-        partnerAvatar = data.partnerAvatar || AVATARS[1]; 
-        
+        hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
+        partnerAvatar = data.partnerAvatar || AVATARS[1];
         partnerIp = data.partnerIp;
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
-    
-    // Questo evento gestisce TUTTI i messaggi in arrivo, sia i nostri che quelli del partner
+
     socket.on('new_message', (messageObject) => {
         removeTypingIndicator();
         addMessage(messageObject);
+    });
+    
+    // CORREZIONE: Aggiorna l'avatar del partner se lo cambia in tempo reale
+    socket.on('partner_avatar_updated', (data) => {
+        partnerAvatar = data.avatarUrl;
+        // Potresti anche aggiornare gli avatar dei messaggi già presenti, se vuoi
     });
 
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
