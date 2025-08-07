@@ -146,8 +146,14 @@
           </div>
 
           <div class="settings-group">
-            <label for="userSongInput">Canzone preferita:</label>
-            <input type="text" id="userSongInput" placeholder="Es: Another Brick in the Wall">
+            <label for="userSongSearchInput">Cerca la tua canzone preferita:</label>
+            <div class="search-container">
+                <input type="text" id="userSongSearchInput" placeholder="Es: Another Brick in the Wall">
+                <button id="songSearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
+            </div>
+            <div id="songResults" class="song-results-grid"></div>
+            <p id="selectedSongDisplay" class="selected-song-display hidden"></p>
+            <input type="hidden" id="userSongInput" value="">
           </div>
           
           <h3>Scegli il tuo Avatar</h3>
@@ -156,9 +162,9 @@
               </div>
 
           <div class="settings-group">
-              <div class="checkbox-container">
-                  <input type="checkbox" id="showProfileCheckbox">
-                  <label for="showProfileCheckbox">Rendi il mio profilo visibile agli altri</label>
+              <div class="toggle-container">
+                  <input type="checkbox" id="showProfileCheckbox" class="toggle-checkbox">
+                  <label for="showProfileCheckbox" class="toggle-label">Rendi il mio profilo visibile agli altri</label>
               </div>
           </div>
 
