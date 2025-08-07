@@ -7,53 +7,63 @@ let isTyping = false;
 let socket;
 let currentUserAvatar;
 let partnerAvatar;
-// NUOVO: Variabile per la selezione temporanea dell'avatar
-let pendingAvatar; 
+// Variabile per la selezione temporanea dell'avatar
+let pendingAvatar;
 
-// --- NUOVO: LISTA AVATAR AMPLIATA E RINNOVATA ---
+// --- NUOVO: LISTA AVATAR DEFINITIVA, CON PIÙ SEZIONI E OPZIONI ---
 const AVATAR_CATEGORIES = {
-    'Artistici': [
-        'https://api.dicebear.com/8.x/shapes/svg?seed=Angel',
-        'https://api.dicebear.com/8.x/shapes/svg?seed=Leo',
-        'https://api.dicebear.com/8.x/shapes/svg?seed=Willow',
-        'https://api.dicebear.com/8.x/shapes/svg?seed=Jasper',
-        'https://api.dicebear.com/8.x/glass/svg?seed=Rowan',
-        'https://api.dicebear.com/8.x/glass/svg?seed=Iris',
-        'https://api.dicebear.com/8.x/glass/svg?seed=Felix',
-        'https://api.dicebear.com/8.x/glass/svg?seed=Shadow'
+    'Avventurieri': [
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Rowan',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Iris',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Felix'
     ],
-    'Personaggi': [
-        'https://api.dicebear.com/8.x/personas/svg?seed=Max',
-        'https://api.dicebear.com/8.x/personas/svg?seed=Ruby',
-        'https://api.dicebear.com/8.x/personas/svg?seed=Zane',
-        'https://api.dicebear.com/8.x/personas/svg?seed=Cleo',
-        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Jax',
-        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Zoe',
-        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Rex',
-        'https://api.dicebear.com/8.x/open-peeps/svg?seed=Ivy'
+    'Robot': [
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Widget',
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Unit-734',
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Data',
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Alpha'
     ],
-    'Strambi': [
-        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Gizmo',
-        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Sparky',
-        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Clank',
-        'https://api.dicebear.com/8.x/fun-emoji/svg?seed=Bolt',
-        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Widget',
-        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Unit-734',
-        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Data',
-        'https://api.dicebear.com/8.x/croodles-neutral/svg?seed=Alpha'
+    'Ritratti': [
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
+        'https://api.dicebear.com/8.x/lorelei/svg?seed=Alex',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Chloe',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=David',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Emily',
+        'https://api.dicebear.com/8.x/lorelei-neutral/svg?seed=Frank'
     ],
-    'Retrò': [
-        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Annie',
-        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Sam',
-        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Mia',
-        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Alex',
-        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Chloe',
-        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=David',
-        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Emily',
-        'https://api.dicebear.com/8.x/big-ears-neutral/svg?seed=Frank'
+    'Umani Stilizzati': [
+        'https://api.dicebear.com/8.x/micah/svg?seed=Rocky',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Coco',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Peanut',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Mimi',
+        'https://api.dicebear.com/8.x/big-smile/svg?seed=Joy',
+        'https://api.dicebear.com/8.x/big-smile/svg?seed=Sunny',
+        'https://api.dicebear.com/8.x/big-smile/svg?seed=Buddy',
+        'https://api.dicebear.com/8.x/big-smile/svg?seed=Lucky'
+    ],
+    'Creativi': [
+        'https://api.dicebear.com/8.x/identicon/svg?seed=Abstract',
+        'https://api.dicebear.com/8.x/identicon/svg?seed=Creative',
+        'https://api.dicebear.com/8.x/identicon/svg?seed=Unique',
+        'https://api.dicebear.com/8.x/identicon/svg?seed=Notion',
+        'https://api.dicebear.com/8.x/rings/svg?seed=Orbit',
+        'https://api.dicebear.com/8.x/rings/svg?seed=Galaxy',
+        'https://api.dicebear.com/8.x/rings/svg?seed=Saturn',
+        'https://api.dicebear.com/8.x/rings/svg?seed=Cosmos'
     ]
 };
-const DEFAULT_AVATAR_CATEGORY = 'Artistici';
+const DEFAULT_AVATAR_CATEGORY = 'Avventurieri';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
@@ -170,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         setTimeout(() => { avatarMsgDiv.classList.add('visible'); }, 10);
     }
     
-    // NUOVO: Funzione per la notifica personale di cambio avatar
     function addSelfAvatarChangeMessage(newAvatarUrl) {
         const avatarMsgDiv = document.createElement('div');
         avatarMsgDiv.className = 'self-avatar-change-message';
@@ -250,7 +259,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- NUOVO: LOGICA AVATAR CONFERMATA ALLA CHIUSURA ---
+    // --- LOGICA AVATAR CONFERMATA ALLA CHIUSURA ---
 
     function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
@@ -260,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
             img.src = avatarSrc;
             img.className = 'avatar-choice';
             img.dataset.src = avatarSrc;
-            // Evidenzia l'avatar PENDENTE, non quello corrente
             if (avatarSrc === pendingAvatar) {
                 img.classList.add('selected');
             }
@@ -283,26 +291,22 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function handleAvatarSelection(avatarSrc) {
-        pendingAvatar = avatarSrc; // Salva la scelta temporaneamente
-        // Aggiorna solo la UI della griglia per mostrare la nuova selezione
+        pendingAvatar = avatarSrc;
         const currentSelected = avatarGrid.querySelector('.selected');
         if (currentSelected) { currentSelected.classList.remove('selected'); }
         const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
         if (newSelected) { newSelected.classList.add('selected'); }
     }
     
-    // Funzione che finalizza il cambio di avatar
     function finalizeAvatarChange() {
         if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
             currentUserAvatar = pendingAvatar;
             localStorage.setItem('userAvatar', currentUserAvatar);
             
-            // Mostra la notifica a te stesso
             if(connected) {
                 addSelfAvatarChangeMessage(currentUserAvatar);
             }
 
-            // Comunica al server il cambio
             if (socket && connected) {
                 socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
             }
@@ -310,11 +314,10 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarModal.classList.add('hidden');
     }
     
-    // --- Inizializzazione e Gestori Eventi Avatar ---
     currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
 
     settingsBtn.addEventListener('click', () => {
-        pendingAvatar = currentUserAvatar; // Imposta la selezione pendente a quella attuale
+        pendingAvatar = currentUserAvatar; 
         
         let currentCategory = DEFAULT_AVATAR_CATEGORY;
         for (const category in AVATAR_CATEGORIES) {
