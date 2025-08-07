@@ -250,7 +250,7 @@ a:hover {
 .system-message { align-self: center; background-color: var(--secondary-color); color: var(--placeholder-color); font-style: normal; font-weight: 500; font-size: 0.85rem; padding: 6px 12px; border-radius: 15px; margin: 10px 0; max-width: fit-content; opacity: 0; transform: translateY(10px); transition: opacity 0.5s ease-out, transform 0.5s ease-out; }
 .system-message.visible { opacity: 1; transform: translateY(0); }
 
-/* NUOVO: Stile per il messaggio di cambio avatar */
+/* Stile per notifica cambio avatar (partner) */
 .avatar-change-message {
     display: flex;
     align-items: center;
@@ -282,6 +282,40 @@ a:hover {
     font-size: 0.9rem;
     color: var(--text-color);
     font-weight: 500;
+}
+
+/* NUOVO: Stile per notifica cambio avatar (personale) */
+.self-avatar-change-message {
+    display: flex;
+    align-items: center;
+    align-self: center;
+    gap: 10px;
+    background-color: var(--success-color); /* Colore diverso per distinguerlo */
+    padding: 8px 15px;
+    border-radius: 20px;
+    margin: 10px 0;
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.4s ease, transform 0.4s ease;
+}
+
+.self-avatar-change-message.visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.self-avatar-change-message img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+}
+
+.self-avatar-change-message p {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #ffffff; /* Testo bianco per contrasto */
+    font-weight: 600;
 }
 
 
