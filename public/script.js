@@ -51,11 +51,13 @@ function debounce(callback, delay = 1000) {
     return debounced;
 }
 
+// *** QUI LA CORREZIONE ***
 function moveActiveIndicator(element) {
     if (element && window.innerWidth > 768) {
         const navBar = document.querySelector('.nav-links');
         activeIndicator.style.width = `${element.offsetWidth}px`;
-        activeIndicator.style.transform = `translateX(${element.offsetLeft - navBar.offsetLeft}px)`;
+        // Calcolo semplificato e corretto
+        activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`;
         activeIndicator.style.opacity = 1;
     } else {
         activeIndicator.style.opacity = 0;
@@ -137,7 +139,6 @@ function sendMessage() {
         sendBtn.disabled = true;
         sendBtn.classList.remove('active-animation');
         
-        // MODIFICA: Usa la proprietà 'hidden'
         if (!emojiPicker.hidden) {
             emojiPicker.hidden = true;
         }
@@ -305,10 +306,9 @@ document.addEventListener('DOMContentLoaded', () => {
         contactForm.reset();
     });
 
-    // --- MODIFICA: LOGICA EMOJI PICKER CORRETTA ---
+    // --- LOGICA EMOJI PICKER ---
     emojiBtn.addEventListener('click', (event) => {
         event.stopPropagation();
-        // Usa la proprietà 'hidden' per mostrare/nascondere
         emojiPicker.hidden = !emojiPicker.hidden;
     });
 
@@ -321,14 +321,12 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // Nascondi il picker quando si clicca altrove
     document.body.addEventListener('click', () => {
         if (!emojiPicker.hidden) {
             emojiPicker.hidden = true;
         }
     });
     
-    // Assicurati che il tema sia corretto anche al caricamento iniziale
     const isLightModeOnLoad = document.body.classList.contains('light-mode');
     emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
     emojiPicker.classList.toggle('light', isLightModeOnLoad);
