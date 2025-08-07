@@ -95,7 +95,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const avatarCategorySelector = document.getElementById('avatar-category-selector');
     const currentUserAvatarDisplay = document.getElementById('currentUserAvatarDisplay');
 
-    // NUOVO: Selettori per le nuove impostazioni
+    // Selettori per le nuove impostazioni
     const userNameInput = document.getElementById('userNameInput');
     const userBioInput = document.getElementById('userBioInput');
     const userSongSearchInput = document.getElementById('userSongSearchInput');
@@ -381,7 +381,7 @@ document.addEventListener('DOMContentLoaded', () => {
         avatarModal.classList.add('hidden');
     }
 
-    // NUOVO: Funzione per simulare la ricerca e mostrare i risultati
+    // Funzione per simulare la ricerca e mostrare i risultati
     function displaySongSearchResults(query) {
         songResultsDiv.innerHTML = '';
         if (query.length < 3) return;
@@ -389,7 +389,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const mockResults = [
             { title: "Another Brick in the Wall", artist: "Pink Floyd", cover: "https://upload.wikimedia.org/wikipedia/en/9/93/Pink_Floyd_-_The_Wall_Live_1980-81.jpg" },
             { title: "Bohemian Rhapsody", artist: "Queen", cover: "https://upload.wikimedia.org/wikipedia/it/thumb/a/a2/A_Night_at_the_Opera.jpg/300px-A_Night_at_the_Opera.jpg" },
-            { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" }
+            { title: "Smells Like Teen Spirit", artist: "Nirvana", cover: "https://upload.wikimedia.org/wikipedia/it/a/a1/Nevermind_cover.jpg" },
+            { title: "Tears of the Kingdom", artist: "Nintendo", cover: "https://upload.wikimedia.org/wikipedia/en/f/f6/The_Legend_of_Zelda_Tears_of_the_Kingdom_cover_art.jpg" },
+            { title: "Blinding Lights", artist: "The Weeknd", cover: "https://upload.wikimedia.org/wikipedia/en/e/e6/The_Weeknd_-_Blinding_Lights.png" }
         ].filter(song => song.title.toLowerCase().includes(query.toLowerCase()) || song.artist.toLowerCase().includes(query.toLowerCase()));
 
         mockResults.forEach(song => {
@@ -419,6 +421,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     settingsBtn.addEventListener('click', () => {
         pendingAvatar = currentUserAvatar; 
+        loadUserSettings(); // Ricarica le impostazioni attuali
         
         let currentCategory = DEFAULT_AVATAR_CATEGORY;
         for (const category in AVATAR_CATEGORIES) {
@@ -474,7 +477,7 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // NUOVO: Logica per il modale del profilo del partner
+    // Logica per il modale del profilo del partner
     function showPartnerProfileModal() {
         if (partnerProfile && partnerProfile.showProfile === true) {
             partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
@@ -503,7 +506,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
         partnerAvatar = data.partnerAvatar || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
         partnerIp = data.partnerIp;
-        // NUOVO: Riceve i dati del profilo del partner se disponibili
+        // Riceve i dati del profilo del partner se disponibili
         partnerProfile = data.partnerProfile || {};
         // Mostra sempre il pulsante del profilo una volta connessi
         viewPartnerProfileBtn.classList.remove('hidden');
