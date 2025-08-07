@@ -661,6 +661,7 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     border: 1px solid var(--border-color); 
     width: 90%; 
     max-width: 600px; 
+    height: 80vh; /* Rende il modale più grande */
     text-align: center; 
     transform: scale(0.95); 
     transition: transform 0.3s ease; 
