@@ -153,8 +153,13 @@
                   <button id="songSearchBtn" class="search-btn"><i class="fas fa-search"></i></button>
               </div>
               <div id="songResults" class="song-results-grid"></div>
-              <p id="selectedSongDisplay" class="selected-song-display hidden"></p>
-              <input type="hidden" id="userSongInput" value="">
+              <div id="selectedSongDisplay" class="selected-song-display hidden">
+                <img id="selectedSongCover" src="" alt="Copertina">
+                <div class="song-details">
+                    <h4 id="selectedSongTitle"></h4>
+                    <p id="selectedSongArtist"></p>
+                </div>
+              </div>
             </div>
             
             <h3>Scegli il tuo Avatar</h3>
@@ -180,7 +185,13 @@
           <div class="profile-details">
               <div class="profile-detail-item">
                   <h4>Canzone preferita</h4>
-                  <p id="partnerProfileSong">Non disponibile</p>
+                  <div id="partnerProfileSongDisplay" class="song-display">
+                    <img id="partnerProfileSongCover" src="" alt="Copertina">
+                    <div class="song-details">
+                        <p id="partnerProfileSongTitle"></p>
+                        <p id="partnerProfileSongArtist"></p>
+                    </div>
+                  </div>
               </div>
               <div class="profile-detail-item">
                   <h4>Bio</h4>
