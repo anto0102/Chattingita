@@ -883,3 +883,103 @@ emoji-picker {
         padding: 1.5rem 2rem;
     }
 }
+/* --- STILI PER REAZIONI AI MESSAGGI --- */
+
+/* Rendi il contenitore del messaggio un punto di riferimento per il posizionamento */
+.message {
+    position: relative;
+    padding-right: 30px; /* Lascia spazio per il pulsante di reazione */
+}
+
+.message.other {
+    padding-left: 30px; /* Lascia spazio a sinistra per i messaggi altrui */
+    padding-right: 15px; /* Ripristina il padding originale a destra */
+}
+
+/* Contenitore per il pulsante che apre la palette */
+.message .add-reaction-container {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    right: 6px; /* Posizionato a destra per i messaggi 'you' */
+    z-index: 5;
+}
+
+/* Posiziona il pulsante a sinistra per i messaggi 'other' */
+.message.other .add-reaction-container {
+    right: auto;
+    left: 6px;
+}
+
+/* Il pulsante per aggiungere la reazione */
+.add-reaction-btn {
+    background: var(--secondary-color);
+    border: none;
+    color: var(--text-color);
+    opacity: 0.7;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 0; /* Nascosto di default */
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    transform: scale(0.9);
+}
+
+/* Mostra il pulsante quando si passa il mouse sul messaggio */
+.message:hover .add-reaction-btn {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* La palette di emoji che apparirà al clic */
+.reaction-palette {
+    position: absolute;
+    bottom: calc(100% + 5px); /* Appare sopra il pulsante */
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--card-background-color);
+    padding: 6px 8px;
+    border-radius: 20px;
+    box-shadow: 0 4px 12px var(--shadow-color);
+    display: flex;
+    gap: 8px;
+    z-index: 10;
+    /* Inizialmente nascosta, la mostreremo con JS */
+    opacity: 0;
+    visibility: hidden;
+    transition: opacity 0.2s ease, visibility 0.2s ease;
+}
+
+.reaction-palette.visible {
+    opacity: 1;
+    visibility: visible;
+}
+
+/* Stile per ogni emoji nella palette */
+.palette-emoji {
+    cursor: pointer;
+    font-size: 22px;
+    transition: transform 0.15s ease;
+}
+
+.palette-emoji:hover {
+    transform: scale(1.3);
+}
+
+/* Contenitore per le reazioni già aggiunte (sotto al messaggio) */
+.reactions-display {
+    display: flex;
+    gap: 4px;
+    padding: 4px 8px 0 8px;
+    justify-content: flex-start; /* Default per messaggi 'other' */
+}
+
+/* Allinea le reazioni a destra per i messaggi 'you' */
+.message.you .reactions-display {
+    justify-content: flex-end;
+}
