@@ -691,6 +691,11 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     gap: 1rem;
     margin-top: 1rem;
 }
+/* Nasconde l'input checkbox di base */
+.toggle-checkbox {
+    display: none;
+}
+/* Stile per l'etichetta, che diventerà lo switch visivo */
 .toggle-label {
     cursor: pointer;
     user-select: none;
@@ -698,47 +703,43 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
     flex-grow: 1;
     font-weight: 500;
     color: var(--text-color);
-}
-.toggle-checkbox {
-    /* Nascondi il checkbox di default */
-    display: none;
-}
-
-.toggle-checkbox + .toggle-label::after {
-    content: '';
-    display: inline-block;
     position: relative;
-    width: 50px;
-    height: 28px;
-    background-color: var(--secondary-color);
-    border: 1px solid var(--border-color);
-    border-radius: 14px;
-    transition: background-color 0.3s ease;
-    vertical-align: middle;
-    margin-left: 10px;
+    padding-left: 70px; /* Spazio per lo switch */
 }
-
-.toggle-checkbox + .toggle-label::before {
+/* La "pista" dello switch */
+.toggle-label::before {
     content: '';
     position: absolute;
-    display: block;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 60px;
+    height: 30px;
+    background-color: var(--secondary-color);
+    border: 1px solid var(--border-color);
+    border-radius: 15px;
+    transition: background-color 0.3s ease;
+}
+/* Il "cursore" o "pomello" dello switch */
+.toggle-label::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 4px; /* Inizialmente a sinistra */
+    transform: translateY(-50%);
     width: 22px;
     height: 22px;
     background-color: #fff;
     border-radius: 50%;
-    top: 50%;
-    right: 5px;
-    transform: translateY(-50%);
-    transition: transform 0.3s ease;
+    transition: transform 0.3s ease, left 0.3s ease;
     box-shadow: 0 2px 4px rgba(0,0,0,0.2);
 }
-
-.toggle-checkbox:checked + .toggle-label::after {
-    background-color: var(--success-color);
-}
-
+/* Quando il checkbox è selezionato */
 .toggle-checkbox:checked + .toggle-label::before {
-    transform: translate(-22px, -50%);
+    background-color: var(--success-color); /* Usa il colore verde corretto */
+}
+.toggle-checkbox:checked + .toggle-label::after {
+    left: calc(100% - 26px); /* Sposta il cursore a destra */
 }
 
 /* --- Stili per l'avatar nella barra di navigazione --- */
