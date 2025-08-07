@@ -12,7 +12,8 @@ let pendingAvatar;
 // Variabili per le impostazioni utente
 let userName;
 let userBio;
-let userFavoriteSong;
+// MODIFICATO: ora è un oggetto per salvare più dati della canzone
+let userFavoriteSong = {};
 let showProfile = false;
 let partnerProfile = {};
 
@@ -102,7 +103,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const songSearchBtn = document.getElementById('songSearchBtn');
     const songResultsDiv = document.getElementById('songResults');
     const selectedSongDisplay = document.getElementById('selectedSongDisplay');
-    const userSongInput = document.getElementById('userSongInput');
+    const selectedSongCover = document.getElementById('selectedSongCover');
+    const selectedSongTitle = document.getElementById('selectedSongTitle');
+    const selectedSongArtist = document.getElementById('selectedSongArtist');
     const showProfileCheckbox = document.getElementById('showProfileCheckbox');
     const viewPartnerProfileBtn = document.getElementById('viewPartnerProfileBtn');
     const partnerProfileModal = document.getElementById('partner-profile-modal');
@@ -110,7 +113,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const partnerProfileName = document.getElementById('partnerProfileName');
     const partnerProfileAvatar = document.getElementById('partnerProfileAvatar');
     const partnerProfileBio = document.getElementById('partnerProfileBio');
-    const partnerProfileSong = document.getElementById('partnerProfileSong');
+    const partnerProfileSongDisplay = document.getElementById('partnerProfileSongDisplay');
+    const partnerProfileSongCover = document.getElementById('partnerProfileSongCover');
+    const partnerProfileSongTitle = document.getElementById('partnerProfileSongTitle');
+    const partnerProfileSongArtist = document.getElementById('partnerProfileSongArtist');
 
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
@@ -331,30 +337,42 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newSelected) { newSelected.classList.add('selected'); }
     }
     
+    // MODIFICATO: Salva i dati della canzone in un oggetto
     function loadUserSettings() {
         userName = localStorage.getItem('userName') || '';
         userBio = localStorage.getItem('userBio') || '';
-        userFavoriteSong = localStorage.getItem('userFavoriteSong') || '';
+        try {
+            userFavoriteSong = JSON.parse(localStorage.getItem('userFavoriteSong')) || {};
+        } catch (e) {
+            userFavoriteSong = {};
+        }
         currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
         showProfile = localStorage.getItem('showProfile') === 'true';
 
         userNameInput.value = userName;
         userBioInput.value = userBio;
-        userSongInput.value = userFavoriteSong;
-        selectedSongDisplay.textContent = userFavoriteSong;
-        if(userFavoriteSong) { selectedSongDisplay.classList.remove('hidden'); }
+
+        if (userFavoriteSong.title) {
+            selectedSongTitle.textContent = userFavoriteSong.title;
+            selectedSongArtist.textContent = userFavoriteSong.artist;
+            selectedSongCover.src = userFavoriteSong.cover;
+            selectedSongDisplay.classList.remove('hidden');
+        } else {
+            selectedSongDisplay.classList.add('hidden');
+        }
+
         showProfileCheckbox.checked = showProfile;
     }
 
+    // MODIFICATO: Salva i dati della canzone come stringa JSON
     function saveUserSettings() {
         userName = userNameInput.value || 'Anonimo';
         userBio = userBioInput.value;
-        userFavoriteSong = userSongInput.value;
         showProfile = showProfileCheckbox.checked;
 
         localStorage.setItem('userName', userName);
         localStorage.setItem('userBio', userBio);
-        localStorage.setItem('userFavoriteSong', userFavoriteSong);
+        localStorage.setItem('userFavoriteSong', JSON.stringify(userFavoriteSong));
         localStorage.setItem('showProfile', showProfile);
     }
     
@@ -415,8 +433,15 @@ document.addEventListener('DOMContentLoaded', () => {
                     <p>${song.artist.name}</p>
                 `;
                 card.addEventListener('click', () => {
-                    userSongInput.value = `${song.title} - ${song.artist.name}`;
-                    selectedSongDisplay.textContent = userSongInput.value;
+                    // MODIFICATO: Salva un oggetto canzone completo
+                    userFavoriteSong = {
+                        title: song.title,
+                        artist: song.artist.name,
+                        cover: song.album.cover_medium
+                    };
+                    selectedSongTitle.textContent = userFavoriteSong.title;
+                    selectedSongArtist.textContent = userFavoriteSong.artist;
+                    selectedSongCover.src = userFavoriteSong.cover;
                     selectedSongDisplay.classList.remove('hidden');
                     songResultsDiv.innerHTML = '';
                     userSongSearchInput.value = '';
@@ -493,18 +518,31 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    // Logica per il modale del profilo del partner
+    // MODIFICATO: Aggiorna il modale del partner per mostrare tutti i dettagli della canzone
     function showPartnerProfileModal() {
         if (partnerProfile && partnerProfile.showProfile === true) {
             partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
             partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
             partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
-            partnerProfileSong.textContent = partnerProfile.favoriteSong || 'Non disponibile';
+            
+            const song = partnerProfile.favoriteSong;
+            if (song && song.title) {
+                partnerProfileSongTitle.textContent = song.title;
+                partnerProfileSongArtist.textContent = song.artist;
+                partnerProfileSongCover.src = song.cover;
+                partnerProfileSongDisplay.classList.remove('hidden');
+            } else {
+                partnerProfileSongDisplay.classList.add('hidden');
+                // fallback per mostrare "Non disponibile" se non c'è una canzone
+                partnerProfileSongDisplay.parentElement.querySelector('p').textContent = 'Non disponibile';
+            }
         } else {
             partnerProfileName.textContent = 'Profilo Anonimo';
             partnerProfileAvatar.src = 'unknown.png';
             partnerProfileBio.textContent = 'L\'utente ha scelto di non condividere il suo profilo.';
-            partnerProfileSong.textContent = 'Non disponibile';
+            
+            partnerProfileSongDisplay.classList.add('hidden');
+            partnerProfileSongDisplay.parentElement.querySelector('p').textContent = 'Non disponibile';
         }
         partnerProfileModal.classList.remove('hidden');
     }
