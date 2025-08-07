@@ -883,32 +883,25 @@ emoji-picker {
         padding: 1.5rem 2rem;
     }
 }
-/* --- STILI PER REAZIONI AI MESSAGGI --- */
+/* --- STILI PER REAZIONI AI MESSAGGI (v2) --- */
 
-/* Rendi il contenitore del messaggio un punto di riferimento per il posizionamento */
-.message {
+/* Contenitore principale del messaggio e del suo pulsante di reazione */
+.message-wrapper {
     position: relative;
-    padding-right: 30px; /* Lascia spazio per il pulsante di reazione */
+    display: flex;
+    align-items: center;
+    /* Spaziatura tra i messaggi */
+    margin-bottom: 10px; 
 }
 
-.message.other {
-    padding-left: 30px; /* Lascia spazio a sinistra per i messaggi altrui */
-    padding-right: 15px; /* Ripristina il padding originale a destra */
+/* Allineamento per i messaggi dell'utente */
+.message-wrapper.you {
+    justify-content: flex-end;
 }
 
-/* Contenitore per il pulsante che apre la palette */
-.message .add-reaction-container {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    right: 6px; /* Posizionato a destra per i messaggi 'you' */
-    z-index: 5;
-}
-
-/* Posiziona il pulsante a sinistra per i messaggi 'other' */
-.message.other .add-reaction-container {
-    right: auto;
-    left: 6px;
+/* Allineamento per i messaggi del partner */
+.message-wrapper.other {
+    justify-content: flex-start;
 }
 
 /* Il pulsante per aggiungere la reazione */
@@ -916,32 +909,41 @@ emoji-picker {
     background: var(--secondary-color);
     border: none;
     color: var(--text-color);
-    opacity: 0.7;
     border-radius: 50%;
     width: 24px;
     height: 24px;
-    font-size: 14px;
+    font-size: 16px;
+    line-height: 24px; /* Centra il testo verticalmente */
+    text-align: center;
     cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0; /* Nascosto di default */
+    
+    /* Posizionamento e scomparsa */
+    opacity: 0;
+    transform: scale(0.8);
     transition: opacity 0.2s ease, transform 0.2s ease;
-    transform: scale(0.9);
+    
+    /* Spazio dal messaggio */
+    margin: 0 8px;
 }
 
-/* Mostra il pulsante quando si passa il mouse sul messaggio */
-.message:hover .add-reaction-btn {
+/* Ordine per i messaggi 'you': prima il messaggio, poi il pulsante */
+.message-wrapper.you .message { order: 1; }
+.message-wrapper.you .add-reaction-btn { order: 2; }
+
+/* Ordine per i messaggi 'other': prima il pulsante, poi il messaggio */
+.message-wrapper.other .message { order: 2; }
+.message-wrapper.other .add-reaction-btn { order: 1; }
+
+/* Mostra il pulsante quando si passa il mouse sul wrapper */
+.message-wrapper:hover .add-reaction-btn {
     opacity: 1;
     transform: scale(1);
 }
 
-/* La palette di emoji che apparirà al clic */
+/* La palette di emoji che appare al clic */
 .reaction-palette {
     position: absolute;
-    bottom: calc(100% + 5px); /* Appare sopra il pulsante */
-    left: 50%;
-    transform: translateX(-50%);
+    top: -40px; /* Posizionata sopra il messaggio */
     background: var(--card-background-color);
     padding: 6px 8px;
     border-radius: 20px;
@@ -949,15 +951,29 @@ emoji-picker {
     display: flex;
     gap: 8px;
     z-index: 10;
-    /* Inizialmente nascosta, la mostreremo con JS */
+    
+    /* Nascondi di default */
     opacity: 0;
     visibility: hidden;
-    transition: opacity 0.2s ease, visibility 0.2s ease;
+    transform: translateY(5px) scale(0.9);
+    transition: all 0.2s ease;
 }
 
+/* Stile per mostrare la palette */
 .reaction-palette.visible {
     opacity: 1;
     visibility: visible;
+    transform: translateY(0) scale(1);
+}
+
+/* Posizionamento palette per messaggi 'other' */
+.message-wrapper.other .reaction-palette {
+    left: 40px;
+}
+
+/* Posizionamento palette per messaggi 'you' */
+.message-wrapper.you .reaction-palette {
+    right: 40px;
 }
 
 /* Stile per ogni emoji nella palette */
@@ -976,10 +992,9 @@ emoji-picker {
     display: flex;
     gap: 4px;
     padding: 4px 8px 0 8px;
-    justify-content: flex-start; /* Default per messaggi 'other' */
+    justify-content: flex-start;
 }
 
-/* Allinea le reazioni a destra per i messaggi 'you' */
 .message.you .reactions-display {
     justify-content: flex-end;
 }
