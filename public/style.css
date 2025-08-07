@@ -1006,13 +1006,16 @@ emoji-picker {
     font-size: 0.8rem;
     border: 1px solid var(--border-color);
 }
-/* Stile per i messaggi di sistema (es. info sul paese) */
+/* Stile per i messaggi di sistema (più moderno) */
 .system-message {
-    text-align: center;
+    align-self: center; /* Si centra da solo nel contenitore flessibile */
+    background-color: var(--secondary-color);
     color: var(--placeholder-color);
-    font-style: italic;
-    font-size: 0.9rem;
-    width: 100%;
-    padding: 10px 0;
-    margin-bottom: 10px;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 0.85rem;
+    padding: 6px 12px;
+    border-radius: 15px;
+    margin: 10px 0;
+    max-width: fit-content; /* La larghezza si adatta al contenuto */
 }
