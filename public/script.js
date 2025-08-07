@@ -13,6 +13,8 @@ let pendingAvatar;
 let userName;
 let userBio;
 let userFavoriteSong;
+let showProfile = false;
+let partnerProfile = {};
 
 // --- NUOVO: SELEZIONE AVATAR FINALE CON I PIÙ POPOLARI DI DICEBEAR ---
 const AVATAR_CATEGORIES = {
@@ -96,6 +98,15 @@ document.addEventListener('DOMContentLoaded', () => {
     // NUOVO: Selettori per le nuove impostazioni
     const userNameInput = document.getElementById('userNameInput');
     const userBioInput = document.getElementById('userBioInput');
+    const userSongInput = document.getElementById('userSongInput');
+    const showProfileCheckbox = document.getElementById('showProfileCheckbox');
+    const viewPartnerProfileBtn = document.getElementById('viewPartnerProfileBtn');
+    const partnerProfileModal = document.getElementById('partner-profile-modal');
+    const closePartnerProfileBtn = document.getElementById('closePartnerProfileBtn');
+    const partnerProfileName = document.getElementById('partnerProfileName');
+    const partnerProfileAvatar = document.getElementById('partnerProfileAvatar');
+    const partnerProfileBio = document.getElementById('partnerProfileBio');
+    const partnerProfileSong = document.getElementById('partnerProfileSong');
 
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
@@ -128,6 +139,7 @@ document.addEventListener('DOMContentLoaded', () => {
         startBtn.disabled = false;
         disconnectBtn.disabled = true;
         reportBtn.disabled = true;
+        viewPartnerProfileBtn.classList.add('hidden');
     }
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
@@ -242,7 +254,20 @@ document.addEventListener('DOMContentLoaded', () => {
     chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const buttonContainer = target.closest('.message-and-button-container'); activePalette = createReactionPalette(messageId); buttonContainer.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
 
     // Logica dei pulsanti principali
-    startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat', { avatarUrl: currentUserAvatar }); startBtn.disabled = true; disconnectBtn.disabled = false; }});
+    startBtn.addEventListener('click', () => { 
+        if (!connected) { 
+            const myProfile = {
+                avatarUrl: currentUserAvatar,
+                name: userName,
+                bio: userBio,
+                favoriteSong: userFavoriteSong,
+                showProfile: showProfile,
+            };
+            socket.emit('start_chat', myProfile); 
+            startBtn.disabled = true; 
+            disconnectBtn.disabled = false; 
+        }
+    });
     disconnectBtn.addEventListener('click', () => { socket.emit('disconnect_chat'); status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
     sendBtn.addEventListener('click', sendMessage);
     input.addEventListener('keypress', (e) => { if (e.key === 'Enter' && !sendBtn.disabled) sendMessage(); });
@@ -263,7 +288,7 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- LOGICA AVATAR CONFERMATA ALLA CHIUSURA ---
+    // --- LOGICA AVATAR E PROFILO CONFERMATA ALLA CHIUSURA ---
 
     function populateAvatarGrid(category) {
         avatarGrid.innerHTML = '';
@@ -302,6 +327,31 @@ document.addEventListener('DOMContentLoaded', () => {
         if (newSelected) { newSelected.classList.add('selected'); }
     }
     
+    function loadUserSettings() {
+        userName = localStorage.getItem('userName') || 'Anonimo';
+        userBio = localStorage.getItem('userBio') || '';
+        userFavoriteSong = localStorage.getItem('userFavoriteSong') || '';
+        currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
+        showProfile = localStorage.getItem('showProfile') === 'true';
+
+        userNameInput.value = userName;
+        userBioInput.value = userBio;
+        userSongInput.value = userFavoriteSong;
+        showProfileCheckbox.checked = showProfile;
+    }
+
+    function saveUserSettings() {
+        userName = userNameInput.value || 'Anonimo';
+        userBio = userBioInput.value;
+        userFavoriteSong = userSongInput.value;
+        showProfile = showProfileCheckbox.checked;
+
+        localStorage.setItem('userName', userName);
+        localStorage.setItem('userBio', userBio);
+        localStorage.setItem('userFavoriteSong', userFavoriteSong);
+        localStorage.setItem('showProfile', showProfile);
+    }
+    
     function finalizeAvatarChange() {
         if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
             currentUserAvatar = pendingAvatar;
@@ -311,17 +361,21 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if(connected) {
                 addSelfAvatarChangeMessage(currentUserAvatar);
-            }
-
-            if (socket && connected) {
-                socket.emit('update_avatar', { avatarUrl: currentUserAvatar });
+                const myProfile = {
+                    avatarUrl: currentUserAvatar,
+                    name: userName,
+                    bio: userBio,
+                    favoriteSong: userFavoriteSong,
+                    showProfile: showProfile,
+                };
+                socket.emit('update_profile', myProfile);
             }
         }
+        saveUserSettings();
         avatarModal.classList.add('hidden');
     }
     
-    currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
-
+    loadUserSettings();
     updateAvatarDisplay();
 
     settingsBtn.addEventListener('click', () => {
@@ -368,6 +422,20 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    // NUOVO: Logica per il modale del profilo del partner
+    function showPartnerProfileModal() {
+        partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
+        partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
+        partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
+        partnerProfileSong.textContent = partnerProfile.favoriteSong || 'Non disponibile';
+        partnerProfileModal.classList.remove('hidden');
+    }
+    
+    viewPartnerProfileBtn.addEventListener('click', showPartnerProfileModal);
+    closePartnerProfileBtn.addEventListener('click', () => {
+        partnerProfileModal.classList.add('hidden');
+    });
+    
     // --- EVENTI SOCKET.IO ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { showLoadingAnimation(); });
@@ -376,6 +444,11 @@ document.addEventListener('DOMContentLoaded', () => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
         partnerAvatar = data.partnerAvatar || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][1];
         partnerIp = data.partnerIp;
+        // NUOVO: Riceve i dati del profilo del partner se disponibili
+        partnerProfile = data.partnerProfile || {};
+        if (partnerProfile.showProfile === true) {
+            viewPartnerProfileBtn.classList.remove('hidden');
+        }
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
 
