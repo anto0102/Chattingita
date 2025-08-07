@@ -90,9 +90,10 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
     const settingsBtn = document.getElementById('settingsBtn');
-    const avatarModal = document.getElementById('avatar-modal');
+    
+    // Rimosso avatarModal e closeAvatarModalBtn
     const avatarGrid = document.getElementById('avatar-grid');
-    const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
+    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
     const avatarCategorySelector = document.getElementById('avatar-category-selector');
     const currentUserAvatarDisplay = document.getElementById('currentUserAvatarDisplay');
 
@@ -377,6 +378,7 @@ document.addEventListener('DOMContentLoaded', () => {
         localStorage.setItem('showProfile', showProfile);
     }
     
+    // Modificata per la nuova implementazione
     function finalizeAvatarChange() {
         saveUserSettings();
         if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
@@ -397,7 +399,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 socket.emit('update_profile', myProfile);
             }
         }
-        avatarModal.classList.add('hidden');
+        showSection('chat', document.querySelector('[data-section="chat"]'));
     }
 
     // Funzione per cercare canzoni e mostrare i risultati usando il tuo proxy backend
@@ -461,6 +463,7 @@ document.addEventListener('DOMContentLoaded', () => {
     loadUserSettings();
     updateAvatarDisplay();
 
+    // Modificata la logica per aprire la nuova sezione
     settingsBtn.addEventListener('click', () => {
         pendingAvatar = currentUserAvatar; 
         loadUserSettings(); // Ricarica le impostazioni attuali
@@ -475,15 +478,15 @@ document.addEventListener('DOMContentLoaded', () => {
         
         populateCategorySelector(currentCategory);
         populateAvatarGrid(currentCategory);
-        avatarModal.classList.remove('hidden');
+        
+        const settingsSectionBtn = document.querySelector('[data-section="settings"]');
+        if (settingsSectionBtn) {
+            showSection('settings', settingsSectionBtn);
+        }
     });
-
-    closeAvatarModalBtn.addEventListener('click', finalizeAvatarChange);
-    avatarModal.addEventListener('click', (e) => { 
-        if (e.target === avatarModal) {
-            finalizeAvatarChange();
-        } 
-    });
+    
+    // Nuovo event listener per il pulsante Salva e Chiudi nella sezione impostazioni
+    saveSettingsBtn.addEventListener('click', finalizeAvatarChange);
     
     avatarGrid.addEventListener('click', (e) => { 
         if (e.target.classList.contains('avatar-choice')) { 
