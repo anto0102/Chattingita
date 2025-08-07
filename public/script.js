@@ -10,60 +10,50 @@ let partnerAvatar;
 // Variabile per la selezione temporanea dell'avatar
 let pendingAvatar;
 
-// --- NUOVO: SELEZIONE AVATAR COMPLETAMENTE RINNOVATA (SENZA DICEBEAR) ---
+// --- NUOVO: SELEZIONE AVATAR FINALE CON I PIÙ POPOLARI DI DICEBEAR ---
 const AVATAR_CATEGORIES = {
-    'Robot Amichevoli': [
-        'https://robohash.org/Amico?set=set1',
-        'https://robohash.org/Compagno?set=set1',
-        'https://robohash.org/Guida?set=set1',
-        'https://robohash.org/Aiutante?set=set1',
-        'https://robohash.org/Saggio?set=set1',
-        'https://robohash.org/Esploratore?set=set1',
-        'https://robohash.org/Inventore?set=set1',
-        'https://robohash.org/Guardiano?set=set1'
+    'Personaggi Iconici': [
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Felix',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Jasper',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Max',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Milo',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Leo',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Sam',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Simon',
+        'https://api.dicebear.com/8.x/avataaars/svg?seed=Toby'
     ],
-    'Mostri Buffi': [
-        'https://robohash.org/Mostro?set=set2',
-        'https://robohash.org/Simpatico?set=set2',
-        'https://robohash.org/Pasticcione?set=set2',
-        'https://robohash.org/Birbante?set=set2',
-        'https://robohash.org/Tenero?set=set2',
-        'https://robohash.org/Confuso?set=set2',
-        'https://robohash.org/Divertente?set=set2',
-        'https://robohash.org/Curioso?set=set2'
+    'Stile Moderno': [
+        'https://api.dicebear.com/8.x/micah/svg?seed=Bella',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Charlie',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Lucy',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Daisy',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Sadie',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Molly',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Zoe',
+        'https://api.dicebear.com/8.x/micah/svg?seed=Cleo'
     ],
-    'Alieni': [
-        'https://robohash.org/Alieno?set=set3',
-        'https://robohash.org/Galassia?set=set3',
-        'https://robohash.org/Stella?set=set3',
-        'https://robohash.org/Cosmo?set=set3',
-        'https://robohash.org/Visitatore?set=set3',
-        'https://robohash.org/Spazio?set=set3',
-        'https://robohash.org/Mistero?set=set3',
-        'https://robohash.org/Infinito?set=set3'
+    'Retrò & Pixel': [
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Rocky',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Annie',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Abby',
+        'https://api.dicebear.com/8.x/pixel-art/svg?seed=Misty',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Garfield',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Sheba',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Mittens',
+        'https://api.dicebear.com/8.x/pixel-art-neutral/svg?seed=Pepper'
     ],
-    'Arte Astratta': [
-        'https://source.boringavatars.com/marble/120/Artista?colors=264653,2a9d8f,e9c46a,f4a261,e76f51',
-        'https://source.boringavatars.com/marble/120/Creativo?colors=8ecae6,219ebc,023047,ffb703,fb8500',
-        'https://source.boringavatars.com/marble/120/Sognatore?colors=5f0f40,9a031e,fb8b24,e36414,0f4c5c',
-        'https://source.boringavatars.com/marble/120/Visionario?colors=000000,14213d,fca311,e5e5e5,ffffff',
-        'https://source.boringavatars.com/marble/120/Poeta?colors=ffadad,ffd6a5,fdffb6,caffbf,9bf6ff',
-        'https://source.boringavatars.com/marble/120/Musico?colors=a0c4ff,bdb2ff,ffc6ff,fffffc,b2f7ef',
-        'https://source.boringavatars.com/marble/120/Scultore?colors=d4e09b,f6f4d2,cbdfbd,f19c79,a44a3f',
-        'https://source.boringavatars.com/marble/120/Pittore?colors=2d3047,e33e38,b2c5c3,4a4a4f,edb54c'
-    ],
-    'Geometrici': [
-        'https://source.boringavatars.com/beam/120/Forma?colors=264653,2a9d8f,e9c46a,f4a261,e76f51',
-        'https://source.boringavatars.com/beam/120/Angolo?colors=8ecae6,219ebc,023047,ffb703,fb8500',
-        'https://source.boringavatars.com/beam/120/Linea?colors=5f0f40,9a031e,fb8b24,e36414,0f4c5c',
-        'https://source.boringavatars.com/beam/120/Cubo?colors=000000,14213d,fca311,e5e5e5,ffffff',
-        'https://source.boringavatars.com/pixel/120/Pixel?colors=ffadad,ffd6a5,fdffb6,caffbf,9bf6ff',
-        'https://source.boringavatars.com/pixel/120/Matrice?colors=a0c4ff,bdb2ff,ffc6ff,fffffc,b2f7ef',
-        'https://source.boringavatars.com/ring/120/Anello?colors=d4e09b,f6f4d2,cbdfbd,f19c79,a44a3f',
-        'https://source.boringavatars.com/ring/120/Cerchio?colors=2d3047,e33e38,b2c5c3,4a4a4f,edb54c'
+    'Creativi': [
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Bandit',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Bear',
+        'https://api.dicebear.com/8.x/bottts/svg?seed=Boo',
+        'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Bubba',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Angel',
+        'https://api.dicebear.com/8.x/adventurer/svg?seed=Oreo',
+        'https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Patches',
+        'https://api.dicebear.com/8.x/adventurer-neutral/svg?seed=Sassy'
     ]
 };
-const DEFAULT_AVATAR_CATEGORY = 'Robot Amichevoli';
+const DEFAULT_AVATAR_CATEGORY = 'Personaggi Iconici';
 
 
 // --- FUNZIONI UTILITY GLOBALI ---
