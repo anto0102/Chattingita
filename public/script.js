@@ -18,17 +18,39 @@ const sendBtn = document.getElementById('sendBtn');
 const onlineCount = document.getElementById('onlineCount');
 const reportBtn = document.getElementById('reportBtn');
 const chatContent = document.querySelector('.chat-content');
-const typingIndicatorContainer = document.getElementById('typing-indicator-container'); // <-- MODIFICA: Aggiunto selettore
+const typingIndicatorContainer = document.getElementById('typing-indicator-container');
+const emojiBtn = document.getElementById('emojiBtn');
+const emojiPicker = document.getElementById('emoji-picker');
 
 // Stato della chat
 let connected = false;
-// let typingIndicator = null; // <-- MODIFICA: Variabile rimossa
 let chatLog = [];
 let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
+const emitStopTyping = debounce(() => {
+    if (isTyping) {
+        socket.emit('stop_typing');
+        isTyping = false;
+    }
+}, 2000);
 
 // --- FUNZIONI UTILITY ---
+
+function debounce(callback, delay = 1000) {
+    let timeout;
+    const debounced = (...args) => {
+        clearTimeout(timeout);
+        timeout = setTimeout(() => {
+            callback(...args);
+        }, delay);
+    };
+    debounced.cancel = () => {
+        clearTimeout(timeout);
+    };
+    return debounced;
+}
+
 function moveActiveIndicator(element) {
     if (element && window.innerWidth > 768) {
         const navBar = document.querySelector('.nav-links');
@@ -70,7 +92,7 @@ function resetChat() {
     sendBtn.disabled = true;
     sendBtn.classList.remove('active-animation');
     inputArea.classList.add('hidden');
-    removeTypingIndicator(); // Questa funzione ora pulisce il nuovo contenitore
+    removeTypingIndicator();
     chatLog = [];
     partnerIp = null;
     reportSent = false;
@@ -101,19 +123,28 @@ function addMessage(text, isYou = false) {
 function sendMessage() {
     const message = input.value.trim();
     if (message !== '' && connected) {
+        emitStopTyping.cancel(); 
+        
         socket.emit('message', message);
         addMessage(message, true);
         input.value = '';
-        socket.emit('stop_typing');
-        isTyping = false;
+
+        if (isTyping) {
+            socket.emit('stop_typing');
+            isTyping = false;
+        }
+
         sendBtn.disabled = true;
         sendBtn.classList.remove('active-animation');
+        
+        // MODIFICA: Usa la proprietà 'hidden'
+        if (!emojiPicker.hidden) {
+            emojiPicker.hidden = true;
+        }
     }
 }
 
-// --- MODIFICA: Funzioni per l'indicatore di scrittura aggiornate ---
 function showTypingIndicator() {
-    // Controlla se l'indicatore non è già visibile
     if (typingIndicatorContainer.innerHTML === '') {
         typingIndicatorContainer.innerHTML = `
             <div class="typing-indicator">
@@ -125,16 +156,13 @@ function showTypingIndicator() {
                 </div>
             </div>
         `;
-        scrollToBottom(); // Scorri per assicurarti che sia visibile
+        scrollToBottom();
     }
 }
 
 function removeTypingIndicator() {
-    // Svuota semplicemente il contenitore
     typingIndicatorContainer.innerHTML = '';
 }
-// --- FINE MODIFICA ---
-
 
 // --- EVENT LISTENERS ---
 startBtn.addEventListener('click', () => {
@@ -165,19 +193,19 @@ input.addEventListener('input', () => {
     if (input.value.trim().length > 0) {
         sendBtn.disabled = false;
         sendBtn.classList.add('active-animation');
-        if (!isTyping) {
-            socket.emit('typing');
-            isTyping = true;
-        }
     } else {
         sendBtn.disabled = true;
         sendBtn.classList.remove('active-animation');
-        if (isTyping) {
-            socket.emit('stop_typing');
-            isTyping = false;
-        }
     }
+
+    if (!isTyping) {
+        socket.emit('typing');
+        isTyping = true;
+    }
+    
+    emitStopTyping();
 });
+
 
 reportBtn.addEventListener('click', () => {
     if (!connected || !partnerIp) {
@@ -247,6 +275,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const isLightMode = document.body.classList.contains('light-mode');
         themeToggleBtn.innerHTML = isLightMode ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
         localStorage.setItem('theme', isLightMode ? 'light' : 'dark');
+        
+        emojiPicker.classList.toggle('dark', !isLightMode);
+        emojiPicker.classList.toggle('light', isLightMode);
     });
 
     hamburger.addEventListener('click', () => {
@@ -273,6 +304,34 @@ document.addEventListener('DOMContentLoaded', () => {
         statusMessage.style.color = 'var(--success-color)';
         contactForm.reset();
     });
+
+    // --- MODIFICA: LOGICA EMOJI PICKER CORRETTA ---
+    emojiBtn.addEventListener('click', (event) => {
+        event.stopPropagation();
+        // Usa la proprietà 'hidden' per mostrare/nascondere
+        emojiPicker.hidden = !emojiPicker.hidden;
+    });
+
+    emojiPicker.addEventListener('emoji-click', event => {
+        input.value += event.detail.unicode;
+        input.focus();
+        if (sendBtn.disabled) {
+           sendBtn.disabled = false;
+           sendBtn.classList.add('active-animation');
+        }
+    });
+
+    // Nascondi il picker quando si clicca altrove
+    document.body.addEventListener('click', () => {
+        if (!emojiPicker.hidden) {
+            emojiPicker.hidden = true;
+        }
+    });
+    
+    // Assicurati che il tema sia corretto anche al caricamento iniziale
+    const isLightModeOnLoad = document.body.classList.contains('light-mode');
+    emojiPicker.classList.toggle('dark', !isLightModeOnLoad);
+    emojiPicker.classList.toggle('light', isLightModeOnLoad);
 });
 
 // --- EVENTI SOCKET.IO ---
