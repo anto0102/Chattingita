@@ -8,17 +8,39 @@ let socket;
 let currentUserAvatar;
 let partnerAvatar;
 
-// --- NUOVO: LISTA AVATAR ---
+// --- NUOVA LOGICA AVATAR: LISTA AVATAR AMPLIATA E PIÙ BELLA ---
 const AVATARS = [
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Casper',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Gizmo',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Felix',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Midnight',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Milo',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Oscar',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Toby',
-    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Zoe'
+    // Stile "Adventurer" (Fantasy)
+    'https://api.dicebear.com/8.x/adventurer/svg?seed=Shadow',
+    'https://api.dicebear.com/8.x/adventurer/svg?seed=Luna',
+    'https://api.dicebear.com/8.x/adventurer/svg?seed=Leo',
+    'https://api.dicebear.com/8.x/adventurer/svg?seed=Willow',
+    'https://api.dicebear.com/8.x/adventurer/svg?seed=Jasper',
+    
+    // Stile "Pixel Art" (Retrò)
+    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Max',
+    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Ruby',
+    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Zane',
+    'https://api.dicebear.com/8.x/pixel-art/svg?seed=Cleo',
+    
+    // Stile "Bottts" (Robot Colorati)
+    'https://api.dicebear.com/8.x/bottts/svg?seed=Gizmo',
+    'https://api.dicebear.com/8.x/bottts/svg?seed=Sparky',
+    'https://api.dicebear.com/8.x/bottts/svg?seed=Clank',
+    'https://api.dicebear.com/8.x/bottts/svg?seed=Bolt',
+
+    // Stile "Lorelei" (Ritratti)
+    'https://api.dicebear.com/8.x/lorelei/svg?seed=Annie',
+    'https://api.dicebear.com/8.x/lorelei/svg?seed=Sam',
+    'https://api.dicebear.com/8.x/lorelei/svg?seed=Mia',
+    
+    // Stile "Avataaars" (Personaggi personalizzabili)
+    'https://api.dicebear.com/8.x/avataaars/svg?seed=Rocky',
+    'https://api.dicebear.com/8.x/avataaars/svg?seed=Coco',
+    'https://api.dicebear.com/8.x/avataaars/svg?seed=Peanut',
+    'https://api.dicebear.com/8.x/avataaars/svg?seed=Mimi'
 ];
+
 
 // --- FUNZIONI UTILITY GLOBALI ---
 function debounce(callback, delay = 1000) { let timeout; const debounced = (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { callback(...args); }, delay); }; debounced.cancel = () => { clearTimeout(timeout); }; return debounced; }
@@ -247,7 +269,7 @@ document.addEventListener('DOMContentLoaded', () => {
         hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
         partnerAvatar = data.partnerAvatar || AVATARS[1];
         partnerIp = data.partnerIp;
-        if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
+        if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
 
     socket.on('new_message', (messageObject) => {
