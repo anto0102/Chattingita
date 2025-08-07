@@ -479,3 +479,26 @@ emoji-picker { position: absolute; bottom: 75px; right: 1rem; z-index: 1001; --b
 .avatar-choice { width: 80px; height: 80px; border-radius: 50%; cursor: pointer; transition: transform 0.2s ease, box-shadow 0.2s ease; border: 3px solid transparent; padding: 3px; background-color: var(--secondary-color); }
 .avatar-choice:hover { transform: scale(1.1); }
 .avatar-choice.selected { border-color: var(--primary-color); box-shadow: 0 0 15px var(--primary-color); }
+
+/* --- NUOVO: Stili per l'avatar nella barra di navigazione --- */
+.user-avatar-display {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    border: 2px solid var(--primary-color);
+    margin-left: 0.5rem; /* Spazio a sinistra */
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    flex-shrink: 0;
+}
+
+.user-avatar-display:hover {
+    transform: scale(1.1);
+    box-shadow: 0 0 10px var(--primary-color);
+}
+
+@media (max-width: 768px) {
+    .user-avatar-display {
+        display: none; /* Nasconde l'avatar su mobile */
+    }
+}
