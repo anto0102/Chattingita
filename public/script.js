@@ -5,6 +5,20 @@ let partnerIp = null;
 let reportSent = false;
 let isTyping = false;
 let socket; 
+let currentUserAvatar;
+let partnerAvatar;
+
+// --- NUOVO: LISTA AVATAR ---
+const AVATARS = [
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Casper',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Gizmo',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Felix',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Midnight',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Milo',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Oscar',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Toby',
+    'https://api.dicebear.com/8.x/bottts-neutral/svg?seed=Zoe'
+];
 
 // --- FUNZIONI UTILITY GLOBALI ---
 function debounce(callback, delay = 1000) { let timeout; const debounced = (...args) => { clearTimeout(timeout); timeout = setTimeout(() => { callback(...args); }, delay); }; debounced.cancel = () => { clearTimeout(timeout); }; return debounced; }
@@ -33,6 +47,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
     
+    // NUOVI SELETTORI PER AVATAR
+    const settingsBtn = document.getElementById('settingsBtn');
+    const avatarModal = document.getElementById('avatar-modal');
+    const avatarGrid = document.getElementById('avatar-grid');
+    const closeAvatarModalBtn = document.getElementById('closeAvatarModal');
+
+
     // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
     const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
@@ -67,12 +88,24 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function scrollToBottom() { if (chatContent) { chatContent.scrollTop = chatContent.scrollHeight; } }
 
+    // MODIFICATA: Aggiunge l'avatar al messaggio
     function addMessage(messageObject) {
-        const { id, text, senderId } = messageObject;
+        const { id, text, senderId, avatarUrl } = messageObject;
         const isYou = senderId === socket.id;
+        const currentAvatar = isYou ? currentUserAvatar : partnerAvatar;
+
         const wrapperDiv = document.createElement('div');
         wrapperDiv.className = 'message-wrapper ' + (isYou ? 'you' : 'other');
-        wrapperDiv.innerHTML = `<div class="message ${isYou ? 'you' : 'other'}" data-id="${id}"><div class="message-content"><p class="message-text">${text}</p></div><div class="reactions-display"></div></div><button class="add-reaction-btn" data-message-id="${id}">+</button>`;
+        
+        // La logica delle reazioni rimane complessa, semplifichiamo per ora la struttura del messaggio
+        wrapperDiv.innerHTML = `
+            <img src="${currentAvatar}" alt="Avatar" class="chat-avatar">
+            <div class="message ${isYou ? 'you' : 'other'}" data-id="${id}">
+                <div class="message-content"><p class="message-text">${text}</p></div>
+                <div class="reactions-display"></div>
+            </div>
+            <button class="add-reaction-btn" data-message-id="${id}">+</button>
+        `;
         chatMessages.append(wrapperDiv);
         scrollToBottom();
         if (!isYou) { chatLog.push(text); }
@@ -84,48 +117,68 @@ document.addEventListener('DOMContentLoaded', () => {
         sysMsgDiv.innerHTML = text;
         chatMessages.append(sysMsgDiv);
         scrollToBottom();
-        setTimeout(() => {
-            sysMsgDiv.classList.add('visible');
-        }, 10);
+        setTimeout(() => { sysMsgDiv.classList.add('visible'); }, 10);
     }
-
-    function sendMessage() { const messageText = input.value.trim(); if (messageText !== '' && connected) { emitStopTyping.cancel(); socket.emit('message', messageText); input.value = ''; if (isTyping) { socket.emit('stop_typing'); isTyping = false; } sendBtn.disabled = true; sendBtn.classList.remove('active-animation'); if (!emojiPicker.hidden) { emojiPicker.hidden = true; } } }
     
-    // MODIFICA: La funzione ora aggiunge un segnaposto per l'allineamento
+    // MODIFICATA: Invia anche l'avatar
+    function sendMessage() {
+        const messageText = input.value.trim();
+        if (messageText !== '' && connected) {
+            emitStopTyping.cancel();
+            
+            // Invia un oggetto che include il testo
+            // Nota: il backend deve essere adattato per gestire un oggetto {text: "..."} invece di una stringa
+            socket.emit('message', messageText); 
+            
+            // Aggiungiamo il nostro messaggio localmente subito, con il nostro avatar
+            const ownMessageObject = {
+                id: `local-${Date.now()}`,
+                text: messageText,
+                senderId: socket.id,
+                avatarUrl: currentUserAvatar
+            };
+            addMessage(ownMessageObject);
+
+            input.value = '';
+            if (isTyping) {
+                socket.emit('stop_typing');
+                isTyping = false;
+            }
+            sendBtn.disabled = true;
+            sendBtn.classList.remove('active-animation');
+            if (!emojiPicker.hidden) {
+                emojiPicker.hidden = true;
+            }
+        }
+    }
+    
     function showTypingIndicator() {
-        if (document.getElementById('typing-indicator-wrapper')) return;
+      if (document.getElementById('typing-indicator-wrapper')) return;
 
-        const wrapperDiv = document.createElement('div');
-        wrapperDiv.className = 'message-wrapper other';
-        wrapperDiv.id = 'typing-indicator-wrapper';
-        wrapperDiv.innerHTML = `
-            <div class="typing-indicator-placeholder"></div>
-            <div class="message other typing-indicator">
-                <div class="typing-dots">
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                    <span class="typing-dot"></span>
-                </div>
-            </div>
-        `;
-        chatMessages.append(wrapperDiv);
-        scrollToBottom();
+      const wrapperDiv = document.createElement('div');
+      wrapperDiv.className = 'message-wrapper other';
+      wrapperDiv.id = 'typing-indicator-wrapper';
+      wrapperDiv.innerHTML = `
+          <img src="${partnerAvatar}" alt="Partner Avatar" class="chat-avatar">
+          <div class="message other typing-indicator">
+              <div class="typing-dots">
+                  <span class="typing-dot"></span><span class="typing-dot"></span><span class="typing-dot"></span>
+              </div>
+          </div>
+      `;
+      chatMessages.append(wrapperDiv);
+      scrollToBottom();
     }
 
-    function removeTypingIndicator() {
-        const indicator = document.getElementById('typing-indicator-wrapper');
-        if (indicator) { indicator.remove(); }
-    }
 
+    function removeTypingIndicator() { const indicator = document.getElementById('typing-indicator-wrapper'); if (indicator) { indicator.remove(); } }
     function getFlagEmoji(countryCode) { if (!countryCode || countryCode.length !== 2) { return '🌍'; } const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt()); return String.fromCodePoint(...codePoints); }
     function showLoadingAnimation() { chatMessages.innerHTML = ''; status.style.display = 'none'; const loadingHTML = `<div class="loading-container" id="loading-container"><div class="orb-canvas"><div class="orb orb-1"></div><div class="orb orb-2"></div></div><p class="loading-text">In attesa di un altro utente...</p></div>`; chatContent.insertAdjacentHTML('beforeend', loadingHTML); setTimeout(() => { const loadingContainer = document.getElementById('loading-container'); if (loadingContainer) { loadingContainer.classList.add('visible'); } }, 10); }
     function hideLoadingAnimation() { const loadingContainer = document.getElementById('loading-container'); if (loadingContainer) { loadingContainer.remove(); } status.style.display = 'block'; }
-
     const REACTION_EMOJIS = ['👍', '❤️', '😂', '😯', '😢', '🙏'];
     let activePalette = null;
     function createReactionPalette(messageId) { const palette = document.createElement('div'); palette.className = 'reaction-palette'; palette.dataset.messageId = messageId; REACTION_EMOJIS.forEach(emoji => { const emojiSpan = document.createElement('span'); emojiSpan.className = 'palette-emoji'; emojiSpan.textContent = emoji; palette.appendChild(emojiSpan); }); return palette; }
     chatMessages.addEventListener('click', (event) => { const target = event.target; if (target.classList.contains('palette-emoji')) { const palette = target.closest('.reaction-palette'); const messageId = palette.dataset.messageId; const emoji = target.textContent; socket.emit('add_reaction', { messageId, emoji }); if (activePalette) { activePalette.remove(); activePalette = null; } return; } if (activePalette) { activePalette.remove(); activePalette = null; } if (target.classList.contains('add-reaction-btn')) { const messageId = target.dataset.messageId; const messageWrapper = target.closest('.message-wrapper'); activePalette = createReactionPalette(messageId); messageWrapper.appendChild(activePalette); setTimeout(() => { activePalette.classList.add('visible'); }, 10); } });
-
     startBtn.addEventListener('click', () => { if (!connected) { socket.emit('start_chat'); startBtn.disabled = true; disconnectBtn.disabled = false; } });
     disconnectBtn.addEventListener('click', () => { socket.emit('disconnect_chat'); status.textContent = 'Disconnesso. Premi "Inizia Chat" per connetterti'; resetChat(); connected = false; });
     sendBtn.addEventListener('click', sendMessage);
@@ -145,11 +198,83 @@ document.addEventListener('DOMContentLoaded', () => {
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
     const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
 
-    // --- EVENTI SOCKET.IO ---
+    // --- NUOVA LOGICA PER AVATAR ---
+    function populateAvatarChoices() {
+        avatarGrid.innerHTML = '';
+        AVATARS.forEach(avatarSrc => {
+            const img = document.createElement('img');
+            img.src = avatarSrc;
+            img.className = 'avatar-choice';
+            img.dataset.src = avatarSrc;
+            if (avatarSrc === currentUserAvatar) {
+                img.classList.add('selected');
+            }
+            avatarGrid.appendChild(img);
+        });
+    }
+
+    function selectAvatar(avatarSrc) {
+        currentUserAvatar = avatarSrc;
+        localStorage.setItem('userAvatar', avatarSrc);
+        const currentSelected = avatarGrid.querySelector('.selected');
+        if (currentSelected) {
+            currentSelected.classList.remove('selected');
+        }
+        const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
+        if (newSelected) {
+            newSelected.classList.add('selected');
+        }
+    }
+
+    // Carica l'avatar salvato o imposta un default
+    currentUserAvatar = localStorage.getItem('userAvatar') || AVATARS[0];
+    selectAvatar(currentUserAvatar); // Imposta lo stato iniziale
+
+    settingsBtn.addEventListener('click', () => {
+        populateAvatarChoices();
+        avatarModal.classList.remove('hidden');
+    });
+
+    closeAvatarModalBtn.addEventListener('click', () => {
+        avatarModal.classList.add('hidden');
+    });
+    
+    avatarModal.addEventListener('click', (e) => {
+        if (e.target === avatarModal) { // Chiudi solo se si clicca sullo sfondo
+             avatarModal.classList.add('hidden');
+        }
+    });
+
+    avatarGrid.addEventListener('click', (e) => {
+        if (e.target.classList.contains('avatar-choice')) {
+            selectAvatar(e.target.dataset.src);
+        }
+    });
+
+
+    // --- EVENTI SOCKET.IO (CON MODIFICHE) ---
     socket.on('online_count', (count) => { onlineCount.textContent = count; });
     socket.on('waiting', () => { showLoadingAnimation(); });
-    socket.on('match', (data) => { hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; if (data && data.partnerIp) { partnerIp = data.partnerIp; } if (data && data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } });
-    socket.on('new_message', (messageObject) => { removeTypingIndicator(); addMessage(messageObject); });
+    
+    socket.on('match', (data) => {
+        hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false; 
+        
+        // Simula la ricezione dell'avatar del partner, scegliendone uno a caso diverso dal nostro
+        const availablePartnerAvatars = AVATARS.filter(av => av !== currentUserAvatar);
+        partnerAvatar = availablePartnerAvatars[Math.floor(Math.random() * availablePartnerAvatars.length)];
+        
+        if (data && data.partnerIp) { partnerIp = data.partnerIp; } 
+        if (data && data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
+    });
+    
+    socket.on('new_message', (messageObject) => {
+        removeTypingIndicator();
+        
+        // Il backend invia solo il testo, quindi deduciamo che è il partner
+        messageObject.senderId = 'partner'; // ID fittizio per il partner
+        addMessage(messageObject);
+    });
+
     socket.on('update_reactions', ({ messageId, reactions }) => { const messageWrapper = document.querySelector(`.message-wrapper .message[data-id="${messageId}"]`); if (!messageWrapper) return; const reactionsDisplay = messageWrapper.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
     socket.on('typing', () => { showTypingIndicator(); });
     socket.on('stop_typing', () => { removeTypingIndicator(); });
