@@ -202,23 +202,24 @@ a:hover {
     transform: scale(0.8);
     transition: opacity 0.2s ease, transform 0.2s ease;
     position: absolute; /* Posizionamento assoluto per non spostarsi */
-    bottom: -15px;
+    top: 50%;
+    transform: translateY(-50%) scale(0.8);
 }
 
 /* Posizione per i messaggi 'you' (a sinistra del messaggio) */
 .message-wrapper.you .add-reaction-btn {
-    left: -15px;
+    left: -35px;
 }
 
 /* Posizione per i messaggi 'other' (a destra del messaggio) */
 .message-wrapper.other .add-reaction-btn {
-    right: -15px;
+    right: -35px;
 }
 
 /* Mostra il bottone solo su hover del wrapper del messaggio */
 .message-wrapper:hover .add-reaction-btn {
     opacity: 1;
-    transform: scale(1);
+    transform: translateY(-50%) scale(1);
 }
 
 /* Su mobile, il bottone è sempre visibile */
@@ -244,8 +245,13 @@ a:hover {
 
 .reactions-display {
     display: flex; gap: 4px; padding: 4px 8px 0 8px;
-    /* L'allineamento è gestito dal parent: .message-content-wrapper */
+    /* L'allineamento è gestito dal parent: .message-and-button-container */
+    align-self: flex-start;
 }
+.message-wrapper.you .reactions-display {
+    align-self: flex-end;
+}
+
 
 .reaction-chip {
     background-color: var(--secondary-color); padding: 2px 8px; border-radius: 10px;
