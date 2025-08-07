@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
     
-    // --- CONNESSIONE DINAMICA AL SERVER (ORA IN UN POSTO SICURO) ---
+    // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
     const betaServerURL = "https://chattingapp-backend-production.up.railway.app";
     let serverURL;
@@ -70,8 +70,7 @@ document.addEventListener('DOMContentLoaded', () => {
         console.log("Ambiente non di produzione: mi collego al server beta per i test.");
         serverURL = betaServerURL;
     }
-
-    // Ora inizializziamo la variabile socket
+    
     socket = io(serverURL);
     
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
@@ -132,21 +131,21 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    // MODIFICA 1: La funzione addMessage ora riceve un oggetto e costruisce un HTML più complesso.
     function addMessage(messageObject) {
         const { id, text, senderId } = messageObject;
         
-        // Determina se il messaggio è nostro confrontando il senderId con il nostro id socket
+        // Determina se il messaggio è nostro
         const isYou = senderId === socket.id;
-
+    
         const msgDiv = document.createElement('div');
         msgDiv.className = 'message ' + (isYou ? 'you' : 'other');
-        
-        // Aggiungiamo l'ID del messaggio come data-attribute. FONDAMENTALE per le reazioni!
         msgDiv.dataset.id = id;
-
-        // Creiamo la struttura interna per testo e future reazioni
+    
+        // Aggiungiamo il contenitore e il pulsante per le reazioni
         msgDiv.innerHTML = `
+            <div class="add-reaction-container">
+                <button class="add-reaction-btn">🙂</button>
+            </div>
             <div class="message-content">
                 <p class="message-text">${text}</p>
             </div>
@@ -155,27 +154,22 @@ document.addEventListener('DOMContentLoaded', () => {
         
         chatMessages.appendChild(msgDiv);
         scrollToBottom();
-
+    
         // Aggiorna il log solo per i messaggi del partner
         if (!isYou) {
             chatLog.push(text);
         }
     }
 
-    // MODIFICA 2: sendMessage ora invia solo il testo al server e non aggiunge il messaggio localmente.
     function sendMessage() {
-        const messageText = input.value.trim(); // Rinominato per chiarezza
+        const messageText = input.value.trim();
         if (messageText !== '' && connected) {
             emitStopTyping.cancel(); 
             
-            // Invia solo il testo. Il server si occuperà di creare l'oggetto con l'ID.
             socket.emit('message', messageText);
             
-            // RIMOSSO: addMessage(message, true); 
-            // Non aggiungiamo più il nostro messaggio subito, aspettiamo che il server ce lo rimandi.
-
             input.value = '';
-            if (isT`yping) {
+            if (isTyping) {
                 socket.emit('stop_typing');
                 isTyping = false;
             }
@@ -265,7 +259,6 @@ document.addEventListener('DOMContentLoaded', () => {
         connected = false;
     });
 
-    // Impostazione tema iniziale
     const savedTheme = localStorage.getItem('theme');
     const prefersLight = window.matchMedia('(prefers-color-scheme: light)').matches;
     if (savedTheme === 'light' || (!savedTheme && prefersLight)) {
@@ -276,7 +269,6 @@ document.addEventListener('DOMContentLoaded', () => {
         themeToggleBtn.innerHTML = '<i class="fas fa-moon"></i>';
     }
 
-    // Navigazione tra sezioni
     navButtons.forEach(btn => {
         btn.addEventListener('click', (e) => {
             e.preventDefault();
@@ -287,7 +279,6 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     });
 
-    // Mostra sezione iniziale
     const activeBtn = document.querySelector('.nav-btn.active');
     if (activeBtn) {
         showSection(activeBtn.dataset.section, activeBtn);
@@ -334,10 +325,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const contactForm = document.getElementById('contact-form');
     contactForm.addEventListener('submit', (e) => {
         e.preventDefault();
-        // ... Logica form contatti ...
     });
 
-    // Logica Emoji Picker
     emojiBtn.addEventListener('click', (event) => {
         event.stopPropagation();
         emojiPicker.hidden = !emojiPicker.hidden;
@@ -385,7 +374,6 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
-    // MODIFICA 3: Ascoltiamo il nuovo evento 'new_message' invece di 'message'.
     socket.on('new_message', (messageObject) => {
         removeTypingIndicator();
         addMessage(messageObject);
