@@ -9,14 +9,14 @@ let currentUserAvatar;
 let partnerAvatar;
 // Variabile per la selezione temporanea dell'avatar
 let pendingAvatar;
-// NUOVO: Variabili per le impostazioni utente
+// Variabili per le impostazioni utente
 let userName;
 let userBio;
 let userFavoriteSong;
 let showProfile = false;
 let partnerProfile = {};
 
-// --- NUOVO: SELEZIONE AVATAR FINALE CON I PIÙ POPOLARI DI DICEBEAR ---
+// --- SELEZIONE AVATAR FINALE CON I PIÙ POPOLARI DI DICEBEAR ---
 const AVATAR_CATEGORIES = {
     'Personaggi Iconici': [
         'https://api.dicebear.com/8.x/avataaars/svg?seed=Felix',
@@ -406,6 +406,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 selectedSongDisplay.classList.remove('hidden');
                 songResultsDiv.innerHTML = '';
                 userSongSearchInput.value = '';
+                const allCards = document.querySelectorAll('.song-result-card');
+                allCards.forEach(c => c.classList.remove('selected'));
+                card.classList.add('selected');
             });
             songResultsDiv.appendChild(card);
         });
@@ -473,10 +476,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // NUOVO: Logica per il modale del profilo del partner
     function showPartnerProfileModal() {
-        partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
-        partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
-        partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
-        partnerProfileSong.textContent = partnerProfile.favoriteSong || 'Non disponibile';
+        if (partnerProfile && partnerProfile.showProfile === true) {
+            partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
+            partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
+            partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
+            partnerProfileSong.textContent = partnerProfile.favoriteSong || 'Non disponibile';
+        } else {
+            partnerProfileName.textContent = 'Profilo Anonimo';
+            partnerProfileAvatar.src = 'unknown.png';
+            partnerProfileBio.textContent = 'L\'utente ha scelto di non condividere il suo profilo.';
+            partnerProfileSong.textContent = 'Non disponibile';
+        }
         partnerProfileModal.classList.remove('hidden');
     }
     
@@ -495,9 +505,9 @@ document.addEventListener('DOMContentLoaded', () => {
         partnerIp = data.partnerIp;
         // NUOVO: Riceve i dati del profilo del partner se disponibili
         partnerProfile = data.partnerProfile || {};
-        if (partnerProfile.showProfile === true) {
-            viewPartnerProfileBtn.classList.remove('hidden');
-        }
+        // Mostra sempre il pulsante del profilo una volta connessi
+        viewPartnerProfileBtn.classList.remove('hidden');
+
         if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
     });
 
