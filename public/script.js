@@ -7,12 +7,11 @@ let isTyping = false;
 let socket;
 let currentUserAvatar;
 let partnerAvatar;
-// Variabile per la selezione temporanea dell'avatar
+// Variabile per la selezione temporanea dell'avatar (usata da settings.js)
 let pendingAvatar;
-// Variabili per le impostazioni utente
+// Variabili per le impostazioni utente (gestite da settings.js, lette da qui)
 let userName;
 let userBio;
-// MODIFICATO: ora è un oggetto per salvare più dati della canzone
 let userFavoriteSong = {};
 let showProfile = false;
 let partnerProfile = {};
@@ -89,22 +88,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const typingIndicatorContainer = document.getElementById('typing-indicator-container');
     const emojiBtn = document.getElementById('emojiBtn');
     const emojiPicker = document.getElementById('emoji-picker');
-    const avatarGrid = document.getElementById('avatar-grid');
-    const saveSettingsBtn = document.getElementById('saveSettingsBtn');
-    const avatarCategorySelector = document.getElementById('avatar-category-selector');
     const currentUserAvatarDisplay = document.getElementById('currentUserAvatarDisplay');
 
-    // Selettori per le nuove impostazioni
-    const userNameInput = document.getElementById('userNameInput');
-    const userBioInput = document.getElementById('userBioInput');
-    const userSongSearchInput = document.getElementById('userSongSearchInput');
-    const songSearchBtn = document.getElementById('songSearchBtn');
-    const songResultsDiv = document.getElementById('songResults');
-    const selectedSongDisplay = document.getElementById('selectedSongDisplay');
-    const selectedSongCover = document.getElementById('selectedSongCover');
-    const selectedSongTitle = document.getElementById('selectedSongTitle');
-    const selectedSongArtist = document.getElementById('selectedSongArtist');
-    const showProfileCheckbox = document.getElementById('showProfileCheckbox');
+    // Selettori per il modale del profilo partner
     const viewPartnerProfileBtn = document.getElementById('viewPartnerProfileBtn');
     const partnerProfileModal = document.getElementById('partner-profile-modal');
     const closePartnerProfileBtn = document.getElementById('closePartnerProfileBtn');
@@ -115,8 +101,6 @@ document.addEventListener('DOMContentLoaded', () => {
     const partnerProfileSongCover = document.getElementById('partnerProfileSongCover');
     const partnerProfileSongTitle = document.getElementById('partnerProfileSongTitle');
     const partnerProfileSongArtist = document.getElementById('partnerProfileSongArtist');
-    const partnerProfileSongFallback = document.getElementById('partnerProfileSongFallback');
-
 
     // --- CONNESSIONE DINAMICA AL SERVER ---
     const publicServerURL = "https://chattingapp-backend.onrender.com";
@@ -130,6 +114,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- FUNZIONI CHE MANIPOLANO IL DOM ---
     function moveActiveIndicator(element) { if (element && window.innerWidth > 768) { activeIndicator.style.width = `${element.offsetWidth}px`; activeIndicator.style.transform = `translateX(${element.offsetLeft}px)`; activeIndicator.style.opacity = 1; } else { activeIndicator.style.opacity = 0; } }
+    
     function showSection(sectionId, element) { 
         const sections = document.querySelectorAll('.content-section'); 
         sections.forEach(section => { section.classList.remove('active'); }); 
@@ -143,22 +128,6 @@ document.addEventListener('DOMContentLoaded', () => {
         if (window.innerWidth <= 768) { 
             navLinks.classList.remove('open'); 
             hamburger.classList.remove('open'); 
-        }
-
-        // NUOVO: Carica le impostazioni solo quando si apre la sezione settings
-        if (sectionId === 'settings') {
-            pendingAvatar = currentUserAvatar; 
-            loadUserSettings(); 
-            
-            let currentCategory = DEFAULT_AVATAR_CATEGORY;
-            for (const category in AVATAR_CATEGORIES) {
-                if (AVATAR_CATEGORIES[category].includes(currentUserAvatar)) {
-                    currentCategory = category;
-                    break;
-                }
-            }
-            populateCategorySelector(currentCategory);
-            populateAvatarGrid(currentCategory);
         }
     }
 
@@ -187,7 +156,6 @@ document.addEventListener('DOMContentLoaded', () => {
         currentUserAvatarDisplay.src = currentUserAvatar;
     }
 
-
     function addMessage(messageObject) {
         const { id, text, senderId, avatarUrl } = messageObject;
         const isYou = senderId === socket.id;
@@ -212,7 +180,6 @@ document.addEventListener('DOMContentLoaded', () => {
         scrollToBottom();
         if (!isYou) { chatLog.push(text); }
     }
-
 
     function addSystemMessage(text) {
         const sysMsgDiv = document.createElement('div');
@@ -282,7 +249,6 @@ document.addEventListener('DOMContentLoaded', () => {
       scrollToBottom();
     }
 
-
     function removeTypingIndicator() { const indicator = document.getElementById('typing-indicator-wrapper'); if (indicator) { indicator.remove(); } }
     function getFlagEmoji(countryCode) { if (!countryCode || countryCode.length !== 2) { return '🌍'; } const codePoints = countryCode.toUpperCase().split('').map(char => 127397 + char.charCodeAt()); return String.fromCodePoint(...codePoints); }
     function showLoadingAnimation() { chatMessages.innerHTML = ''; status.style.display = 'none'; const loadingHTML = `<div class="loading-container" id="loading-container"><div class="orb-canvas"><div class="orb orb-1"></div><div class="orb orb-2"></div></div><p class="loading-text">In attesa di un altro utente...</p></div>`; chatContent.insertAdjacentHTML('beforeend', loadingHTML); setTimeout(() => { const loadingContainer = document.getElementById('loading-container'); if (loadingContainer) { loadingContainer.classList.add('visible'); } }, 10); }
@@ -325,270 +291,4 @@ document.addEventListener('DOMContentLoaded', () => {
     emojiBtn.addEventListener('click', (event) => { event.stopPropagation(); emojiPicker.hidden = !emojiPicker.hidden; });
     emojiPicker.addEventListener('emoji-click', event => { input.value += event.detail.unicode; input.focus(); if (sendBtn.disabled) { sendBtn.disabled = false; sendBtn.classList.add('active-animation'); } });
     document.body.addEventListener('click', () => { if (!emojiPicker.hidden) { emojiPicker.hidden = true; } });
-    const isLightModeOnLoad = document.body.classList.contains('light-mode'); emojiPicker.classList.toggle('dark', !isLightModeOnLoad); emojiPicker.classList.toggle('light', isLightModeOnLoad);
-
-    // --- LOGICA AVATAR E PROFILO ---
-
-    function populateAvatarGrid(category) {
-        avatarGrid.innerHTML = '';
-        const avatars = AVATAR_CATEGORIES[category] || [];
-        avatars.forEach(avatarSrc => {
-            const img = document.createElement('img');
-            img.src = avatarSrc;
-            img.className = 'avatar-choice';
-            img.dataset.src = avatarSrc;
-            if (avatarSrc === pendingAvatar) {
-                img.classList.add('selected');
-            }
-            avatarGrid.appendChild(img);
-        });
-    }
-
-    function populateCategorySelector(activeCategory) {
-        avatarCategorySelector.innerHTML = '';
-        Object.keys(AVATAR_CATEGORIES).forEach(category => {
-            const btn = document.createElement('button');
-            btn.className = 'category-btn';
-            btn.textContent = category;
-            btn.dataset.category = category;
-            if (category === activeCategory) {
-                btn.classList.add('active');
-            }
-            avatarCategorySelector.appendChild(btn);
-        });
-    }
-
-    function handleAvatarSelection(avatarSrc) {
-        pendingAvatar = avatarSrc;
-        const currentSelected = avatarGrid.querySelector('.selected');
-        if (currentSelected) { currentSelected.classList.remove('selected'); }
-        const newSelected = avatarGrid.querySelector(`[data-src="${avatarSrc}"]`);
-        if (newSelected) { newSelected.classList.add('selected'); }
-    }
-    
-    function loadUserSettings() {
-        userName = localStorage.getItem('userName') || '';
-        userBio = localStorage.getItem('userBio') || '';
-        try {
-            userFavoriteSong = JSON.parse(localStorage.getItem('userFavoriteSong')) || {};
-        } catch (e) {
-            userFavoriteSong = {};
-        }
-        currentUserAvatar = localStorage.getItem('userAvatar') || AVATAR_CATEGORIES[DEFAULT_AVATAR_CATEGORY][0];
-        showProfile = localStorage.getItem('showProfile') === 'true';
-
-        userNameInput.value = userName;
-        userBioInput.value = userBio;
-
-        if (userFavoriteSong.title) {
-            selectedSongTitle.textContent = userFavoriteSong.title;
-            selectedSongArtist.textContent = userFavoriteSong.artist;
-            selectedSongCover.src = userFavoriteSong.cover;
-            selectedSongDisplay.classList.remove('hidden');
-        } else {
-            selectedSongDisplay.classList.add('hidden');
-        }
-
-        showProfileCheckbox.checked = showProfile;
-    }
-
-    function saveUserSettings() {
-        userName = userNameInput.value || 'Anonimo';
-        userBio = userBioInput.value;
-        showProfile = showProfileCheckbox.checked;
-
-        localStorage.setItem('userName', userName);
-        localStorage.setItem('userBio', userBio);
-        localStorage.setItem('userFavoriteSong', JSON.stringify(userFavoriteSong));
-        localStorage.setItem('showProfile', showProfile);
-    }
-    
-    function finalizeAvatarChange() {
-        saveUserSettings();
-        if (pendingAvatar && pendingAvatar !== currentUserAvatar) {
-            currentUserAvatar = pendingAvatar;
-            localStorage.setItem('userAvatar', currentUserAvatar);
-            
-            updateAvatarDisplay();
-
-            if(connected) {
-                addSelfAvatarChangeMessage(currentUserAvatar);
-                const myProfile = {
-                    avatarUrl: currentUserAvatar,
-                    name: userName,
-                    bio: userBio,
-                    favoriteSong: userFavoriteSong,
-                    showProfile: showProfile,
-                };
-                socket.emit('update_profile', myProfile);
-            }
-        }
-        showSection('chat', document.querySelector('[data-section="chat"]'));
-    }
-    
-    saveSettingsBtn.addEventListener('click', finalizeAvatarChange);
-
-
-    async function displaySongSearchResults(query) {
-        songResultsDiv.innerHTML = '';
-        if (query.length < 3) return;
-
-        try {
-            songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Caricamento...</p>';
-            
-            const response = await fetch(`${serverURL}/api/search-songs?q=${encodeURIComponent(query)}`);
-            
-            if (!response.ok) {
-                 throw new Error("Errore dal server proxy.");
-            }
-            
-            const data = await response.json();
-            const results = data.data;
-
-            songResultsDiv.innerHTML = '';
-
-            if (results.length === 0) {
-                songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem;">Nessun risultato trovato.</p>';
-                return;
-            }
-
-            results.forEach(song => {
-                const card = document.createElement('div');
-                card.className = 'song-result-card';
-                card.innerHTML = `
-                    <img src="${song.album.cover_medium}" alt="Copertina di ${song.title}">
-                    <h4>${song.title}</h4>
-                    <p>${song.artist.name}</p>
-                `;
-                card.addEventListener('click', () => {
-                    userFavoriteSong = {
-                        title: song.title,
-                        artist: song.artist.name,
-                        cover: song.album.cover_medium
-                    };
-                    selectedSongTitle.textContent = userFavoriteSong.title;
-                    selectedSongArtist.textContent = userFavoriteSong.artist;
-                    selectedSongCover.src = userFavoriteSong.cover;
-                    selectedSongDisplay.classList.remove('hidden');
-                    songResultsDiv.innerHTML = '';
-                    userSongSearchInput.value = '';
-                    const allCards = document.querySelectorAll('.song-result-card');
-                    allCards.forEach(c => c.classList.remove('selected'));
-                    card.classList.add('selected');
-                });
-                songResultsDiv.appendChild(card);
-            });
-        } catch (error) {
-            console.error("Errore durante la ricerca della canzone:", error);
-            songResultsDiv.innerHTML = '<p style="text-align:center; padding:1rem; color: var(--danger-color);">Errore nel caricamento dei risultati. Riprova.</p>';
-        }
-    }
-    
-    loadUserSettings();
-    updateAvatarDisplay();
-
-    avatarGrid.addEventListener('click', (e) => { 
-        if (e.target.classList.contains('avatar-choice')) { 
-            handleAvatarSelection(e.target.dataset.src);
-        } 
-    });
-
-    avatarCategorySelector.addEventListener('click', (e) => {
-        if (e.target.classList.contains('category-btn')) {
-            const category = e.target.dataset.category;
-            document.querySelectorAll('.category-btn').forEach(btn => btn.classList.remove('active'));
-            e.target.classList.add('active');
-            populateAvatarGrid(category);
-        }
-    });
-
-    songSearchBtn.addEventListener('click', () => {
-        displaySongSearchResults(userSongSearchInput.value);
-    });
-
-    userSongSearchInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            displaySongSearchResults(userSongSearchInput.value);
-        }
-    });
-
-
-    if (currentUserAvatarDisplay) {
-        currentUserAvatarDisplay.addEventListener('click', () => {
-            showSection('settings', document.getElementById('settingsNavBtn'));
-        });
-    }
-
-    function showPartnerProfileModal() {
-        if (partnerProfile && partnerProfile.showProfile === true) {
-            partnerProfileName.textContent = partnerProfile.name || 'Anonimo';
-            partnerProfileAvatar.src = partnerProfile.avatarUrl || partnerAvatar;
-            partnerProfileBio.textContent = partnerProfile.bio || 'Non disponibile';
-            
-            const song = partnerProfile.favoriteSong;
-            if (song && song.title) {
-                partnerProfileSongTitle.textContent = song.title;
-                partnerProfileSongArtist.textContent = song.artist;
-                partnerProfileSongCover.src = song.cover;
-                partnerProfileSongDisplay.classList.remove('hidden');
-                partnerProfileSongFallback.classList.add('hidden');
-            } else {
-                partnerProfileSongDisplay.classList.add('hidden');
-                partnerProfileSongFallback.classList.remove('hidden');
-            }
-        } else {
-            partnerProfileName.textContent = 'Profilo Anonimo';
-            partnerProfileAvatar.src = 'unknown.png';
-            partnerProfileBio.textContent = 'L\'utente ha scelto di non condividere il suo profilo.';
-            
-            partnerProfileSongDisplay.classList.add('hidden');
-            partnerProfileSongFallback.classList.remove('hidden');
-        }
-        partnerProfileModal.classList.remove('hidden');
-    }
-    
-    viewPartnerProfileBtn.addEventListener('click', showPartnerProfileModal);
-    closePartnerProfileBtn.addEventListener('click', () => {
-        partnerProfileModal.classList.add('hidden');
-    });
-    
-    // --- EVENTI SOCKET.IO ---
-    socket.on('online_count', (count) => { onlineCount.textContent = count; });
-    socket.on('waiting', () => { showLoadingAnimation(); });
-
-    socket.on('match', (data) => {
-        hideLoadingAnimation(); status.textContent = 'Connesso! Puoi iniziare a chattare.'; status.style.display = 'block'; inputArea.classList.remove('hidden'); input.disabled = false; disconnectBtn.disabled = false; reportBtn.disabled = false; connected = true; reportSent = false; isTyping = false;
-        
-        partnerProfile = data.partnerProfile || {};
-        partnerAvatar = data.partnerAvatar;
-        partnerIp = data.partnerIp;
-        
-        viewPartnerProfileBtn.classList.remove('hidden');
-
-        if (data.partnerCountry && data.partnerCountry !== 'Sconosciuto') { if (data.partnerCountry === 'Localhost') { addSystemMessage(`Sei connesso con un utente in locale 💻`); } else { try { const countryName = new Intl.DisplayNames(['it'], { type: 'country' }).of(data.partnerCountry); const flag = getFlagEmoji(data.partnerCountry); addSystemMessage(`Sei connesso con un utente da: ${countryName} ${flag}`); } catch (e) { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); } } } else { addSystemMessage(`Sei stato connesso con un altro utente 🌍`); }
-    });
-    
-    socket.on('update_profile_from_partner', (profileData) => {
-        partnerProfile = profileData;
-        partnerAvatar = profileData.avatarUrl;
-        addSystemMessage(`Il tuo partner ha aggiornato il suo profilo.`);
-    });
-
-    socket.on('new_message', (messageObject) => {
-        removeTypingIndicator();
-        addMessage(messageObject);
-    });
-    
-    socket.on('partner_avatar_updated', (data) => {
-        const newAvatarUrl = data.avatarUrl;
-        partnerAvatar = newAvatarUrl; 
-        addAvatarChangeMessage(newAvatarUrl); 
-    });
-
-    socket.on('update_reactions', ({ messageId, reactions }) => { const messageElem = document.querySelector(`.message[data-id="${messageId}"]`); if (!messageElem) return; const reactionsDisplay = messageElem.parentElement.querySelector('.reactions-display'); if (!reactionsDisplay) return; reactionsDisplay.innerHTML = ''; let reactionsHTML = ''; for (const emoji in reactions) { const count = reactions[emoji]; if (count > 0) { reactionsHTML += `<span class="reaction-chip">${emoji} ${count}</span>`; } } reactionsDisplay.innerHTML = reactionsHTML; });
-    socket.on('typing', () => { showTypingIndicator(); });
-    socket.on('stop_typing', () => { removeTypingIndicator(); });
-    socket.on('partner_disconnected', () => { status.textContent = 'Il tuo partner si è disconnesso.'; resetChat(); connected = false; });
-    socket.on('connect_error', (err) => { status.textContent = 'Errore di connessione: ' + err.message; resetChat(); connected = false; });
 });
