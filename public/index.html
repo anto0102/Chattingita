@@ -132,7 +132,7 @@
       
       <div id="settings-section" class="content-section">
           <div class="settings-content">
-              <h3><i class="fas fa-cog"></i> Impostazioni Utente</h3>
+              <h3><i class="fas fa-user-edit"></i> Impostazioni Utente</h3>
               
               <div class="settings-content-scrollable">
                 <div class="settings-group">
@@ -162,18 +162,18 @@
                 </div>
                 
                 <h3>Scegli il tuo Avatar</h3>
-                <div id="avatar-category-selector" class="avatar-category-selector"></div>
+                <div id="avatar-category-selector" class="controls-area"></div>
                 <div id="avatar-grid" class="avatar-grid"></div>
     
                 <div class="settings-group toggle-group">
-                    <label class="toggle-label">Rendi il mio profilo visibile agli altri</label>
-                    <button id="showProfileBtn" class="control-btn primary toggle-btn">
-                        <i class="fas fa-eye"></i> <span>Mostra Profilo</span>
+                    <label for="showProfileBtn" class="toggle-label">Rendi il mio profilo visibile agli altri</label>
+                    <button id="showProfileBtn" class="control-btn primary">
+                        <i class="fas fa-eye"></i> <span>Attiva visibilità</span>
                     </button>
                 </div>
               </div>
     
-              <button id="saveSettingsBtn" class="control-btn primary"><i class="fas fa-arrow-left"></i> Torna alla Chat</button>
+              <button id="saveSettingsBtn" class="control-btn primary"><i class="fas fa-save"></i> Salva e Torna alla Chat</button>
           </div>
       </div>
   </main>
@@ -186,7 +186,7 @@
           </div>
           <div class="profile-details">
               <div class="profile-detail-item">
-                  <h4>Canzone preferita</h4>
+                  <h4><i class="fas fa-music"></i> Canzone preferita</h4>
                   <div id="partnerProfileSongDisplay" class="song-display hidden">
                     <img id="partnerProfileSongCover" src="" alt="Copertina">
                     <div class="song-details">
@@ -194,9 +194,10 @@
                         <p id="partnerProfileSongArtist"></p>
                     </div>
                   </div>
+                   <p id="partnerProfileSongFallback">Non disponibile</p>
               </div>
               <div class="profile-detail-item">
-                  <h4>Bio</h4>
+                  <h4><i class="fas fa-info-circle"></i> Bio</h4>
                   <p id="partnerProfileBio">Non disponibile</p>
               </div>
           </div>
